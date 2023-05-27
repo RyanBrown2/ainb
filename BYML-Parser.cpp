@@ -9,6 +9,7 @@
 #include <cstring>
 #include "Util.h"
 #include "Parser.h"
+#include "Nodes/NodeUtil.h"
 
 
 using namespace std;
@@ -27,6 +28,9 @@ int main()
 
     Parser parser(file);
 
+    file.seekg(16, std::ios::beg);
+
+    detectNodeType(file);
 
     file.close();
 

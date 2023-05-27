@@ -128,7 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BYML-Parser.cpp" />
-    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="Nodes\NodeUtil.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
@@ -136,7 +136,7 @@
     <ResourceCompile Include="BYML-Parser.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Node.h" />
+    <ClInclude Include="Nodes\NodeUtil.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
