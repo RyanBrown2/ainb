@@ -9,11 +9,11 @@ Parser::Parser(std::fstream& file)
 {
 	HeaderData headerData = parseHeaderData(file);
     Parser::headerData = headerData;
-	std::cout << "Endianness: " << headerData.isBigEndian << std::endl;
-	std::cout << "Version: " << headerData.version << std::endl;
-	std::cout << "Hash Offset: " << headerData.hashOffset << std::endl;
-	std::cout << "String Offset: " << headerData.stringOffset << std::endl;
-	std::cout << "Root Node Offset: " << headerData.rootNodeOffset << std::endl;
+	//std::cout << "Endianness: " << headerData.isBigEndian << std::endl;
+	//std::cout << "Version: " << headerData.version << std::endl;
+	//std::cout << "Hash Offset: " << headerData.hashOffset << std::endl;
+	//std::cout << "String Offset: " << headerData.stringOffset << std::endl;
+	//std::cout << "Root Node Offset: " << headerData.rootNodeOffset << std::endl;
 }
 
 

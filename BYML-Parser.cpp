@@ -30,7 +30,9 @@ int main()
 
     file.seekg(16, std::ios::beg);
 
-    detectNodeType(file);
+    //processNode(file);
+    //Node(file);
+    Node testNode(file, parser.headerData.isBigEndian);
 
     file.close();
 
