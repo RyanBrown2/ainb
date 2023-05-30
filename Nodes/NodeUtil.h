@@ -35,5 +35,6 @@ private:
 	void processNode(std::fstream& file);
 
 	void processValueHashNode(std::fstream& file);
+	void processStringHashNode(std::fstream& file);
 	void processStringTableNode(std::fstream& file);
 };

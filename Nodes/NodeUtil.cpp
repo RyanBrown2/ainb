@@ -16,6 +16,7 @@ NodeType detectNodeType(fstream& file) {
 	char type[2];
 	file.read(type, 1);
 	type[1] = '\0';
+	file.seekg(-1, ios::cur);
 
 	int typeInt = static_cast<int>(type[0]);
 
@@ -52,6 +53,7 @@ void Node::processNode(fstream& file) {
 		break;
 	case NodeType::string_hash:
 		std::cout << "String hash" << std::endl;
+		processStringHashNode(file);
 		break;
 	case NodeType::string_table:
 		std::cout << "String table" << std::endl;
@@ -89,9 +91,12 @@ void Node::processNode(fstream& file) {
 
 Node::Node(fstream& file, bool isBigEndian) {
 	//Node::nodeType = detectNodeType(file);
+	
+	this->isBigEndian = isBigEndian;
+	
 	Node::processNode(file);
 
-	Node::isBigEndian = isBigEndian;
+	
 }
 
 Node::~Node() {
@@ -105,6 +110,18 @@ NodeType Node::getType() {
 void Node::processValueHashNode(fstream& file) {
 	char value[4];
 	file.read(value, 4);
+}
+
+void Node::processStringHashNode(fstream& file) {
+	// Get number of entries
+	file.seekg(1, ios::cur);
+	char entryNum[4];
+	file.read(entryNum, 3);
+	entryNum[3] = '\0';
+	int entryNumInt = convertHexCharArrayToInt(entryNum, this->isBigEndian, 3);
+
+	cout << "Entry num: " << entryNumInt << endl;
+
 }
 
 void Node::processStringTableNode(std::fstream& file) {

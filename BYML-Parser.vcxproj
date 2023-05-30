@@ -24,6 +24,7 @@
     <ProjectGuid>{b22474d6-95dd-44ba-ae49-41431f7580fb}</ProjectGuid>
     <RootNamespace>BYMLParser</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>File-Parser</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -127,17 +128,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BYML-Parser.cpp" />
+    <ClCompile Include="ainb\AINB_parser.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Nodes\NodeUtil.cpp" />
-    <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="BYML_Parser.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BYML-Parser.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ainb\AINB_parser.h" />
     <ClInclude Include="Nodes\NodeUtil.h" />
-    <ClInclude Include="Parser.h" />
+    <ClInclude Include="BYML_Parser.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
