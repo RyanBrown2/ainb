@@ -27,7 +27,7 @@ int main()
 
     file.seekg(0, ios::beg);
 
-	BYML parser(file);
+	BYML byml(file);
 
     //file.seekg(parser.headerData.rootNodeOffset, ios::beg);
 

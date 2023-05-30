@@ -118,13 +118,17 @@ void Node::processStringHashNode(fstream& file) {
 	char entryNum[4];
 	file.read(entryNum, 3);
 	entryNum[3] = '\0';
-	int entryNumInt = convertHexCharArrayToInt(entryNum, this->isBigEndian, 3);
+	int entryNumInt = convertHexCharArrayToInt(entryNum, isBigEndian, 3);
+
+	file.seekg(-4, ios::cur);
 
 	cout << "Entry num: " << entryNumInt << endl;
-
 }
 
 void Node::processStringTableNode(std::fstream& file) {
+
+	int seekReturn = file.tellg();
+
 	// Get the number of entries
 	file.seekg(1, ios::cur);
 	char entryNum[4];
@@ -135,5 +139,20 @@ void Node::processStringTableNode(std::fstream& file) {
 
 	cout << "Entry num: " << entryNumInt << endl;
 
-	file.seekg(-1, ios::cur);
+	int* offsets;
+	offsets = new int[entryNumInt];
+
+	for (int i = 0; i < entryNumInt; i++) {
+		char entryOffset[5];
+		file.read(entryOffset, 4);
+		entryOffset[4] = '\0';
+
+		offsets[i] = convertHexCharArrayToInt(entryOffset, isBigEndian, 4);
+	}
+
+
+
+
+	file.seekg(seekReturn, ios::beg);
+
 }

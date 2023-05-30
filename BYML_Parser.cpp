@@ -18,7 +18,7 @@ BYML::BYML(std::fstream& file)
 	//std::cout << "Root Node Offset: " << headerData.rootNodeOffset << std::endl;
 
 
-    file.seekg(this->headerData.rootNodeOffset, std::ios::cur);
+    file.seekg(this->headerData.hashOffset, std::ios::cur);
 
     // Create root node
     Node node(file, this->headerData.isBigEndian);
