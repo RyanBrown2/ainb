@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include "../Util.h"
+#include <string>
+#include <vector>
 
 using namespace std;
 
@@ -139,15 +141,41 @@ void Node::processStringTableNode(std::fstream& file) {
 
 	cout << "Entry num: " << entryNumInt << endl;
 
-	int* offsets;
-	offsets = new int[entryNumInt];
+	int* offsets = new int[entryNumInt];
 
 	for (int i = 0; i < entryNumInt; i++) {
 		char entryOffset[5];
 		file.read(entryOffset, 4);
 		entryOffset[4] = '\0';
 
-		offsets[i] = convertHexCharArrayToInt(entryOffset, isBigEndian, 4);
+		int offsetNum = convertHexCharArrayToInt(entryOffset, isBigEndian, 4);
+		offsets [i] = offsetNum;
+
+		//offsetNum >> offsets[i];
+	}
+
+	std::vector<std::string> strings;
+
+	for (int i = 0; i < entryNumInt; i++) {
+		int offset = offsets[i];
+		file.seekg(seekReturn, ios::beg);
+		file.seekg(offset, ios::cur);
+
+		char buffer[1];
+		char str[100];
+		file.read(buffer, 1);
+		str[0] = buffer[0];
+		int a = 1;
+		while (buffer[0] != '\0') {
+			file.read(buffer, 1);
+			str[a] = buffer[0];
+			a += 1;
+		}
+
+		str[a] = '\0';
+
+		cout << str << endl;
+		strings.push_back(str);
 	}
 
 

@@ -20,7 +20,7 @@ BYML::BYML(std::fstream& file)
 
     file.seekg(this->headerData.hashOffset, std::ios::cur);
 
-    // Create root node
+    // Create hash node
     Node node(file, this->headerData.isBigEndian);
 }
 

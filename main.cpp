@@ -9,12 +9,14 @@
 #include <cstring>
 #include "Util.h"
 #include "BYML_Parser.h"
+#include "ainb/AINB_parser.h"
 
 
 using namespace std;
 
 int main()
 {
+    //const char *fileDir = "LargeDungeonThunder_abdc.logic.module.ainb";
     const char *fileDir = "test.byml";
 
     fstream file;
@@ -27,11 +29,10 @@ int main()
 
     file.seekg(0, ios::beg);
 
-	BYML byml(file);
+    BYML fileBYML(file);
 
-    //file.seekg(parser.headerData.rootNodeOffset, ios::beg);
+    //AINB ainb(file);
 
-    //Node node(file, parser.headerData.isBigEndian);
 
     file.close();
 
