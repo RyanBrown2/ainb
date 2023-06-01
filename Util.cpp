@@ -1,6 +1,7 @@
 #include "Util.h"
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 int convertHexCharArrayToInt(char* array, bool isBigEndian, int len) {
     int result = 0;
@@ -15,4 +16,13 @@ int convertHexCharArrayToInt(char* array, bool isBigEndian, int len) {
         }
     }
     return result;
+}
+
+void displayCharArrayAsHex(char* arr, int len)
+{
+    for (int i = 0; i < len; ++i)
+    {
+        std::cout << std::setw(2) << std::setfill('0') << std::hex << (static_cast<int>(arr[i]) & 0xFF) << " ";
+    }
+    std::cout << std::dec << std::endl;
 }

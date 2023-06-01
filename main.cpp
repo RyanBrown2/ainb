@@ -16,9 +16,9 @@ using namespace std;
 int main()
 {
     //const char *fileDir = "";
-    const char *fileDir = "FormalSequence.root.ainb";
+    //const char *fileDir = "FormalSequence.root.ainb";
     //const char *fileDir = "FastLoadOff.module.ainb";
-    //const char *fileDir = "GuideDive_a6f2.logic.module.ainb";
+    const char *fileDir = "GuideDive_a6f2.logic.module.ainb";
     //const char *fileDir = "LargeDungeonThunder_abdc.logic.module.ainb";
     //const char *fileDir = "test.byml";
 

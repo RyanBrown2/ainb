@@ -7,6 +7,8 @@
 
 using namespace std;
 
+
+
 AINB::AINB(fstream& file)
 {
 	parse(file);
@@ -24,51 +26,86 @@ void AINB::parse(fstream& file)
 
 	// Unknown One
 	file.seekg(12, ios::beg);
-	char unknownOne[5];
-	file.read(unknownOne, 4);
-	unknownOne[4] = '\0';
-	int unknownOneAddress = convertHexCharArrayToInt(unknownOne, isBigEndian, 4);
-	printf("Unknown One Value: %d\n", unknownOneAddress);
-	AINB::unknownOneAddress = unknownOneAddress;
+	char headerOne[5];
+	file.read(headerOne, 4);
+	headerOne[4] = '\0';
+	int headerOneInt = convertHexCharArrayToInt(headerOne, isBigEndian, 4);
+	printf("Header One Value: %d\n", headerOneInt);
+	AINB::headerOne = headerOneInt;
 
 	// Unknown Two
-	char unknownTwo[5];
-	file.read(unknownTwo, 4);
-	unknownTwo[4] = '\0';
-	int unknownTwoAddress = convertHexCharArrayToInt(unknownTwo, isBigEndian, 4);
-	printf("Unknown Two Value: %d\n", unknownTwoAddress);
-	AINB::unknownTwoAddress = unknownTwoAddress;
+	char headerTwo[5];
+	file.read(headerTwo, 4);
+	headerTwo[4] = '\0';
+	int headerTwoInt = convertHexCharArrayToInt(headerTwo, isBigEndian, 4);
+	printf("Header Two Value: %d\n", headerTwoInt);
+	AINB::headerTwo = headerTwoInt;
 
 	// Unknown Three
-	char unknownThree[5];
-	file.read(unknownThree, 4);
-	unknownThree[4] = '\0';
-	int unknownThreeAddress = convertHexCharArrayToInt(unknownThree, isBigEndian, 4);
-	printf("Unknown Three Value: %d\n", unknownThreeAddress);
-	AINB::unknownThreeAddress = unknownThreeAddress;
+	char headerThree[5];
+	file.read(headerThree, 4);
+	headerThree[4] = '\0';
+	int headerThreeInt = convertHexCharArrayToInt(headerThree, isBigEndian, 4);
+	printf("Header Three Value: %d\n", headerThreeInt);
+	AINB::headerThree = headerThreeInt;
 
-	parseHead(file);
+	cout << endl;
 
-	//// Header
-	//file.seekg(32, ios::cur);
+	int firstDataBandAddress;
+	if (headerOneInt > 0) {
+		firstDataBandAddress = 0x74;
+	}
+	else {
+		firstDataBandAddress = 0x74;
+	}
 
-	//char headerEnd[5];
-	//file.read(headerEnd, 4);
-	//headerEnd[4] = '\0';
-
-	//int headerEndAddress = convertHexCharArrayToInt(headerEnd, false, 2);
-
-	//char stringBegin[5];
-	//file.read(stringBegin, 4);
-	//stringBegin[4] = '\0';
-
-	//int stringBeginAddress = convertHexCharArrayToInt(stringBegin, isBigEndian, 2);
+	//file.seekg(0, ios::beg);
+	parseDataBlock(file, firstDataBandAddress);
 
 
+	//parseHead(file);
 
 }
 
-void AINB::parseHead(fstream & file)
+AINB::DataBlock AINB::parseDataBlock(fstream& file, int beginAddress)
+{
+	//file.clear();
+	file.seekg(beginAddress, ios::beg);
+
+	DataBlock datablock;
+
+	datablock.version = 0; // temp for testing
+
+	// get index
+	file.seekg(2, ios::cur);
+	char indexChar[3];
+	file.read(indexChar, 2);
+	indexChar[2] = '\0';
+	int index = convertHexCharArrayToInt(indexChar, isBigEndian, 2);
+	datablock.index = index;
+
+	// get data
+	file.seekg(beginAddress, ios::beg);
+	file.seekg(0x2c, ios::cur);
+	char dataChar[17];
+	file.read(dataChar, 16);
+	dataChar[16] = '\0';
+	//strcpy_s(datablock.data, dataChar);
+
+
+
+	cout << "Data Block " << to_string(index) << endl;
+	cout << "Data: ";
+
+	displayCharArrayAsHex(dataChar, 16);
+
+	return datablock;
+	//for (int i = 0; i < 16; ++i)
+	//	std::cout << std::hex << (int)dataChar[i];
+	//cout << endl;
+}
+
+void AINB::parseHead(fstream& file)
 {
 	file.clear();
 	file.seekg(0, ios::beg);
