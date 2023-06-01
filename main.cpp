@@ -8,7 +8,6 @@
 #include <string>
 #include <cstring>
 #include "Util.h"
-#include "BYML_Parser.h"
 #include "ainb/AINB_parser.h"
 
 
@@ -16,8 +15,12 @@ using namespace std;
 
 int main()
 {
+    //const char *fileDir = "";
+    const char *fileDir = "FormalSequence.root.ainb";
+    //const char *fileDir = "FastLoadOff.module.ainb";
+    //const char *fileDir = "GuideDive_a6f2.logic.module.ainb";
     //const char *fileDir = "LargeDungeonThunder_abdc.logic.module.ainb";
-    const char *fileDir = "test.byml";
+    //const char *fileDir = "test.byml";
 
     fstream file;
     file.open(fileDir, fstream::in | fstream::out | std::ios::binary);
@@ -29,7 +32,9 @@ int main()
 
     file.seekg(0, ios::beg);
 
-    BYML fileBYML(file);
+    //BYML fileBYML(file);
+
+    AINB ainb(file);
 
     //AINB ainb(file);
 

@@ -2,6 +2,6 @@
 //#ifndef UTIL_H
 //#define UTIL_H
 
-int convertHexCharArrayToInt(char* array, bool isLittleEndian, int len);
+int convertHexCharArrayToInt(char* array, bool isBigEndian, int len);
 
 //#endif  // UTIL_H

@@ -130,8 +130,6 @@
   <ItemGroup>
     <ClCompile Include="ainb\AINB_parser.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Nodes\NodeUtil.cpp" />
-    <ClCompile Include="BYML_Parser.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -139,8 +137,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ainb\AINB_parser.h" />
-    <ClInclude Include="Nodes\NodeUtil.h" />
-    <ClInclude Include="BYML_Parser.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

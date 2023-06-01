@@ -18,13 +18,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BYML_Parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Util.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Nodes\NodeUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ainb\AINB_parser.cpp">
@@ -37,13 +31,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BYML_Parser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Nodes\NodeUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ainb\AINB_parser.h">
