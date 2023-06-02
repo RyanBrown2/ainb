@@ -128,18 +128,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ainb\AINB_parser.cpp" />
-    <ClCompile Include="ainb\DataBlock.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Util.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="AINB-Parser.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ainb\AINB_parser.h" />
-    <ClInclude Include="ainb\DataBlock.h" />
-    <ClInclude Include="Util.h" />
+    <ClCompile Include="src\ainb\AINB_parser.cpp" />
+    <ClCompile Include="src\ainb\BodyBlock.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Util.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ainb\AINB_parser.h" />
+    <ClInclude Include="src\ainb\BodyBlock.h" />
+    <ClInclude Include="src\Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

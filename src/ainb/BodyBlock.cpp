@@ -1,21 +1,21 @@
-#include "DataBlock.h"
+#include "BodyBlock.h"
 
 using namespace std;
 
-DataBlock::DataBlock(int address)
+BodyBlock::BodyBlock(int address)
 {
-	DataBlock::address = address;
+	BodyBlock::address = address;
 
 	this->data = new char[17];
 	this->index = 0;
 }
 
-DataBlock::~DataBlock()
+BodyBlock::~BodyBlock()
 {
-	delete[] data;
+	delete[] this->data;
 }
 
-void DataBlock::load(fstream& file)
+void BodyBlock::load(fstream& file)
 {
 	int startAddress = file.tellg();
 	file.seekg(address, ios::beg);
@@ -36,7 +36,7 @@ void DataBlock::load(fstream& file)
 }
 
 
-void DataBlock::print()
+void BodyBlock::print()
 {
 	cout << "Data Block Address: " << address << endl;
 	cout << "Data Block Index: " << index << endl;

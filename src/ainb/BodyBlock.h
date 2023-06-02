@@ -5,11 +5,11 @@
 #include <vector>
 #include "../Util.h"
 
-class DataBlock
+class BodyBlock
 {
 public:
-	DataBlock(int address);
-	~DataBlock();
+	BodyBlock(int address);
+	~BodyBlock();
 	void load(std::fstream& file);
 	void print();
 private:

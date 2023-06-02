@@ -53,7 +53,7 @@ void AINB::parse(fstream& file)
 
 
 	// Parse Data Blocks
-	vector<DataBlock> dataBlocks;
+	vector<BodyBlock> dataBlocks;
 
 	int datablockAddress = 0x74;
 
@@ -61,7 +61,7 @@ void AINB::parse(fstream& file)
 		//parseSpecialDataBlock(file, datablockAddress);
 	}
 	else {
-		DataBlock datablock(datablockAddress);
+		BodyBlock datablock(datablockAddress);
 		datablock.load(file);
 		datablock.print();
 		
