@@ -51,59 +51,91 @@ void AINB::parse(fstream& file)
 
 	cout << endl;
 
-	int firstDataBandAddress;
+
+	// Parse Data Blocks
+	vector<DataBlock> dataBlocks;
+
+	int datablockAddress = 0x74;
+
 	if (headerOneInt > 0) {
-		firstDataBandAddress = 0x74;
+		//parseSpecialDataBlock(file, datablockAddress);
 	}
 	else {
-		firstDataBandAddress = 0x74;
+		DataBlock datablock(datablockAddress);
+		datablock.load(file);
+		datablock.print();
+		
 	}
-
-	//file.seekg(0, ios::beg);
-	parseDataBlock(file, firstDataBandAddress);
 
 
 	//parseHead(file);
 
 }
 
-AINB::DataBlock AINB::parseDataBlock(fstream& file, int beginAddress)
-{
-	//file.clear();
-	file.seekg(beginAddress, ios::beg);
+//AINB::DataBlock AINB::parseDataBlock(fstream& file, int beginAddress)
+//{
+//	//file.clear();
+//	file.seekg(beginAddress, ios::beg);
+//
+//	DataBlock datablock;
+//
+//	// get index
+//	file.seekg(2, ios::cur);
+//	char indexChar[3];
+//	file.read(indexChar, 2);
+//	indexChar[2] = '\0';
+//	int index = convertHexCharArrayToInt(indexChar, isBigEndian, 2);
+//	datablock.index = index;
+//
+//	// get data
+//	file.seekg(beginAddress, ios::beg);
+//	file.seekg(0x2c, ios::cur);
+//	char dataChar[17];
+//	file.read(dataChar, 16);
+//	dataChar[16] = '\0';
+//	strcpy_s(datablock.data, dataChar);
+//
+//
+//
+//	cout << "Data Block " << to_string(index) << endl;
+//	cout << "Data: ";
+//
+//	displayCharArrayAsHex(dataChar, 16);
+//
+//	return datablock;
+//	//for (int i = 0; i < 16; ++i)
+//	//	std::cout << std::hex << (int)dataChar[i];
+//	//cout << endl;
+//}
 
-	DataBlock datablock;
-
-	datablock.version = 0; // temp for testing
-
-	// get index
-	file.seekg(2, ios::cur);
-	char indexChar[3];
-	file.read(indexChar, 2);
-	indexChar[2] = '\0';
-	int index = convertHexCharArrayToInt(indexChar, isBigEndian, 2);
-	datablock.index = index;
-
-	// get data
-	file.seekg(beginAddress, ios::beg);
-	file.seekg(0x2c, ios::cur);
-	char dataChar[17];
-	file.read(dataChar, 16);
-	dataChar[16] = '\0';
-	//strcpy_s(datablock.data, dataChar);
-
-
-
-	cout << "Data Block " << to_string(index) << endl;
-	cout << "Data: ";
-
-	displayCharArrayAsHex(dataChar, 16);
-
-	return datablock;
-	//for (int i = 0; i < 16; ++i)
-	//	std::cout << std::hex << (int)dataChar[i];
-	//cout << endl;
-}
+//AINB::SpecialDataBlock AINB::parseSpecialDataBlock(fstream& file, int beginAddress)
+//{
+//	file.seekg(beginAddress, ios::beg);
+//
+//	SpecialDataBlock specialDatablock;
+//
+//	// get unknown1
+//	char unknown1Char[5];
+//	file.read(unknown1Char, 4);
+//	unknown1Char[4] = '\0';
+//	int unknown1 = convertHexCharArrayToInt(unknown1Char, isBigEndian, 4);
+//	specialDatablock.unknown1 = unknown1;
+//
+//	// get data
+//	char dataChar[17];
+//	file.read(dataChar, 16);
+//	dataChar[16] = '\0';
+//	strcpy_s(specialDatablock.data, dataChar);
+//
+//	//get unknown2
+//	char unknown2Char[5];
+//	file.read(unknown2Char, 4);
+//	unknown2Char[4] = '\0';
+//	int unknown2 = convertHexCharArrayToInt(unknown2Char, isBigEndian, 4);
+//	specialDatablock.unknown2 = unknown2;
+//
+//	return specialDatablock;
+//}
 
 void AINB::parseHead(fstream& file)
 {

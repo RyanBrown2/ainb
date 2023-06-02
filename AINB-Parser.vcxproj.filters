@@ -24,6 +24,9 @@
     <ClCompile Include="ainb\AINB_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ainb\DataBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AINB-Parser.rc">
@@ -35,6 +38,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ainb\AINB_parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ainb\DataBlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
