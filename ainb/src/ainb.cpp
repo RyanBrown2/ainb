@@ -49,6 +49,15 @@ void AINB::load(fstream& file)
 	int a_BlockCount = convertHexCharArrayToInt(a_BlockCountChar, isBigEndian, 4);
 	cout << "Type A Block Count: " << a_BlockCount << endl;
 
+	// find number of type B blocks
+	char b_BlockCountChar[5];
+	file.read(b_BlockCountChar, 4);
+	b_BlockCountChar[4] = '\0';
+	int b_BlockCount = convertHexCharArrayToInt(b_BlockCountChar, isBigEndian, 4);
+	cout << "Type B Block Count: " << b_BlockCount << endl;
+
+	cout << endl;
+
 	// find end address of block section
 	file.seekg(0x20, ios::beg);
 	char blockEndAddressChar[5];
@@ -68,36 +77,14 @@ void AINB::load(fstream& file)
 
 	cout << "Finished Loading Type A Blocks" << endl << endl;
 
-
 	cout << "Loading Type B Blocks" << endl;
-	int currentAddress = file.tellg();
-	int bBlockCount = (blockEndAddress - currentAddress) / 0x3c;
-
-	cout << "Type B Block Count: " << bBlockCount << endl;
 
 	vector<B_Block> bBlocks;
-	while (currentAddress < blockEndAddress) {
+	for (int i = 0; i < b_BlockCount; i++) {
 		B_Block bBlock = B_Block::load(file);
-		currentAddress = file.tellg();
-		cout << "Current Address: " <<  std::hex << currentAddress << endl;
 		bBlocks.push_back(bBlock);
 	}
 
-
 	cout << "Finished Loading Type B Blocks" << endl << endl;
-
-
-	//if (headerBlockCount != 0) {
-	//	cout << "TODO: handle header blocks" << endl;
-	//	cout << "Stopping AINB load" << endl;
-	//	return;
-	//}
-	
-	// read data blocks
-
-
-
-	//displayCharArrayAsHex(dataBlock.data, 16);
-
 
 }

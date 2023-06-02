@@ -7,7 +7,10 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    const char *fileDir = "GuideDive_a6f2.logic.module.ainb";
+    //const char* fileDir = "";
+    const char* fileDir = "FormalSequence.root.ainb";
+    //const char *fileDir = "Npc_Ganondorf_Human.event.root.ainb";
+    //const char *fileDir = "GuideDive_a6f2.logic.module.ainb";
 
     fstream file;
     file.open(fileDir, fstream::in | fstream::out | std::ios::binary);
