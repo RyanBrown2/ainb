@@ -1,1 +1,6 @@
 .vs/
+out/
+*.ainb
+*.byml
+*.bgyml
+*.gyml

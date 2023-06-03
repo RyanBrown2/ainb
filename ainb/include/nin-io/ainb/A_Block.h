@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include "nin-io/util/util.h"
 #include "DataBlock.h"
 
 class A_Block : public DataBlock

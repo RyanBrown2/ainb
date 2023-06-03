@@ -1,10 +1,6 @@
-#include "ainb/Ainb.h"
-#include "util/util.h"
+#include "nin-io/ainb/Ainb.h"
 #include <iostream>
 #include <fstream>
-#include "ainb/DataBlock.h"
-#include "ainb/A_Block.h"
-#include "ainb/B_Block.h"
 #include <vector>
 
 using namespace std;
@@ -86,5 +82,11 @@ void AINB::load(fstream& file)
 	}
 
 	cout << "Finished Loading Type B Blocks" << endl << endl;
+
+	// temp address checking
+	int predictedEnd = 0x74 + (a_BlockCount * 0x18) + (b_BlockCount * 0x3c);
+
+	cout << "Predicted End Address: " << hex << predictedEnd << endl;
+	cout << "Actual End Address: " << hex << blockEndAddress << endl;
 
 }
