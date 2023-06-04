@@ -19,6 +19,8 @@ public:
 	int m_unknown1; // 0x00
 	int m_unknown2; // 0x06
 	int m_unknown3; // 0x08
+
+	int t_size;
 private:
 
 

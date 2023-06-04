@@ -19,15 +19,16 @@ void AINB::load(fstream& file)
 {
 	cout << "Loading AINB" << endl << endl;
 
+	//FileHeaderData header_data;
+
 	file.seekg(0, ios::beg);
 
 	// Reading Header Data
-	char type[4];
-	file.read(type, 3);
-	type[3] = '\0';
+	file.read(header_data.type, 3);
+	header_data.type[3] = '\0';
 
 	// Check if file is AINB
-	if (strcmp(type, "AIB") != 0) {
+	if (strcmp(header_data.type, "AIB") != 0) {
 		cout << "File is not AINB" << endl;
 		return;
 	}
@@ -37,25 +38,25 @@ void AINB::load(fstream& file)
 
 	// find number of type A blocks
 	file.seekg(0xC, ios::beg);
-	int a_BlockCount;
-	readIntFromStream(file, isBigEndian, 4, a_BlockCount);
-	cout << "Type A Block Count: " << a_BlockCount << endl;
+	readIntFromStream(file, isBigEndian, 4, header_data.a_blocks);
+	cout << "Type A Block Count: " << header_data.a_blocks << endl;
 
 	// find number of type B blocks
-	int b_BlockCount;
-	readIntFromStream(file, isBigEndian, 4, b_BlockCount);
-	cout << "Type B Block Count: " << b_BlockCount << endl;
+	readIntFromStream(file, isBigEndian, 4, header_data.b_blocks);
+	cout << "Type B Block Count: " << header_data.b_blocks << endl;
 
 	cout << endl;
 
 	// find end address of block section
 	file.seekg(0x20, ios::beg);
-	int blockEndAddress;
-	readIntFromStream(file, isBigEndian, 4, blockEndAddress);
+	readIntFromStream(file, isBigEndian, 4, header_data.data_body_start);
 
 	// find start of string list
-	int stringListStartAddress;
-	readIntFromStream(file, isBigEndian, 4, stringListStartAddress);
+	readIntFromStream(file, isBigEndian, 4, header_data.string_section_start);
+
+	// find start of footer section
+	file.seekg(0x2c, ios::beg);
+	readIntFromStream(file, isBigEndian, 4, header_data.t_footer_start);
 
 
 	// load footer
@@ -83,7 +84,7 @@ void AINB::load(fstream& file)
 	file.seekg(0x74, ios::beg);
 
 	vector<A_Block> aBlocks;
-	for (int i = 0; i < a_BlockCount; i++) {
+	for (int i = 0; i < header_data.a_blocks; i++) {
 		A_Block aBlock = A_Block::load(file);
 		aBlocks.push_back(aBlock);
 	}
@@ -93,16 +94,14 @@ void AINB::load(fstream& file)
 	cout << "Loading Type B Blocks" << endl;
 
 	vector<B_Block> bBlocks;
-	for (int i = 0; i < b_BlockCount; i++) {
+	for (int i = 0; i < header_data.b_blocks; i++) {
 		B_Block bBlock = B_Block::load(file);
 		bBlocks.push_back(bBlock);
 	}
 
 	cout << "Finished Loading Type B Blocks" << endl << endl;
 
-	int maxSize = 0;
-	B_Block* maxBlock;
-	int maxAddress = 0;
+
 	// parse b blocks
 	for (int i = 0; i < bBlocks.size(); i++) {
 		B_Block block = bBlocks[i];
@@ -116,21 +115,46 @@ void AINB::load(fstream& file)
 		if (i + 1 < bBlocks.size()) {
 			int size = bBlocks[i + 1].m_dataPointer - block.m_dataPointer;
 			cout << "Size: " << hex << size << " (" << to_string(size) << ")" << endl;
-			if (size > maxSize) {
-
-				maxAddress = block.m_address;
-				cout << "New Largest Size: " << hex << size << " (" << to_string(size) << ")" << endl;
-				cout << "Old Largest Size: " << hex << maxSize << " (" << to_string(maxSize) << ")" << endl << endl;
-				
-				maxSize = size;
-				//maxBlock = &block;
-			}
+			bBlocks[i].t_size = size;
 		}
+		else {
+			int size = header_data.t_footer_start - block.m_dataPointer;
+			cout << "Size: " << hex << size << " (" << to_string(size) << ")" << endl;
+			bBlocks[i].t_size = size;
+		}
+
 		cout << endl;
+
 	}
 
-	cout << "Max Size: " << hex << maxSize << " (" << to_string(maxSize) << ")" << endl;
-	cout << "At Address: " << hex << maxAddress << endl;
+	//loadFooter(file);
+
+	loadDataFootAddresses(file);
+
+	//loadDataBody(file);
+
+	return;
+
+
+	//cout << endl << "Checks" << endl << endl;
+
+	//for (int i = 0; i < bBlocks.size(); i++) {
+	//	B_Block block = bBlocks[i];
+	//	if (block.m_unknown1 == 0) {
+	//		if (block.t_size != 0xa4) {
+	//			cout << "Found Type B Block with Unknown 1 = 0 and Size != 0xa4" << endl;
+	//			cout << "Block " << to_string(block.m_index) << endl;
+	//			cout << "Address: " << hex << block.m_address << endl;
+	//			cout << "Data Pointer: " << hex << block.m_dataPointer << endl;
+	//			cout << "Unknown 1: " << hex << block.m_unknown1 << " (" << to_string(block.m_unknown1) << ")" << endl;
+	//			cout << "Unknown 2: " << hex << block.m_unknown2 << " (" << to_string(block.m_unknown2) << ")" << endl;
+	//			cout << "Unknown 3: " << hex << block.m_unknown3 << " (" << to_string(block.m_unknown3) << ")" << endl;
+	//			cout << "Size: " << hex << block.t_size << " (" << to_string(block.t_size) << ")" << endl;
+	//			cout << endl;
+	//		}
+	//	}
+	//}
+
 	//cout << "At Address: " << hex << maxBlock->m_address << endl;
 	//if (b_BlockCount != bBlocks.size()) {
 	//	cout << "Error: Type B Block Count Mismatch" << endl;
@@ -140,15 +164,56 @@ void AINB::load(fstream& file)
 	//}
 
 
+
+}
+
+void AINB::loadDataBody(fstream& file) {
+	// first entry in data body
+	int first_entry_address = header_data.data_body_start + 0x30;
+	file.seekg(first_entry_address, ios::beg);
+
+	// todo - figure out what the beginning of the entry data is
+
+	// check if entry has table
+	file.seekg(0x94, ios::cur);
+	int has_table;
+	readIntFromStream(file, isBigEndian, 4, has_table);
+	if (has_table != 0) {
+		cout << "Entry has table" << endl;
+	}
+
+}
+
+void AINB::loadDataFootAddresses(fstream& file)
+{
+	file.seekg(0x20, ios::beg);
+
+	// load the table section start address
+	file.seekg(0xc, ios::cur);
+	readIntFromStream(file, isBigEndian, 4, data_foot_addresses.table_section_start);
+
+	// load the structure section start address
+	file.seekg(0x4, ios::cur);
+	readIntFromStream(file, isBigEndian, 4, data_foot_addresses.structure_section_start);
+
+
 }
 
 void AINB::loadFooter(fstream& file)
 {
 	int initialPosition = file.tellg();
 
+	//struct FootAddresses {
+	//	int table_section_address;
+	//	int structutre_section_address;
+	//};
+
 	file.seekg(0x28, ios::beg);
 
 	cout << "Loading Footer Address Data" << endl;
+
+	// find start of table section
+	//file.seekg(0x8, ios::cur);
 
 	// find end of footer
 	int footerEndAddress;
