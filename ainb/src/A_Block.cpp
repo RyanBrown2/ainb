@@ -24,8 +24,8 @@ A_Block A_Block::load(std::fstream& file)
 	block.unknown1 = convertHexCharArrayToInt(unknown1Char, false, 4);
 
 	// data
-	file.read(block.data, 16);
-	block.data[16] = '\0';
+	file.read(block.data_dump, 16);
+	block.data_dump[16] = '\0';
 
 	// unknown 2
 	char unknow2Char[5];

@@ -11,10 +11,9 @@ public:
 	};
 	DataBlock(int address, BlockType type);
 	~DataBlock();
-	static DataBlock loadTypeA(std::fstream& file);
-	char* data;
+	char* data_dump;
+	int m_address;
 private:
 	BlockType m_blockType;
-	int m_address;
 
 };

@@ -13,4 +13,6 @@ public:
 	~AINB();
 	void load(std::fstream& file);
 private:
+	bool isBigEndian;
+	void loadFooter(std::fstream& file);
 };

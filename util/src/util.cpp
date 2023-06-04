@@ -23,3 +23,11 @@ void displayCharArrayAsHex(char* arr, int len)
     }
     std::cout << std::dec << std::endl;
 }
+
+void readIntFromStream(std::istream& stream, bool isBigEndian, int size, int& result)
+{
+	char* buffer = new char[size];
+	stream.read(buffer, size);
+	result = convertHexCharArrayToInt(buffer, isBigEndian, size);
+	delete[] buffer;
+}
