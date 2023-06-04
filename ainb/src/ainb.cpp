@@ -149,11 +149,16 @@ void AINB::loadFooter(fstream& file)
 	file.seekg(initialPosition, ios::beg);
 
 	cout << "Finished Loading Footer Address Data" << endl << endl;
-	cout << "Section One: " << hex << footerStartAddress << " - " << sectionTwoStartAddress << endl;
-	cout << "Section Two: " << hex << sectionTwoStartAddress << " - " << sectionThreeStartAddress << endl;
-	cout << "Section Three: " << hex << sectionThreeStartAddress << " - " << sectionFourStartAddress << endl;
-	cout << "Section Four: " << hex << sectionFourStartAddress << " - " << sectionFiveStartAddress << endl;
-	cout << "Section Five: " << hex << sectionFiveStartAddress << " - " << footerEndAddress << endl;
+	cout << "Section One: " << hex << footerStartAddress << " - " << sectionTwoStartAddress;
+	cout << " Length: " << to_string(sectionTwoStartAddress - footerStartAddress) << endl;
+	cout << "Section Two: " << hex << sectionTwoStartAddress << " - " << sectionThreeStartAddress;
+	cout << " LengthL " << to_string(sectionThreeStartAddress - sectionTwoStartAddress) << endl;
+	cout << "Section Three: " << hex << sectionThreeStartAddress << " - " << sectionFourStartAddress;
+	cout << " Length: " << to_string(sectionFourStartAddress - sectionThreeStartAddress) << endl;
+	cout << "Section Four: " << hex << sectionFourStartAddress << " - " << sectionFiveStartAddress;
+	cout << " Length: " << to_string(sectionFiveStartAddress - sectionFourStartAddress) << endl;
+	cout << "Section Five: " << hex << sectionFiveStartAddress << " - " << footerEndAddress;
+	cout << " Length: " << to_string(footerEndAddress - sectionFiveStartAddress) << endl;
 
 	cout << endl;
 
