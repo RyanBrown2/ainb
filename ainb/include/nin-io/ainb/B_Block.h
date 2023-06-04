@@ -13,7 +13,7 @@ public:
 
 	// temp public for testing
 	int m_index; // 0x02
-	int m_storedAddress; // 0x14
+	int m_dataPointer; // 0x14
 	char *m_dataChunk; // 0x0c
 	// unknown values
 	int m_unknown1; // 0x00

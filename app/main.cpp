@@ -8,11 +8,9 @@ using namespace std;
 int main(int argc, char* argv[])
 {
     //const char* fileDir = "";
-    const char* fileDir = "CustomHouseControlActor.event.root.ainb";
+    //const char* fileDir = "CustomHouseControlActor.event.root.ainb";
     //const char* fileDir = "FastLoadOff.module.ainb";
-    //const char* fileDir = "Cannon15_IviesOnlyExistBeforeOpen_b7b6.logic.module.ainb";
-    //const char* fileDir = "FormalSequence.root.ainb";
-    //const char *fileDir = "Npc_Ganondorf_Human.event.root.ainb";
+    const char *fileDir = "Npc_Ganondorf_Human.event.root.ainb";
     //const char *fileDir = "GuideDive_a6f2.logic.module.ainb";
 
     fstream file;

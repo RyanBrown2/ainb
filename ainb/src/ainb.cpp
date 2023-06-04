@@ -59,7 +59,7 @@ void AINB::load(fstream& file)
 
 
 	// load footer
-	loadFooter(file);
+	//loadFooter(file);
 
 	// find file type (sequence, logic, etc)
 	file.seekg(0x64, ios::beg);
@@ -100,12 +100,44 @@ void AINB::load(fstream& file)
 
 	cout << "Finished Loading Type B Blocks" << endl << endl;
 
-	if (b_BlockCount != bBlocks.size()) {
-		cout << "Error: Type B Block Count Mismatch" << endl;
-		cout << "Expected: " << to_string(b_BlockCount) << endl;
-		cout << "Actual: " << to_string(bBlocks.size()) << endl << endl;
-		return;
+	int maxSize = 0;
+	B_Block* maxBlock;
+	int maxAddress = 0;
+	// parse b blocks
+	for (int i = 0; i < bBlocks.size(); i++) {
+		B_Block block = bBlocks[i];
+
+		cout << "Block " << to_string(block.m_index) << endl;
+		cout << "Data Pointer: " << hex << block.m_dataPointer << endl;
+		cout << "Unknown 1: " << hex << block.m_unknown1 << " (" << to_string(block.m_unknown1) << ")" << endl;
+		cout << "Unknown 2: " << hex << block.m_unknown2 << " (" << to_string(block.m_unknown2) << ")" << endl;
+		cout << "Unknown 3: " << hex << block.m_unknown3 << " (" << to_string(block.m_unknown3) << ")" << endl;
+
+		if (i + 1 < bBlocks.size()) {
+			int size = bBlocks[i + 1].m_dataPointer - block.m_dataPointer;
+			cout << "Size: " << hex << size << " (" << to_string(size) << ")" << endl;
+			if (size > maxSize) {
+
+				maxAddress = block.m_address;
+				cout << "New Largest Size: " << hex << size << " (" << to_string(size) << ")" << endl;
+				cout << "Old Largest Size: " << hex << maxSize << " (" << to_string(maxSize) << ")" << endl << endl;
+				
+				maxSize = size;
+				//maxBlock = &block;
+			}
+		}
+		cout << endl;
 	}
+
+	cout << "Max Size: " << hex << maxSize << " (" << to_string(maxSize) << ")" << endl;
+	cout << "At Address: " << hex << maxAddress << endl;
+	//cout << "At Address: " << hex << maxBlock->m_address << endl;
+	//if (b_BlockCount != bBlocks.size()) {
+	//	cout << "Error: Type B Block Count Mismatch" << endl;
+	//	cout << "Expected: " << to_string(b_BlockCount) << endl;
+	//	cout << "Actual: " << to_string(bBlocks.size()) << endl << endl;
+	//	return;
+	//}
 
 
 }

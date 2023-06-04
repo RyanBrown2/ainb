@@ -5,6 +5,7 @@ add_library(${PROJECT_NAME}
 	src/DataBlock.cpp
 	src/A_Block.cpp
 	src/B_Block.cpp
+	src/BodyData.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
