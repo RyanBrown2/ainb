@@ -11,12 +11,13 @@ public:
 	};
 	DataBlock(BlockType type);
 	~DataBlock();
-	char* data_dump;
-	int m_address;
 	void load(std::fstream& file);
 private:
 	BlockType m_blockType;
 protected:
+	int m_address;
 	char* m_data_dump;
+	int m_string_pointer;
+
 	static const bool is_big_endian = false;
 };

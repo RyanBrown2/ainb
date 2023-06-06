@@ -5,12 +5,11 @@ using namespace std;
 DataBlock::DataBlock(BlockType type)
 {
 	//DataBlock::m_address = address;
-	DataBlock::m_address = -1;
-	data_dump = new char[17];
-
+	m_address = -1;
 	m_data_dump = new char[17];
 
 	m_blockType = type;
+	m_string_pointer = -1;
 }
 
 DataBlock::~DataBlock()

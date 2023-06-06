@@ -59,6 +59,7 @@ void AINB::load(fstream& file)
 	readIntFromStream(file, isBigEndian, 4, header_data.t_footer_start);
 
 
+
 	// load footer
 	//loadFooter(file);
 
@@ -78,6 +79,9 @@ void AINB::load(fstream& file)
 	}
 
 	cout << endl;
+
+	file.seekg(header_data.string_section_start, ios::beg);
+	StringList stringList(file);
 
 	// Start Parsing DataBlocks
 	cout << "Loading Type A Blocks" << endl;
@@ -103,9 +107,20 @@ void AINB::load(fstream& file)
 		bBlock.load(file);
 		b_blocks[i] = bBlock;
 		cout << bBlock << endl;
+		
+		int current_address = file.tellg();
+
+		bBlock.loadBody(file);
+		cout << endl;
+
+		file.seekg(current_address, ios::beg);
+
 	}
 
 	cout << "Finished Loading Type B Blocks" << endl << endl;
+
+	cout << "Loading Data Body" << endl;
+
 
 	return;
 }

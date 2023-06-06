@@ -8,7 +8,6 @@ B_Block::B_Block() : DataBlock(BlockType::B)
 	m_dataPointer = -1;
 	m_unknown1 = -1;
 	m_unknown2 = -1;
-	m_unknown3 = -1;
 
 	m_dataChunk = new char[5];
 }
@@ -33,8 +32,8 @@ void B_Block::load(fstream& file)
 	file.seekg(0x6, ios::cur);
 	readIntFromStream(file, is_big_endian, 2, m_unknown2);
 
-	// unknown 3
-	readIntFromStream(file, is_big_endian, 2, m_unknown3);
+	// string pointer
+	readIntFromStream(file, is_big_endian, 2, m_string_pointer);
 
 	// 4 byte data chunk
 	file.seekg(m_address, ios::beg);
@@ -54,3 +53,19 @@ void B_Block::load(fstream& file)
 	m_data_dump[16] = '\0';
 }
 
+void B_Block::loadBody(fstream& file)
+{
+	file.seekg(m_dataPointer, ios::beg);
+
+	int length = 0xa4/4;
+
+	for (int i = 0; i < length; i++) {
+		int value;
+		readIntFromStream(file, is_big_endian, 4, value);
+		if (value > 60) {
+			cout << "Value: " << value << endl;
+		}
+	}
+
+
+}

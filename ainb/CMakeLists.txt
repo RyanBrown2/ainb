@@ -6,7 +6,8 @@ add_library(${PROJECT_NAME}
 	src/A_Block.cpp
 	src/B_Block.cpp
 	src/BodyData.cpp
-)
+	src/BodyEntry.cpp
+	src/StringList.cpp)
 
 target_link_libraries(${PROJECT_NAME}
 	nin-io::util

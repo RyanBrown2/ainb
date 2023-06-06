@@ -5,6 +5,7 @@
 #include "DataBlock.h"
 #include "A_Block.h"
 #include "B_Block.h"
+#include "StringList.h"
 
 class AINB
 {
@@ -16,6 +17,7 @@ private:
 	bool isBigEndian;
 	void loadFooter(std::fstream& file);
 	void loadDataBody(std::fstream& file);
+
 	struct FileHeaderData {
 		char type[4]; // 0x00 | 3
 		int a_blocks; // 0x0C | 4
