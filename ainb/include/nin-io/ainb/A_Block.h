@@ -7,10 +7,18 @@
 class A_Block : public DataBlock
 {
 public:
-	A_Block(int address);
+	A_Block();
 	~A_Block();
-	static A_Block load(std::fstream& file);
+	void load(std::fstream& file);
+
+	friend std::ostream& operator<<(std::ostream& os, const A_Block block) {
+		std::cout << "A Block at address: " << block.m_address << std::endl;
+		std::cout << "Unknown 1: " << block.m_unknown1 << std::endl;
+		std::cout << "Unknown 2:" << block.m_unknown2 << std::endl;
+		return os;
+	}
+
 private:
-	int unknown1;
-	int unknown2;
+	int m_unknown1;
+	int m_unknown2;
 };

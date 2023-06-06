@@ -2,7 +2,7 @@
 
 using namespace std;
 
-B_Block::B_Block(int address) : DataBlock(address, BlockType::B)
+B_Block::B_Block() : DataBlock(BlockType::B)
 {
 	m_index = -1;
 	m_dataPointer = -1;
@@ -18,44 +18,39 @@ B_Block::~B_Block()
 
 }
 
-B_Block B_Block::load(std::fstream& file)
+void B_Block::load(fstream& file)
 {
-	int address = file.tellg();
-	B_Block block(address);
+	DataBlock::load(file);
 
-	// unknown1
-	readIntFromStream(file, false, 2, block.m_unknown1);
+	// unknown 1
+	readIntFromStream(file, is_big_endian, 2, m_unknown1);
 
 	// get index
-	//file.seekg(0x2, ios::cur);
-	readIntFromStream(file, false, 2, block.m_index);
+	readIntFromStream(file, is_big_endian, 2, m_index);
 
-	// unknown2
-	file.seekg(address, ios::beg);
+	// unknown 2
+	file.seekg(m_address, ios::beg);
 	file.seekg(0x6, ios::cur);
-	readIntFromStream(file, false, 2, block.m_unknown2);
+	readIntFromStream(file, is_big_endian, 2, m_unknown2);
 
-	//unknown3
-	readIntFromStream(file, false, 2, block.m_unknown3);
+	// unknown 3
+	readIntFromStream(file, is_big_endian, 2, m_unknown3);
 
 	// 4 byte data chunk
-	file.seekg(address, ios::beg);
+	file.seekg(m_address, ios::beg);
 	file.seekg(0xc, ios::cur);
-	char dataChunkChar[5];
-	file.read(dataChunkChar, 4);
-	dataChunkChar[4] = '\0';
-	block.m_dataChunk = dataChunkChar;
+	file.read(m_dataChunk, 4);
+	m_dataChunk[4] = '\0';
 
-	// get stored address
-	file.seekg(address, ios::beg);
+	// get the body data pointer
+	file.seekg(m_address, ios::beg);
 	file.seekg(0x14, ios::cur);
-	readIntFromStream(file, false, 4, block.m_dataPointer);
+	readIntFromStream(file, is_big_endian, 4, m_dataPointer);
 
 	// get data chunk
-	file.seekg(address, ios::beg);
+	file.seekg(m_address, ios::beg);
 	file.seekg(0x2c, ios::cur);
-	file.read(block.data_dump, 16);
-	block.data_dump[16] = '\0';
-
-	return block;
+	file.read(m_data_dump, 16);
+	m_data_dump[16] = '\0';
 }
+

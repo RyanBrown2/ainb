@@ -2,9 +2,10 @@
 
 using namespace std;
 
-A_Block::A_Block(int address) : DataBlock(address, BlockType::A)
+A_Block::A_Block() : DataBlock(BlockType::A)
 {
-
+	m_unknown1 = -1;
+	m_unknown2 = -1;
 }
 
 A_Block::~A_Block()
@@ -12,26 +13,16 @@ A_Block::~A_Block()
 
 }
 
-A_Block A_Block::load(std::fstream& file)
+void A_Block::load(fstream& file)
 {
-	int address = file.tellg();
-	A_Block block(address);
+	DataBlock::load(file);
 
 	// unknown 1
-	char unknown1Char[5];
-	file.read(unknown1Char, 4);
-	unknown1Char[4] = '\0';
-	block.unknown1 = convertHexCharArrayToInt(unknown1Char, false, 4);
+	readIntFromStream(file, is_big_endian, 4, m_unknown1);
 
 	// data
-	file.read(block.data_dump, 16);
-	block.data_dump[16] = '\0';
+	file.read(m_data_dump, 16);
 
 	// unknown 2
-	char unknow2Char[5];
-	file.read(unknow2Char, 4);
-	unknow2Char[4] = '\0';
-	block.unknown2 = convertHexCharArrayToInt(unknow2Char, false, 4);
-
-	return block;
+	readIntFromStream(file, is_big_endian, 4, m_unknown2);
 }

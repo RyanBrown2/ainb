@@ -83,72 +83,31 @@ void AINB::load(fstream& file)
 	cout << "Loading Type A Blocks" << endl;
 	file.seekg(0x74, ios::beg);
 
-	vector<A_Block> aBlocks;
+	A_Block* a_blocks = new A_Block[header_data.a_blocks];
+
 	for (int i = 0; i < header_data.a_blocks; i++) {
-		A_Block aBlock = A_Block::load(file);
-		aBlocks.push_back(aBlock);
+		A_Block* aBlock = new A_Block();
+		aBlock->load(file);
+		a_blocks[i] = *aBlock;
+		cout << *aBlock << endl;
 	}
 
 	cout << "Finished Loading Type A Blocks" << endl << endl;
 
 	cout << "Loading Type B Blocks" << endl;
 
-	vector<B_Block> bBlocks;
+	B_Block* b_blocks = new B_Block[header_data.b_blocks];
+
 	for (int i = 0; i < header_data.b_blocks; i++) {
-		B_Block bBlock = B_Block::load(file);
-		bBlocks.push_back(bBlock);
+		B_Block bBlock;
+		bBlock.load(file);
+		b_blocks[i] = bBlock;
+		cout << bBlock << endl;
 	}
 
 	cout << "Finished Loading Type B Blocks" << endl << endl;
 
-
-	// parse b blocks
-	for (int i = 0; i < bBlocks.size(); i++) {
-		B_Block block = bBlocks[i];
-
-		cout << "Block " << to_string(block.m_index) << endl;
-		cout << "Data Pointer: " << hex << block.m_dataPointer << endl;
-		cout << "Unknown 1: " << hex << block.m_unknown1 << " (" << to_string(block.m_unknown1) << ")" << endl;
-		cout << "Unknown 2: " << hex << block.m_unknown2 << " (" << to_string(block.m_unknown2) << ")" << endl;
-		cout << "Unknown 3: " << hex << block.m_unknown3 << " (" << to_string(block.m_unknown3) << ")" << endl;
-
-		if (i + 1 < bBlocks.size()) {
-			int size = bBlocks[i + 1].m_dataPointer - block.m_dataPointer;
-			cout << "Size: " << hex << size << " (" << to_string(size) << ")" << endl;
-			bBlocks[i].t_size = size;
-		}
-		else {
-			int size = header_data.t_footer_start - block.m_dataPointer;
-			cout << "Size: " << hex << size << " (" << to_string(size) << ")" << endl;
-			bBlocks[i].t_size = size;
-		}
-
-		file.seekg(block.m_dataPointer, ios::beg);
-
-		loadDataBody(file);
-
-		cout << endl;
-
-	}
-
-	//loadDataBody(file);
-
-	// Loading data body
-	//for (int i = 0; i < bBlocks.size(); i++) {
-	//	B_Block block = bBlocks[i];
-	//	int pointer_address = block.m_dataPointer;
-	//	file.seekg(pointer_address, ios::beg);
-	//	loadDataBody(file);
-	//}
-
-	//loadFooter(file);
-
-	//loadDataFootAddresses(file);
-
-
-
 	return;
-
 }
 
 void AINB::loadDataBody(fstream& file) {

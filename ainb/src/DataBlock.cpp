@@ -2,11 +2,13 @@
 
 using namespace std;
 
-DataBlock::DataBlock(int address, BlockType type)
+DataBlock::DataBlock(BlockType type)
 {
-	DataBlock::m_address = address;
+	//DataBlock::m_address = address;
+	DataBlock::m_address = -1;
 	data_dump = new char[17];
-	data_dump[16] = '\0';
+
+	m_data_dump = new char[17];
 
 	m_blockType = type;
 }
@@ -16,3 +18,7 @@ DataBlock::~DataBlock()
 	//delete[] data;
 }
 
+void DataBlock::load(fstream& file)
+{
+	m_address = file.tellg();
+}
