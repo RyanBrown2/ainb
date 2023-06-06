@@ -12,8 +12,9 @@ public:
 	void load(std::fstream& file);
 
 	friend std::ostream& operator<<(std::ostream& os, const A_Block block) {
-		std::cout << "A Block at address: " << block.m_address << std::endl;
-		std::cout << "String Pointer: " << std::to_string(block.m_string_pointer) << std::endl;
+		std::cout << block.m_name << std::endl;
+		std::cout << "Address: " << block.m_address << std::endl;
+		//std::cout << "String Pointer: " << std::to_string(block.m_string_pointer) << std::endl;
 		std::cout << "Unknown 2: " << block.m_unknown2 << std::endl;
 		return os;
 	}

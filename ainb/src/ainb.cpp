@@ -92,6 +92,7 @@ void AINB::load(fstream& file)
 	for (int i = 0; i < header_data.a_blocks; i++) {
 		A_Block* aBlock = new A_Block();
 		aBlock->load(file);
+		aBlock->setString(stringList.getString(aBlock->getStringPointer()));
 		a_blocks[i] = *aBlock;
 		cout << *aBlock << endl;
 	}
@@ -103,18 +104,11 @@ void AINB::load(fstream& file)
 	B_Block* b_blocks = new B_Block[header_data.b_blocks];
 
 	for (int i = 0; i < header_data.b_blocks; i++) {
-		B_Block bBlock;
-		bBlock.load(file);
-		b_blocks[i] = bBlock;
-		cout << bBlock << endl;
-		
-		int current_address = file.tellg();
-
-		bBlock.loadBody(file);
-		cout << endl;
-
-		file.seekg(current_address, ios::beg);
-
+		B_Block* bBlock = new B_Block();
+		bBlock->load(file);
+		bBlock->setString(stringList.getString(bBlock->getStringPointer()));
+		b_blocks[i] = *bBlock;
+		cout << *bBlock << endl;
 	}
 
 	cout << "Finished Loading Type B Blocks" << endl << endl;
@@ -127,8 +121,6 @@ void AINB::load(fstream& file)
 
 void AINB::loadDataBody(fstream& file) {
 	// first entry in data body
-	//int first_entry_address = header_data.data_body_start + 0x30;
-	//file.seekg(first_entry_address, ios::beg);
 
 	// todo - figure out what the beginning of the entry data is
 
@@ -138,7 +130,6 @@ void AINB::loadDataBody(fstream& file) {
 	int has_table;
 	readIntFromStream(file, isBigEndian, 2, has_table);
 	if (has_table != 0) {
-
 		cout << "Entry has table" << endl;
 		cout << "Length: " << to_string(has_table) << endl;
 	}

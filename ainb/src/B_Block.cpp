@@ -59,13 +59,4 @@ void B_Block::loadBody(fstream& file)
 
 	int length = 0xa4/4;
 
-	for (int i = 0; i < length; i++) {
-		int value;
-		readIntFromStream(file, is_big_endian, 4, value);
-		if (value > 60) {
-			cout << "Value: " << value << endl;
-		}
-	}
-
-
 }

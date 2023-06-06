@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <string>
 #include "nin-io/util/util.h"
 
 
@@ -11,6 +12,7 @@ public:
 	StringList(std::fstream& file);
 	~StringList();
 
+	std::string getString(int pos);
 private:
-	char* m_raw_data;
+	std::map<int, std::string> m_string_map;
 };
