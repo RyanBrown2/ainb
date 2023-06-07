@@ -25,15 +25,29 @@ DataFoot::DataFoot(fstream& file, StringList* string_list)
 
 	cout << "Section Three Start: " << hex << m_section_three_start << endl;
 
+
+	// find start of potential function section
+	file.seekg(0x5c, ios::beg);
+	int section_four_start;
+	readIntFromStream(file, is_big_endian, 4, section_four_start);
+
+	cout << "Section Four Start: " << hex << section_four_start << endl;
+
 	cout << endl;
 
 	// load table section
 	file.seekg(m_table_section_start, ios::beg);
 	m_table_section_data = loadTableSection(file);
 
+	cout << "Table Section Loaded" << endl;
+
+	printTableSectionData(m_table_section_data);
+
 	// load structure section
 	file.seekg(m_structure_section_start, ios::beg);
 	m_structure_section_data = loadStructureSection(file);
+
+
 
 	return;
 
@@ -44,13 +58,13 @@ DataFoot::~DataFoot()
 
 }
 
-// 6 addresses
-DataFoot::TableSection DataFoot::loadTableSection(fstream& file)
+DataFoot::TableSectionData DataFoot::loadTableSection(fstream& file)
 {
-	TableSection table_section;
+	TableSectionData table_section_data;
 	
+	vector<int> table_section_addresses;
+
 	int current_pos = file.tellg();
-	int last_entry = 0;
 	for (int i = 0; i < 6; i++) {
 		file.seekg(current_pos, ios::beg);
 		file.seekg(4*i, ios::cur);
@@ -60,22 +74,59 @@ DataFoot::TableSection DataFoot::loadTableSection(fstream& file)
 		file.seekg(entry_address, ios::beg);
 
 		if (entry_address == m_structure_section_start) {
-			table_section.count = i+1;
 			break;
 		}
-
-		last_entry = entry_address;
-		int string_tag;
-		readIntFromStream(file, is_big_endian, 4, string_tag);
-		table_section.strings[i] = m_string_list->getString(string_tag);
-
-		cout << "Entry " << to_string(i) << " Address: " << hex << entry_address << endl;
-		cout << "String Tag: " << to_string(string_tag) << endl;
-		cout << "String " << i << ": " << table_section.strings[i] << endl;
-		cout << endl;
+		table_section_addresses.push_back(entry_address);
 	}
 
-	return table_section;
+	for (int i = 0; i < table_section_addresses.size(); i++) {
+		TableData table_data;
+		int current_pos = table_section_addresses[i];
+		file.seekg(current_pos, ios::beg);
+		table_data.address = current_pos;
+
+		int end_pos;
+		if (i + 1 < table_section_addresses.size()) {
+			end_pos = table_section_addresses[i+1];
+		}
+		else {
+			end_pos = m_structure_section_start;
+		}
+
+		while (current_pos < end_pos) {
+			TableEntry entry;
+
+			// get name
+			int name_string_tag;
+			readIntFromStream(file, is_big_endian, 4, name_string_tag);
+			entry.name = m_string_list->getString(name_string_tag);
+
+			file.seekg(0x4, ios::cur); // skip 4 bytes, assumed to be 0x00000000
+			int var_string_tag;
+			readIntFromStream(file, is_big_endian, 4, var_string_tag);
+			entry.var = m_string_list->getString(var_string_tag);
+
+			table_data.entries.push_back(entry);
+			current_pos = file.tellg();
+		}
+
+		table_section_data.tables.push_back(table_data);
+
+	}
+
+	return table_section_data;
+}
+
+void DataFoot::printTableSectionData(TableSectionData table_section_data) {
+	cout << "Table Section Data" << endl;
+	for (int i = 0; i < table_section_data.tables.size(); i++) {
+		cout << "Table " << i << endl;
+		for (int j = 0; j < table_section_data.tables[i].entries.size(); j++) {
+			cout << "Entry " << j << ": " << table_section_data.tables[i].entries[j].name << " | ";
+			cout << table_section_data.tables[i].entries[j].var << endl;
+		}
+	}
+
 }
 
 // 12 addresses

@@ -133,7 +133,6 @@ void AINB::load(fstream& file)
 
 	cout << "Loading Data Foot" << endl;
 
-	//loadDataFoot(file);
 	DataFoot dataFoot(file, &string_list);
 
 	return;

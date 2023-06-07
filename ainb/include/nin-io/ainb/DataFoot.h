@@ -10,11 +10,19 @@ public:
 	DataFoot(std::fstream& file, StringList* string_list);
 	~DataFoot();
 
-	struct TableSection {
-		int count = 0;
-		std::string strings[6];
+	struct TableEntry {
+		std::string name;
+		std::string var;
 	};
-	TableSection loadTableSection(std::fstream& file);
+	struct TableData {
+		int address;
+		std::vector<TableEntry> entries;
+	};
+	struct TableSectionData {
+		std::vector<TableData> tables;
+	};
+
+	TableSectionData loadTableSection(std::fstream& file);
 
 	struct StructureSection {
 		int count = 0;
@@ -25,7 +33,7 @@ private:
 	int m_table_section_start;
 	int m_structure_section_start;
 	int m_section_three_start;
-	TableSection m_table_section_data;
+	TableSectionData m_table_section_data;
 	StructureSection m_structure_section_data;
 
 	StringList* m_string_list;
@@ -36,6 +44,8 @@ private:
 	};
 
 	StructureEntry loadEntry(std::fstream& file);
+
+	static void printTableSectionData(TableSectionData table_section_data);
 
 	static const bool is_big_endian = false;
 
