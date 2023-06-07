@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <map>
 #include "StringList.h"
 #include "nin-io/util/util.h"
 
@@ -44,15 +45,9 @@ private:
 
 	StringList* m_string_list;
 
-	//struct StructureEntry {
-	//	std::string name;
-	//	std::vector<StructureEntry> children;
-	//};
-
-	//StructureEntry loadEntry(std::fstream& file);
-
 	static void printTableSectionData(TableSectionData table_section_data);
 
 	static const bool is_big_endian = false;
 
+	static std::map<int, int> structure_entry_lengths;
 };

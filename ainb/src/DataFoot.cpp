@@ -43,6 +43,10 @@ DataFoot::DataFoot(fstream& file, StringList* string_list)
 
 	//printTableSectionData(m_table_section_data);
 
+	cout << endl;
+
+	cout << "Loading Structure Section" << endl << endl;
+
 	// load structure section
 	file.seekg(m_structure_section_start, ios::beg);
 	m_structure_section_data = loadStructureSection(file);
@@ -149,30 +153,33 @@ DataFoot::StructureSectionData DataFoot::loadStructureSection(fstream& file)
 		section_addresses.push_back(entry_address);
 	}
 
-	map<int, int> final_section_addresses;
-	cout << "Sections: " << to_string(section_addresses.size()) << endl;
-	int actual_sections = 0;
-	int last_address = 0;
+	// load each section
 	for (int i = 0; i < section_addresses.size(); i++) {
-		if (section_addresses[i] != last_address) {
-			actual_sections++;
-			final_section_addresses[i] = section_addresses[i];
-			cout << "Section " << to_string(i) << " Address: " << hex << section_addresses[i] << endl;
+
+		int section_address = section_addresses[i];
+
+		cout << "Section " << to_string(i) << " at address: " << hex << section_address << endl;
+		file.seekg(section_address, ios::beg);
+
+		int end_address;
+		if (i + 1 < section_addresses.size()) {
+			end_address = section_addresses[i + 1];
 		}
-		last_address = section_addresses[i];
+		else {
+			end_address = m_section_three_start;
+		}
+
+		while (file.tellg() < end_address) {
+			int start_address = file.tellg();
+			StructureEntry entry = parseStructureEntry(file);
+			file.seekg(start_address, ios::beg);
+			file.seekg(structure_entry_lengths[i], ios::cur);
+			//cout << "Next Address: " << hex << file.tellg() << endl;
+			cout << entry.name << endl;
+		}
+
 	}
 
-	//cout << "Actual Sections: " << to_string(actual_sections) << endl;
-
-	// section one
-	int section_one_address = final_section_addresses[0];
-	int section_two_address = final_section_addresses[1];
-	file.seekg(section_one_address, ios::beg);
-
-	while (file.tellg() < section_two_address) {
-		StructureEntry entry = parseStructureEntry(file);
-
-	}
 
 
 	return structure_section;
@@ -183,27 +190,44 @@ DataFoot::StructureEntry DataFoot::parseStructureEntry(fstream& file)
 	StructureEntry entry;
 
 	int string_offset;
-	readIntFromStream(file, is_big_endian, 4, string_offset);
+	readIntFromStream(file, is_big_endian, 2, string_offset);
 	entry.name = m_string_list->getString(string_offset);
 
-	file.seekg(0xc, ios::cur);
+	//file.seekg(0xc, ios::cur);
+	file.seekg(0x1, ios::cur);
+
+	// check for entry delimiter
+	int entry_delimiter;
+	readIntFromStream(file, is_big_endian, 1, entry_delimiter);
+	if (entry_delimiter == 0x80) {
+		//cout << "Entry Delimiter not found" << endl;
+		return entry;
+	}
+
+	 //check if this is parent entry
+	int check_parent;
+	readIntFromStream(file, is_big_endian, 2, check_parent);
+	if (check_parent == 0xffff)
+	{
+		//cout << "Entry is parent" << endl;
+
+	}
+		file.seekg(0xa, ios::cur);
 
 	return entry;
 }
 
-//DataFoot::StructureEntry DataFoot::loadEntry(fstream& file)
-//{
-//	StructureEntry entry;
-//
-//	int start_pos = file.tellg();
-//
-//	int name_string_tag;
-//	readIntFromStream(file, is_big_endian, 4, name_string_tag);
-//	entry.name = m_string_list->getString(name_string_tag);
-//
-//	file.seekg(start_pos + 0x10, ios::beg);
-//
-//	cout << "Name: " << entry.name << endl;
-//
-//	return entry;
-//}
+map<int, int> DataFoot::structure_entry_lengths = {
+	{0, 0x10},
+	{1, 0x4},
+	{2, 0x10},
+	{3, 0x4},
+	{4, 0x10},
+	{5, 0x4},
+	{6, 0x10},
+	{7, 0x4},
+	{8, 0x18},
+	{9, 0x4},
+	{10, 0x14},
+	{11, 0x4}
+};
