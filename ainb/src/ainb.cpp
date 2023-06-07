@@ -7,12 +7,21 @@ using namespace std;
 
 AINB::AINB()
 {
-	isBigEndian = false;
 }
 
 AINB::~AINB()
 {
 
+}
+
+AINB::FileVariable AINB::readVariable(fstream& file, StringList* string_list)
+{
+	FileVariable var;
+	file.read(var.raw_data, 4);
+	int string_offset;
+	readIntFromStream(file, is_big_endian, 4, string_offset);
+	var.name = string_list->getString(string_offset);
+	return var;
 }
 
 void AINB::load(fstream& file)
@@ -34,39 +43,39 @@ void AINB::load(fstream& file)
 	}
 
 	int headerDataStart;
-	readIntFromStream(file, isBigEndian, 1, headerDataStart);
+	readIntFromStream(file, is_big_endian, 1, headerDataStart);
 
 	// find number of type A blocks
 	file.seekg(0xC, ios::beg);
-	readIntFromStream(file, isBigEndian, 4, header_data.a_blocks);
+	readIntFromStream(file, is_big_endian, 4, header_data.a_blocks);
 	cout << "Type A Block Count: " << header_data.a_blocks << endl;
 
 	// find number of type B blocks
-	readIntFromStream(file, isBigEndian, 4, header_data.b_blocks);
+	readIntFromStream(file, is_big_endian, 4, header_data.b_blocks);
 	cout << "Type B Block Count: " << header_data.b_blocks << endl;
 
 	cout << endl;
 
 	// find end address of block section
 	file.seekg(0x20, ios::beg);
-	readIntFromStream(file, isBigEndian, 4, header_data.data_body_start);
+	readIntFromStream(file, is_big_endian, 4, header_data.data_body_start);
 
 	// find start of string list
-	readIntFromStream(file, isBigEndian, 4, header_data.string_section_start);
+	readIntFromStream(file, is_big_endian, 4, header_data.string_section_start);
 
 	// find start of footer section
 	file.seekg(0x2c, ios::beg);
-	readIntFromStream(file, isBigEndian, 4, header_data.t_footer_start);
+	readIntFromStream(file, is_big_endian, 4, header_data.t_footer_start);
 
+	file.seekg(0x60, ios::beg);
 
-
-	// load footer
-	//loadFooter(file);
+	// find file root name offset
+	int root_name_pointer;
+	readIntFromStream(file, is_big_endian, 4, root_name_pointer);
 
 	// find file type (sequence, logic, etc)
-	file.seekg(0x64, ios::beg);
 	int fileType;
-	readIntFromStream(file, isBigEndian, 4, fileType);
+	readIntFromStream(file, is_big_endian, 4, fileType);
 
 	if (fileType == 2) {
 		cout << "File Type: Sequence" << endl;
@@ -78,13 +87,13 @@ void AINB::load(fstream& file)
 		cout << "File Type: Unknown" << endl;
 	}
 
-	cout << endl;
-
 	file.seekg(header_data.string_section_start, ios::beg);
-	StringList stringList(file);
+	StringList string_list(file);
+
+	cout << "Root Name: " << string_list.getString(root_name_pointer) << endl << endl;
 
 	// Start Parsing DataBlocks
-	cout << "Loading Type A Blocks" << endl;
+	cout << "Loading Type A Blocks" << endl << endl;
 	file.seekg(0x74, ios::beg);
 
 	A_Block* a_blocks = new A_Block[header_data.a_blocks];
@@ -92,29 +101,40 @@ void AINB::load(fstream& file)
 	for (int i = 0; i < header_data.a_blocks; i++) {
 		A_Block* aBlock = new A_Block();
 		aBlock->load(file);
-		aBlock->setString(stringList.getString(aBlock->getStringPointer()));
+		aBlock->setString(string_list.getString(aBlock->getStringPointer()));
 		a_blocks[i] = *aBlock;
-		cout << *aBlock << endl;
+		//cout << *aBlock << endl;
 	}
 
 	cout << "Finished Loading Type A Blocks" << endl << endl;
 
-	cout << "Loading Type B Blocks" << endl;
+	cout << "Loading Type B Blocks" << endl << endl;
 
 	B_Block* b_blocks = new B_Block[header_data.b_blocks];
 
 	for (int i = 0; i < header_data.b_blocks; i++) {
 		B_Block* bBlock = new B_Block();
 		bBlock->load(file);
-		bBlock->setString(stringList.getString(bBlock->getStringPointer()));
+		bBlock->setString(string_list.getString(bBlock->getStringPointer()));
+		bBlock->loadBody(file);
 		b_blocks[i] = *bBlock;
-		cout << *bBlock << endl;
+		//if (bBlock->m_unknown1 != 0) {
+			//cout << *bBlock << endl;
+		//}
+		//cout << *bBlock << endl;
 	}
 
 	cout << "Finished Loading Type B Blocks" << endl << endl;
 
 	cout << "Loading Data Body" << endl;
 
+	// todo
+	cout << endl;
+
+	cout << "Loading Data Foot" << endl;
+
+	//loadDataFoot(file);
+	DataFoot dataFoot(file, &string_list);
 
 	return;
 }
@@ -128,7 +148,7 @@ void AINB::loadDataBody(fstream& file) {
 	file.seekg(0x90, ios::cur);
 	cout << hex << file.tellg() << endl;
 	int has_table;
-	readIntFromStream(file, isBigEndian, 2, has_table);
+	readIntFromStream(file, is_big_endian, 2, has_table);
 	if (has_table != 0) {
 		cout << "Entry has table" << endl;
 		cout << "Length: " << to_string(has_table) << endl;
@@ -141,9 +161,9 @@ void AINB::loadDataBody(fstream& file) {
 
 }
 
-void AINB::loadDataFootAddresses(fstream& file)
+void AINB::loadDataFoot(fstream& file)
 {
-
+	//DataFoot dataFoot(file);
 
 }
 

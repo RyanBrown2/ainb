@@ -5,9 +5,9 @@ add_library(${PROJECT_NAME}
 	src/DataBlock.cpp
 	src/A_Block.cpp
 	src/B_Block.cpp
-	src/BodyData.cpp
+	
 	src/BodyEntry.cpp
-	src/StringList.cpp)
+	src/StringList.cpp "include/nin-io/ainb/DataFoot.h" "src/DataFoot.cpp")
 
 target_link_libraries(${PROJECT_NAME}
 	nin-io::util

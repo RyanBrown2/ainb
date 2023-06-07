@@ -15,7 +15,7 @@ public:
 		std::cout << block.m_name << std::endl;
 		std::cout << "Address: " << block.m_address << std::endl;
 		//std::cout << "String Pointer: " << std::to_string(block.m_string_pointer) << std::endl;
-		std::cout << "Unknown 2: " << block.m_unknown2 << std::endl;
+		std::cout << "Unknown 2: " << std::hex << block.m_unknown2 << std::endl;
 		return os;
 	}
 
