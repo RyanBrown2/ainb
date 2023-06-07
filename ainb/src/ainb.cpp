@@ -103,7 +103,7 @@ void AINB::load(fstream& file)
 		aBlock->load(file);
 		aBlock->setString(string_list.getString(aBlock->getStringPointer()));
 		a_blocks[i] = *aBlock;
-		//cout << *aBlock << endl;
+		cout << *aBlock << endl;
 	}
 
 	cout << "Finished Loading Type A Blocks" << endl << endl;
@@ -119,7 +119,7 @@ void AINB::load(fstream& file)
 		bBlock->loadBody(file);
 		b_blocks[i] = *bBlock;
 		//if (bBlock->m_unknown1 != 0) {
-			//cout << *bBlock << endl;
+			cout << *bBlock << endl;
 		//}
 		//cout << *bBlock << endl;
 	}
