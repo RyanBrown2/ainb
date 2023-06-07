@@ -41,12 +41,11 @@ DataFoot::DataFoot(fstream& file, StringList* string_list)
 
 	cout << "Table Section Loaded" << endl;
 
-	printTableSectionData(m_table_section_data);
+	//printTableSectionData(m_table_section_data);
 
 	// load structure section
 	file.seekg(m_structure_section_start, ios::beg);
 	m_structure_section_data = loadStructureSection(file);
-
 
 
 	return;
@@ -130,36 +129,81 @@ void DataFoot::printTableSectionData(TableSectionData table_section_data) {
 }
 
 // 12 addresses
-DataFoot::StructureSection DataFoot::loadStructureSection(fstream& file)
+DataFoot::StructureSectionData DataFoot::loadStructureSection(fstream& file)
 {
-	StructureSection structure_section;
+	StructureSectionData structure_section;
 
-	int first_entry_address;
-	readIntFromStream(file, is_big_endian, 4, first_entry_address);
-	file.seekg(first_entry_address, ios::beg);
+	//int first_entry_address;
+	//readIntFromStream(file, is_big_endian, 4, first_entry_address);
+	//file.seekg(first_entry_address, ios::beg);
 
-	StructureEntry first_entry = loadEntry(file);
+	vector<int> section_addresses;
 
-	//for (int i = 0; i < 12; i++) {
+	// load addresses
+	for (int i = 0; i < 12; i++) {
+		int entry_address;
+		readIntFromStream(file, is_big_endian, 4, entry_address);
+		if (entry_address == m_section_three_start) {
+			break;
+		}
+		section_addresses.push_back(entry_address);
+	}
 
-	//}
+	map<int, int> final_section_addresses;
+	cout << "Sections: " << to_string(section_addresses.size()) << endl;
+	int actual_sections = 0;
+	int last_address = 0;
+	for (int i = 0; i < section_addresses.size(); i++) {
+		if (section_addresses[i] != last_address) {
+			actual_sections++;
+			final_section_addresses[i] = section_addresses[i];
+			cout << "Section " << to_string(i) << " Address: " << hex << section_addresses[i] << endl;
+		}
+		last_address = section_addresses[i];
+	}
+
+	//cout << "Actual Sections: " << to_string(actual_sections) << endl;
+
+	// section one
+	int section_one_address = final_section_addresses[0];
+	int section_two_address = final_section_addresses[1];
+	file.seekg(section_one_address, ios::beg);
+
+	while (file.tellg() < section_two_address) {
+		StructureEntry entry = parseStructureEntry(file);
+
+	}
+
 
 	return structure_section;
 }
 
-DataFoot::StructureEntry DataFoot::loadEntry(fstream& file)
+DataFoot::StructureEntry DataFoot::parseStructureEntry(fstream& file)
 {
 	StructureEntry entry;
 
-	int start_pos = file.tellg();
+	int string_offset;
+	readIntFromStream(file, is_big_endian, 4, string_offset);
+	entry.name = m_string_list->getString(string_offset);
 
-	int name_string_tag;
-	readIntFromStream(file, is_big_endian, 4, name_string_tag);
-	entry.name = m_string_list->getString(name_string_tag);
-
-	file.seekg(start_pos + 0x10, ios::beg);
-
-	cout << "Name: " << entry.name << endl;
+	file.seekg(0xc, ios::cur);
 
 	return entry;
 }
+
+//DataFoot::StructureEntry DataFoot::loadEntry(fstream& file)
+//{
+//	StructureEntry entry;
+//
+//	int start_pos = file.tellg();
+//
+//	int name_string_tag;
+//	readIntFromStream(file, is_big_endian, 4, name_string_tag);
+//	entry.name = m_string_list->getString(name_string_tag);
+//
+//	file.seekg(start_pos + 0x10, ios::beg);
+//
+//	cout << "Name: " << entry.name << endl;
+//
+//	return entry;
+//}

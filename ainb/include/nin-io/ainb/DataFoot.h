@@ -24,26 +24,32 @@ public:
 
 	TableSectionData loadTableSection(std::fstream& file);
 
-	struct StructureSection {
+	struct StructureEntry {
+		std::string name;
+		std::vector<StructureEntry> children;
+	};
+	struct StructureSectionData {
 		int count = 0;
 		std::vector<std::string> strings;
 	};
-	StructureSection loadStructureSection(std::fstream& file);
+	StructureSectionData loadStructureSection(std::fstream& file);
 private:
 	int m_table_section_start;
 	int m_structure_section_start;
 	int m_section_three_start;
 	TableSectionData m_table_section_data;
-	StructureSection m_structure_section_data;
+	StructureSectionData m_structure_section_data;
+
+	StructureEntry parseStructureEntry(std::fstream& file);
 
 	StringList* m_string_list;
 
-	struct StructureEntry {
-		std::string name;
-		std::vector<StructureEntry> children;
-	};
+	//struct StructureEntry {
+	//	std::string name;
+	//	std::vector<StructureEntry> children;
+	//};
 
-	StructureEntry loadEntry(std::fstream& file);
+	//StructureEntry loadEntry(std::fstream& file);
 
 	static void printTableSectionData(TableSectionData table_section_data);
 
