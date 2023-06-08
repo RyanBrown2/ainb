@@ -51,7 +51,6 @@ DataFoot::DataFoot(fstream& file, StringList* string_list)
 	file.seekg(m_structure_section_start, ios::beg);
 	m_structure_section_data = loadStructureSection(file);
 
-
 	return;
 
 }

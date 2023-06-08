@@ -12,15 +12,22 @@ StringList::StringList(fstream& file)
 
 	int null_pos = 0;
 	int current_pos = 0;
+	int last_null = false;
 	while ((null_pos = raw_string.find('\0', null_pos)) != string::npos) {
 		string current_string = raw_string.substr(current_pos, null_pos - current_pos);
+
+		if (last_null) {
+			m_string_map[current_pos - 1] = current_string;
+			last_null = false;
+		}
+
+		if (current_string.length() == 0) {
+			last_null = true;
+		}
+
+		m_string_map[current_pos] = current_string;
 		null_pos++;
 		current_pos = null_pos;
-		if (current_string.length() == 0) {
-			m_string_map[current_pos] = m_string_map[current_pos - 1];
-			continue;
-		}
-		m_string_map[current_pos] = current_string;
 	}	
 }
 
