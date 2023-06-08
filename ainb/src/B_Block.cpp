@@ -66,7 +66,16 @@ void B_Block::loadBody(fstream& file, StringList string_list)
 
 	//int length = 0xa4/4;
 
+	//if (m_unknown1 == 0) {
+		//file.seekg(0x90, ios::cur);
+	//} else {
+	//	cin.get();
+	//	file.seekg(0x94, ios::cur);
+	//}
+
+	// todo - figure out proper way to determine length
 	file.seekg(0x90, ios::cur);
+
 	readIntFromStream(file, is_big_endian, 2, m_array_length);
 
 
@@ -82,13 +91,21 @@ void B_Block::loadBody(fstream& file, StringList string_list)
 		return;
 	}
 
+	//if (m_unknown1 == 0) {
+		//file.seekg(0x12, ios::cur);
+	//} else {
+	//	cin.get();
+	//	file.seekg(0xE, ios::cur);
+	//}
+
+	// todo - figure out proper way to determine length
 	file.seekg(0x12, ios::cur);
 
-	cout << "Table Starting at: " << hex << file.tellg() << endl;
+	//cout << "Table Starting at: " << hex << file.tellg() << endl;
 
 	m_table = loadBodyTable(file, m_array_length, string_list);
 
-	cout << "Table Ending at: " << hex << file.tellg() << endl;
+	//cout << "Table Ending at: " << hex << file.tellg() << endl;
 
 	file.seekg(current_pos, ios::beg);
 

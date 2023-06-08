@@ -45,7 +45,7 @@ public:
 		if (block.m_array_length > 0) {
 			std::cout << "Array Length: " << std::to_string(block.m_array_length) << std::endl;
 			for (int i = 0; i < block.m_array_length; i++) {
-				std::cout << "Table Entry " << std::to_string(i) << ": " << std::to_string(block.m_table.entries[i].value1) << ", " << block.m_table.entries[i].value2 << std::endl;
+				std::cout << "Table Entry " << std::to_string(i) << ": " << std::hex << block.m_table.entries[i].value1 << ", " << block.m_table.entries[i].value2 << std::endl;
 			}
 		}
 		return os;

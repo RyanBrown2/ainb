@@ -1,5 +1,6 @@
 #include "nin-io/ainb/DataFoot.h"
 #include "nin-io/ainb/StringList.h"
+#include "nin-io/ainb/ParameterNode.h"
 
 using namespace std;
 
@@ -41,11 +42,13 @@ DataFoot::DataFoot(fstream& file, StringList* string_list)
 
 	cout << "Table Section Loaded" << endl;
 
-	//printTableSectionData(m_table_section_data);
+	printTableSectionData(m_table_section_data);
 
 	cout << endl;
 
 	cout << "Loading Structure Section" << endl << endl;
+
+
 
 	// load structure section
 	file.seekg(m_structure_section_start, ios::beg);
@@ -131,33 +134,65 @@ void DataFoot::printTableSectionData(TableSectionData table_section_data) {
 
 }
 
-// 12 addresses
 DataFoot::StructureSectionData DataFoot::loadStructureSection(fstream& file)
 {
 	StructureSectionData structure_section;
 
-	//int first_entry_address;
-	//readIntFromStream(file, is_big_endian, 4, first_entry_address);
-	//file.seekg(first_entry_address, ios::beg);
-
 	vector<int> section_addresses;
 
+	map<int, int> address_to_section_number;
+
 	// load addresses
+	int last_vector_index = 0;
 	for (int i = 0; i < 12; i++) {
 		int entry_address;
 		readIntFromStream(file, is_big_endian, 4, entry_address);
 		if (entry_address == m_section_three_start) {
 			break;
 		}
-		section_addresses.push_back(entry_address);
+		
+		// handle repeating addresses
+		if (i > 0) {
+			// if this address is repeated
+			if (entry_address == section_addresses[last_vector_index]) {
+				address_to_section_number[entry_address] = i;
+			} else {
+				last_vector_index += 1;
+				section_addresses.push_back(entry_address);
+				address_to_section_number[entry_address] = i;
+			}
+		} else {
+			last_vector_index = i;
+			section_addresses.push_back(entry_address);
+			address_to_section_number[entry_address] = i;
+		}
+
 	}
 
+	for (int i = 0; i < section_addresses.size(); i++) {
+		int address = section_addresses[i];
+		cout << "Section " << to_string(address_to_section_number[address]) << " at address: " << hex << address << endl;
+	}
+
+	//cout << endl;
+
 	// load each section
+	//int last_address = -1;
 	for (int i = 0; i < section_addresses.size(); i++) {
 
+		cin.get();
 		int section_address = section_addresses[i];
 
-		cout << "Section " << to_string(i) << " at address: " << hex << section_address << endl;
+		// get entry lengths for section
+		int section_number = address_to_section_number[section_address];
+		int entry_length = structure_entry_lengths[section_number];
+
+		cout << "Section " << to_string(section_number) << " at address: " << hex << section_address << endl;
+		cout << "Entry Length " << dec << entry_length << endl;
+		//cout << endl;
+
+		cin.get();
+
 		file.seekg(section_address, ios::beg);
 
 		int end_address;
@@ -168,15 +203,39 @@ DataFoot::StructureSectionData DataFoot::loadStructureSection(fstream& file)
 			end_address = m_section_three_start;
 		}
 
-		while (file.tellg() < end_address) {
-			int start_address = file.tellg();
-			StructureEntry entry = parseStructureEntry(file);
-			cout << entry.name << " at " << hex << file.tellg() << endl;
-			file.seekg(start_address, ios::beg);
-			file.seekg(structure_entry_lengths[i], ios::cur);
-			//cout << "Next Address: " << hex << file.tellg() << endl;
+		vector<ParameterNode> nodes;
 
+		while (file.tellg() < end_address) {
+			ParameterNode node;
+			node.loadStringList(m_string_list);
+			node.load(file, entry_length);
+			nodes.push_back(node);
 		}
+
+		//StructureNode node;
+		//node.loadStringList(m_string_list);
+		//node.load(file, entry_length);
+
+		//cout << node << endl;
+
+		for (int i = 0; i < nodes.size(); i++) {
+			cout << nodes[i] << endl;
+		}
+
+
+
+		//break;
+
+
+		//while (file.tellg() < end_address) {
+		//	int start_address = file.tellg();
+		//	StructureEntry entry = parseStructureEntry(file);
+		//	cout << entry.name << " at " << hex << file.tellg() << endl;
+		//	file.seekg(start_address, ios::beg);
+		//	file.seekg(structure_entry_lengths[i], ios::cur);
+		//	//cout << "Next Address: " << hex << file.tellg() << endl;
+
+		//}
 
 	}
 

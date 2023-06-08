@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include "StringList.h"
+#include "ParameterNode.h"
 #include "nin-io/util/util.h"
 
 class DataFoot {
