@@ -11,14 +11,16 @@ public:
 	ParameterNode();
 	~ParameterNode();
 	void loadStringList(StringList* string_list);
-	void load(std::fstream& file, int length);
+	void load(std::fstream& file, int length, int section_num);
+
+	int getBlockRef();
 
 	friend std::ostream& operator<<(std::ostream& os, const ParameterNode& node) {
 		os << "ParameterNode: " << node.m_name << std::endl;
 		os << "Address: " << std::hex << node.m_address;
 		os << " | Length: " <<std::dec << node.m_length << std::endl;
 		os << "Terminated: " << (node.m_terminated ? "Yes" : "No") << std::endl;
-		os << "Tag: " << std::hex << node.m_tag << std::endl;
+		os << "Tag: " << std::hex << node.m_block_ref << std::endl;
 		if (node.m_second_string != "") {
 			os << "Second String: " << node.m_second_string << std::endl;
 		}
@@ -36,14 +38,14 @@ private:
 	std::string m_name;
 
 
-	int m_tag;
+	int m_block_ref;
 	bool m_terminated;
 
 	bool m_follows_expected;
 
 	StringList* m_string_list;
 
-
+	int m_section_num;
 
 	int m_second_string_tag;
 	std::string m_second_string;

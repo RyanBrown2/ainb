@@ -12,19 +12,19 @@ DataFoot::DataFoot(fstream& file, StringList* string_list)
 	file.seekg(0x2c, ios::beg);
 	readIntFromStream(file, is_big_endian, 4, m_table_section_start);
 
-	cout << "Table Section Start: " << hex << m_table_section_start << endl;
+	//cout << "Table Section Start: " << hex << m_table_section_start << endl;
 
 	// find start of the structure section
 	file.seekg(0x34, ios::beg);
 	readIntFromStream(file, is_big_endian, 4, m_structure_section_start);
 
-	cout << "Structure Section Start: " << hex << m_structure_section_start << endl;
+	//cout << "Structure Section Start: " << hex << m_structure_section_start << endl;
 
 	// find start of section three
 	file.seekg(0x30, ios::beg);
 	readIntFromStream(file, is_big_endian, 4, m_section_three_start);
 
-	cout << "Section Three Start: " << hex << m_section_three_start << endl;
+	//cout << "Section Three Start: " << hex << m_section_three_start << endl;
 
 
 	// find start of potential function section
@@ -32,7 +32,7 @@ DataFoot::DataFoot(fstream& file, StringList* string_list)
 	int section_four_start;
 	readIntFromStream(file, is_big_endian, 4, section_four_start);
 
-	cout << "Section Four Start: " << hex << section_four_start << endl;
+	//cout << "Section Four Start: " << hex << section_four_start << endl;
 
 	cout << endl;
 
@@ -42,17 +42,17 @@ DataFoot::DataFoot(fstream& file, StringList* string_list)
 
 	cout << "Table Section Loaded" << endl;
 
-	printTableSectionData(m_table_section_data);
+	//printTableSectionData(m_table_section_data);
 
 	cout << endl;
 
 	cout << "Loading Structure Section" << endl << endl;
 
-
-
 	// load structure section
 	file.seekg(m_structure_section_start, ios::beg);
 	m_structure_section_data = loadStructureSection(file);
+
+	cout << "Structure Section Loaded" << endl;
 
 	return;
 
@@ -169,10 +169,10 @@ DataFoot::StructureSectionData DataFoot::loadStructureSection(fstream& file)
 
 	}
 
-	for (int i = 0; i < section_addresses.size(); i++) {
-		int address = section_addresses[i];
-		cout << "Section " << to_string(address_to_section_number[address]) << " at address: " << hex << address << endl;
-	}
+	//for (int i = 0; i < section_addresses.size(); i++) {
+	//	int address = section_addresses[i];
+	//	cout << "Section " << to_string(address_to_section_number[address]) << " at address: " << hex << address << endl;
+	//}
 
 	//cout << endl;
 
@@ -180,18 +180,16 @@ DataFoot::StructureSectionData DataFoot::loadStructureSection(fstream& file)
 	//int last_address = -1;
 	for (int i = 0; i < section_addresses.size(); i++) {
 
-		cin.get();
 		int section_address = section_addresses[i];
 
 		// get entry lengths for section
 		int section_number = address_to_section_number[section_address];
 		int entry_length = structure_entry_lengths[section_number];
 
-		cout << "Section " << to_string(section_number) << " at address: " << hex << section_address << endl;
-		cout << "Entry Length " << dec << entry_length << endl;
+		//cout << "Section " << to_string(section_number) << " at address: " << hex << section_address << endl;
+		//cout << "Entry Length " << dec << entry_length << endl;
 		//cout << endl;
 
-		cin.get();
 
 		file.seekg(section_address, ios::beg);
 
@@ -208,8 +206,9 @@ DataFoot::StructureSectionData DataFoot::loadStructureSection(fstream& file)
 		while (file.tellg() < end_address) {
 			ParameterNode node;
 			node.loadStringList(m_string_list);
-			node.load(file, entry_length);
+			node.load(file, entry_length, section_number);
 			nodes.push_back(node);
+			structure_section.parameter_nodes.push_back(node);
 		}
 
 		//StructureNode node;
@@ -218,9 +217,9 @@ DataFoot::StructureSectionData DataFoot::loadStructureSection(fstream& file)
 
 		//cout << node << endl;
 
-		for (int i = 0; i < nodes.size(); i++) {
-			cout << nodes[i] << endl;
-		}
+		//for (int i = 0; i < nodes.size(); i++) {
+		//	cout << nodes[i] << endl;
+		//}
 
 
 

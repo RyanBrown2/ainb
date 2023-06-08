@@ -103,7 +103,7 @@ void AINB::load(fstream& file)
 		aBlock->load(file);
 		aBlock->setString(string_list.getString(aBlock->getStringPointer()));
 		a_blocks[i] = *aBlock;
-		cout << *aBlock << endl;
+		//cout << *aBlock << endl;
 	}
 
 	cout << "Finished Loading Type A Blocks" << endl << endl;
@@ -118,7 +118,7 @@ void AINB::load(fstream& file)
 		bBlock->setString(string_list.getString(bBlock->getStringPointer()));
 		bBlock->loadBody(file, string_list);
 		b_blocks[i] = *bBlock;
-		cout << *bBlock << endl;
+		//cout << *bBlock << endl;
 	}
 
 	cout << "Finished Loading Type B Blocks" << endl << endl;
@@ -131,6 +131,18 @@ void AINB::load(fstream& file)
 	cout << "Loading Data Foot" << endl;
 
 	DataFoot dataFoot(file, &string_list);
+
+	
+	DataFoot::StructureSectionData structure_data = dataFoot.getStructureSectionData();
+
+	for (int i = 0; i < structure_data.parameter_nodes.size(); i++) {
+		ParameterNode node = structure_data.parameter_nodes[i];
+		cout << node << endl;
+		if (node.getBlockRef() < header_data.b_blocks && node.getBlockRef() > 0) {
+			cout << "Referenced Block: " << endl;
+			cout << b_blocks[node.getBlockRef()] << endl;
+		}
+	}
 
 	return;
 }

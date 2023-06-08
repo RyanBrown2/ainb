@@ -9,7 +9,7 @@ ParameterNode::ParameterNode()
 
 	m_name = "";
 
-	m_tag = -1;
+	m_block_ref = -1;
 	m_terminated = false;
 
 	m_follows_expected = true;
@@ -18,6 +18,7 @@ ParameterNode::ParameterNode()
 
 	m_second_string_tag = -1;
 	m_second_string = "";
+	m_section_num = -1;
 }
 
 ParameterNode::~ParameterNode()
@@ -25,11 +26,12 @@ ParameterNode::~ParameterNode()
 
 }
 
-void ParameterNode::load(fstream& file, int length)
+void ParameterNode::load(fstream& file, int length, int section_num)
 {
 
 	m_address = file.tellg();
 	m_length = length;
+	m_section_num = section_num;
 
 	int end_pos = (int)file.tellg() + length;
 	
@@ -57,7 +59,7 @@ void ParameterNode::load(fstream& file, int length)
 	
 
 	// get the tag
-	readIntFromStream(file, is_big_endian, 2, m_tag);
+	readIntFromStream(file, is_big_endian, 2, m_block_ref);
 	// 0x06 - current pos
 
 	file.seekg(0x2, ios::cur);
@@ -75,9 +77,9 @@ void ParameterNode::load(fstream& file, int length)
 	readIntFromStream(file, is_big_endian, 1, check_value);
 	// 0x0B - current pos
 
-	if (check_value != 0x80) {
-		m_follows_expected = false;
-	}
+	//if (check_value != 0x80) {
+	//	m_follows_expected = false;
+	//}
 
 	// check if second string is expected
 	int check_second_string;
@@ -104,7 +106,7 @@ void ParameterNode::load(fstream& file, int length)
 		}
 	}
 
-	if (m_tag == 0xFFFF) {
+	if (m_block_ref == 0xFFFF) {
 
 	}
 
@@ -118,4 +120,8 @@ void ParameterNode::load(fstream& file, int length)
 void ParameterNode::loadStringList(StringList* string_list)
 {
 	m_string_list = string_list;
+}
+
+int ParameterNode::getBlockRef() {
+	return m_block_ref;
 }

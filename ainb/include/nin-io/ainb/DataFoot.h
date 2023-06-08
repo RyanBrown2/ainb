@@ -31,10 +31,12 @@ public:
 		std::vector<StructureEntry> children;
 	};
 	struct StructureSectionData {
-		int count = 0;
-		std::vector<std::string> strings;
+		std::vector<ParameterNode> parameter_nodes;
 	};
-	StructureSectionData loadStructureSection(std::fstream& file);
+	StructureSectionData getStructureSectionData() {
+		return m_structure_section_data;
+	}
+
 private:
 	int m_table_section_start;
 	int m_structure_section_start;
@@ -43,6 +45,7 @@ private:
 	StructureSectionData m_structure_section_data;
 
 	StructureEntry parseStructureEntry(std::fstream& file);
+	StructureSectionData loadStructureSection(std::fstream& file);
 
 	StringList* m_string_list;
 

@@ -36,7 +36,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const B_Block block) {
 		std::cout << block.m_name << std::endl;
 		std::cout << "Address: " << block.m_address << std::endl;
-		std::cout << "Index: " << std::to_string(block.m_index) << std::endl;
+		std::cout << "Index: " << std::hex << block.m_index << std::endl;
 		std::cout << "Data Pointer: " << std::hex << block.m_dataPointer << std::endl;
 		std::cout << "Unknown 1: " << block.m_unknown1 << std::endl;
 		std::cout << "Unknown 2: " << block.m_unknown2 << std::endl;
