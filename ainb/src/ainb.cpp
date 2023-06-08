@@ -116,7 +116,7 @@ void AINB::load(fstream& file)
 		B_Block* bBlock = new B_Block();
 		bBlock->load(file);
 		bBlock->setString(string_list.getString(bBlock->getStringPointer()));
-		bBlock->loadBody(file);
+		bBlock->loadBody(file, string_list);
 		b_blocks[i] = *bBlock;
 		cout << *bBlock << endl;
 	}

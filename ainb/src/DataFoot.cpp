@@ -171,10 +171,11 @@ DataFoot::StructureSectionData DataFoot::loadStructureSection(fstream& file)
 		while (file.tellg() < end_address) {
 			int start_address = file.tellg();
 			StructureEntry entry = parseStructureEntry(file);
+			cout << entry.name << " at " << hex << file.tellg() << endl;
 			file.seekg(start_address, ios::beg);
 			file.seekg(structure_entry_lengths[i], ios::cur);
 			//cout << "Next Address: " << hex << file.tellg() << endl;
-			cout << entry.name << endl;
+
 		}
 
 	}

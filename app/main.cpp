@@ -12,8 +12,8 @@ int main(int argc, char* argv[])
     //const char* fileDir = "FastLoadOff.module.ainb";
     //const char* fileDir = "LargeDungeonWater_AllinArea_895e.logic.module.ainb";
     //const char* fileDir = "Set_Defense_Karakara_ee67.logic.module.ainb";
-    //const char* fileDir = "CustomHouseControlActor.event.root.ainb";
-    const char *fileDir = "Npc_Ganondorf_Human.event.root.ainb";
+    const char* fileDir = "CustomHouseControlActor.event.root.ainb";
+    //const char *fileDir = "Npc_Ganondorf_Human.event.root.ainb";
 
     //const char* fileDir = "NpcGoronSage.utility.root.ainb";
 
