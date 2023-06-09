@@ -100,7 +100,9 @@ void AINB::load(fstream& file)
 		m_b_commands.push_back(*bBlock);
 	}
 
-	Parameters dataFoot(file, &string_list);
+	Parameters parameters(file, &string_list);
+	
+	m_parameter_data = parameters.getData();
 
 	return;
 }

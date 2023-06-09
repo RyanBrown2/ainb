@@ -173,9 +173,29 @@ int main(int argc, char* argv[])
         out << command;
     }
     out << YAML::EndSeq;
+    
+    // parameters
+    Parameters::ParameterData parameter_data = ainb.getParameterData();
+    out << YAML::Key << "parameters";
+    out << YAML::Value;
+    out << YAML::BeginMap;
 
+    out << YAML::Key << "table";
+    out << YAML::Value;
+    out << YAML::BeginSeq;
+    for (int i = 0; i < parameter_data.table.size(); i++) {
+        Parameters::TableEntry table = parameter_data.table[i];
+		out << YAML::BeginMap;
+        out << YAML::Key << "name";
+        out << YAML::Value << table.name;
+        out << YAML::Key << "value";
+        out << YAML::Value << table.var;
+		out << YAML::EndMap;
 
+    }
+    out << YAML::EndSeq;
 
+    out << YAML::EndMap;
 
     out << YAML::EndMap;
     assert(out.good());

@@ -30,9 +30,19 @@ Parameters::Parameters(fstream& file, StringList* string_list)
 	file.seekg(m_table_section_start, ios::beg);
 	m_table_section_data = loadTableSection(file);
 
+	for (int i = 0; i < m_table_section_data.tables.size(); i++) {
+		TableData table = m_table_section_data.tables[i];
+		for (int j = 0; j < table.entries.size(); j++) {
+			m_data.table.push_back(table.entries[j]);
+		}
+	}
+
+	//m_data.tables = m_table_section_data.tables;
+
 	// load structure section
 	file.seekg(m_structure_section_start, ios::beg);
 	m_structure_section_data = loadStructureSection(file);
+	m_data.parameters = m_structure_section_data.parameter_nodes;
 
 	return;
 
@@ -89,7 +99,8 @@ Parameters::TableSectionData Parameters::loadTableSection(fstream& file)
 			file.seekg(0x4, ios::cur); // skip 4 bytes, assumed to be 0x00000000
 			int var_string_tag;
 			readIntFromStream(file, is_big_endian, 4, var_string_tag);
-			entry.var = m_string_list->getString(var_string_tag);
+			entry.var = to_string(var_string_tag);
+			//entry.var = m_string_list->getString(var_string_tag);
 
 			table_data.entries.push_back(entry);
 			current_pos = file.tellg();

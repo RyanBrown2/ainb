@@ -34,6 +34,7 @@ public:
 	std::vector<A_Command> getACommands();
 	std::vector<B_Command> getBCommands();
 
+	Parameters::ParameterData getParameterData() { return m_parameter_data; }
 	
 private:
 	static const bool is_big_endian = false;
@@ -44,6 +45,8 @@ private:
 	AinbHeaderData m_header_data;
 
 	std::vector<A_Command> m_a_commands;
-	std::vector<B_Command> m_b_commands;	
+	std::vector<B_Command> m_b_commands;
+
+	Parameters::ParameterData m_parameter_data;
 
 };
