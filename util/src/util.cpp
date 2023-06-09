@@ -15,13 +15,13 @@ int convertHexCharArrayToInt(char* array, bool isBigEndian, int len) {
     return result;
 }
 
-void displayCharArrayAsHex(char* arr, int len)
+void displayCharArrayAsHex(std::ostream& os, char* arr, int len)
 {
     for (int i = 0; i < len; ++i)
     {
-        std::cout << std::setw(2) << std::setfill('0') << std::hex << (static_cast<int>(arr[i]) & 0xFF) << " ";
+        os << std::setw(2) << std::setfill('0') << std::hex << (static_cast<int>(arr[i]) & 0xFF) << " ";
     }
-    std::cout << std::dec << std::endl;
+    os << std::dec << std::endl;
 }
 
 void readIntFromStream(std::istream& stream, bool isBigEndian, int size, int& result)

@@ -4,14 +4,14 @@
 #include <string>
 #include "nin-io/util/util.h"
 
-class DataBlock
+class BaseCommand
 {
 public:
 	enum BlockType {
 		A, B,
 	};
-	DataBlock(BlockType type);
-	~DataBlock();
+	BaseCommand(BlockType type);
+	~BaseCommand();
 	void load(std::fstream& file);
 	int getStringPointer() { return m_string_pointer; }
 	void setString(std::string name) { m_name = name; }

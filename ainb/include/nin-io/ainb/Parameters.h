@@ -7,10 +7,10 @@
 #include "ParameterNode.h"
 #include "nin-io/util/util.h"
 
-class DataFoot {
+class Parameters {
 public:
-	DataFoot(std::fstream& file, StringList* string_list);
-	~DataFoot();
+	Parameters(std::fstream& file, StringList* string_list);
+	~Parameters();
 
 private:
 	int m_table_section_start;

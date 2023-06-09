@@ -5,3 +5,5 @@ researchFiles/
 *.byml
 *.bgyml
 *.gyml
+
+CMakeSettings.json

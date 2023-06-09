@@ -1,8 +1,8 @@
-#include "nin-io/ainb/DataBlock.h"
+#include "nin-io/ainb/BaseCommand.h"
 
 using namespace std;
 
-DataBlock::DataBlock(BlockType type)
+BaseCommand::BaseCommand(BlockType type)
 {
 	//DataBlock::m_address = address;
 	m_address = -1;
@@ -13,12 +13,12 @@ DataBlock::DataBlock(BlockType type)
 	m_string_pointer = -1;
 }
 
-DataBlock::~DataBlock()
+BaseCommand::~BaseCommand()
 {
 	//delete[] data;
 }
 
-void DataBlock::load(fstream& file)
+void BaseCommand::load(fstream& file)
 {
 	m_address = file.tellg();
 }

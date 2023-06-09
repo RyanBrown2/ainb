@@ -14,30 +14,18 @@ AINB::~AINB()
 
 }
 
-AINB::FileVariable AINB::readVariable(fstream& file, StringList* string_list)
-{
-	FileVariable var;
-	file.read(var.raw_data, 4);
-	int string_offset;
-	readIntFromStream(file, is_big_endian, 4, string_offset);
-	var.name = string_list->getString(string_offset);
-	return var;
-}
-
 void AINB::load(fstream& file)
 {
-	cout << "Loading AINB" << endl << endl;
-
-	//FileHeaderData header_data;
+	// Header Data
 
 	file.seekg(0, ios::beg);
 
 	// Reading Header Data
-	file.read(header_data.type, 3);
-	header_data.type[3] = '\0';
+	file.read(m_header_data.type, 3);
+	m_header_data.type[3] = '\0';
 
 	// Check if file is AINB
-	if (strcmp(header_data.type, "AIB") != 0) {
+	if (strcmp(m_header_data.type, "AIB") != 0) {
 		cout << "File is not AINB" << endl;
 		return;
 	}
@@ -45,27 +33,25 @@ void AINB::load(fstream& file)
 	int headerDataStart;
 	readIntFromStream(file, is_big_endian, 1, headerDataStart);
 
-	// find number of type A blocks
+	// find number of type A commands
 	file.seekg(0xC, ios::beg);
-	readIntFromStream(file, is_big_endian, 4, header_data.a_blocks);
-	cout << "Type A Block Count: " << header_data.a_blocks << endl;
+	readIntFromStream(file, is_big_endian, 4, m_header_data.a_commands);
 
-	// find number of type B blocks
-	readIntFromStream(file, is_big_endian, 4, header_data.b_blocks);
-	cout << "Type B Block Count: " << header_data.b_blocks << endl;
+	// find number of type B commands
+	readIntFromStream(file, is_big_endian, 4, m_header_data.b_commands);
 
 	cout << endl;
 
-	// find end address of block section
+	// find end address of command section
 	file.seekg(0x20, ios::beg);
-	readIntFromStream(file, is_big_endian, 4, header_data.data_body_start);
+	readIntFromStream(file, is_big_endian, 4, m_header_data.data_body_start);
 
 	// find start of string list
-	readIntFromStream(file, is_big_endian, 4, header_data.string_section_start);
+	readIntFromStream(file, is_big_endian, 4, m_header_data.string_section_start);
 
-	// find start of footer section
+	// find start of parameter section
 	file.seekg(0x2c, ios::beg);
-	readIntFromStream(file, is_big_endian, 4, header_data.footer_start);
+	readIntFromStream(file, is_big_endian, 4, m_header_data.footer_start);
 
 	file.seekg(0x60, ios::beg);
 
@@ -77,75 +63,64 @@ void AINB::load(fstream& file)
 	int fileType;
 	readIntFromStream(file, is_big_endian, 4, fileType);
 
-	if (fileType == 2) {
-		cout << "File Type: Sequence" << endl;
-	}
-	else if (fileType == 1) {
-		cout << "File Type: Logic" << endl;
-	}
-	else {
-		cout << "File Type: Unknown" << endl;
-	}
+	//if (fileType == 2) {
+	//	cout << "File Type: Sequence" << endl;
+	//}
+	//else if (fileType == 1) {
+	//	cout << "File Type: Logic" << endl;
+	//}
+	//else {
+	//	cout << "File Type: Unknown" << endl;
+	//}
 
-	file.seekg(header_data.string_section_start, ios::beg);
+	file.seekg(m_header_data.string_section_start, ios::beg);
 	StringList string_list(file);
 
-	cout << "Root Name: " << string_list.getString(root_name_pointer) << endl << endl;
+	// get file name
+	m_name = string_list.getString(0);
 
-	// Start Parsing DataBlocks
-	cout << "Loading Type A Blocks" << endl << endl;
+	//cout << "Root Name: " << string_list.getString(root_name_pointer) << endl << endl;
+
+	// Start Parsing Commands
+
 	file.seekg(0x74, ios::beg);
 
-	A_Block* a_blocks = new A_Block[header_data.a_blocks];
-
-	for (int i = 0; i < header_data.a_blocks; i++) {
-		A_Block* aBlock = new A_Block();
+	for (int i = 0; i < m_header_data.a_commands; i++) {
+		A_Command* aBlock = new A_Command();
 		aBlock->load(file);
 		aBlock->setString(string_list.getString(aBlock->getStringPointer()));
-		a_blocks[i] = *aBlock;
-		//cout << *aBlock << endl;
+		m_a_commands.push_back(*aBlock);
 	}
 
-	cout << "Finished Loading Type A Blocks" << endl << endl;
-
-	cout << "Loading Type B Blocks" << endl << endl;
-
-	B_Block* b_blocks = new B_Block[header_data.b_blocks];
-
-	for (int i = 0; i < header_data.b_blocks; i++) {
-		B_Block* bBlock = new B_Block();
+	for (int i = 0; i < m_header_data.b_commands; i++) {
+		B_Command* bBlock = new B_Command();
 		bBlock->load(file);
 		bBlock->setString(string_list.getString(bBlock->getStringPointer()));
 		bBlock->loadBody(file, string_list);
-		b_blocks[i] = *bBlock;
-		//cout << *bBlock << endl;
+		m_b_commands.push_back(*bBlock);
 	}
 
-	cout << "Finished Loading Type B Blocks" << endl << endl;
-
-	//cout << "Loading Data Body" << endl;
-
-	//cout << endl;
-
-	cout << "Loading Data Foot" << endl;
-
-	DataFoot dataFoot(file, &string_list);
-
-	
-	//DataFoot::StructureSectionData structure_data = dataFoot.getStructureSectionData();
-
-	//for (int i = 0; i < structure_data.parameter_nodes.size(); i++) {
-	//	ParameterNode node = structure_data.parameter_nodes[i];
-	//	cout << node << endl;
-	//	if (node.getBlockRef() < header_data.b_blocks && node.getBlockRef() > 0) {
-	//		cout << "Referenced Block: " << endl;
-	//		cout << b_blocks[node.getBlockRef()] << endl;
-	//	}
-	//}
-
-
-
+	Parameters dataFoot(file, &string_list);
 
 	return;
+}
+
+string AINB::getName() {
+	return m_name;
+}
+
+AINB::FileHeaderData AINB::getHeaderData()
+{
+	return m_header_data;
+}
+
+vector<A_Command> AINB::getACommands()
+{
+	return m_a_commands;
+}
+
+vector<B_Command> AINB::getBCommands()
+{
+	return m_b_commands;
 }
 

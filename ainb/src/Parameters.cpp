@@ -1,10 +1,10 @@
-#include "nin-io/ainb/DataFoot.h"
+#include "nin-io/ainb/Parameters.h"
 #include "nin-io/ainb/StringList.h"
 #include "nin-io/ainb/ParameterNode.h"
 
 using namespace std;
 
-DataFoot::DataFoot(fstream& file, StringList* string_list)
+Parameters::Parameters(fstream& file, StringList* string_list)
 {
 	m_string_list = string_list;
 
@@ -12,63 +12,38 @@ DataFoot::DataFoot(fstream& file, StringList* string_list)
 	file.seekg(0x2c, ios::beg);
 	readIntFromStream(file, is_big_endian, 4, m_table_section_start);
 
-	//cout << "Table Section Start: " << hex << m_table_section_start << endl;
 
 	// find start of the structure section
 	file.seekg(0x34, ios::beg);
 	readIntFromStream(file, is_big_endian, 4, m_structure_section_start);
 
-	//cout << "Structure Section Start: " << hex << m_structure_section_start << endl;
-
 	// find start of section three
 	file.seekg(0x30, ios::beg);
 	readIntFromStream(file, is_big_endian, 4, m_section_three_start);
-
-	//cout << "Section Three Start: " << hex << m_section_three_start << endl;
-
 
 	// find start of potential function section
 	file.seekg(0x5c, ios::beg);
 	int section_four_start;
 	readIntFromStream(file, is_big_endian, 4, section_four_start);
 
-	//cout << "Section Four Start: " << hex << section_four_start << endl;
-
-	cout << endl;
-
 	// load table section
 	file.seekg(m_table_section_start, ios::beg);
 	m_table_section_data = loadTableSection(file);
-
-	cout << "Table Section Loaded" << endl;
-
-	printTableSectionData(m_table_section_data);
-
-	cout << endl;
-
-	cout << "Loading Structure Section" << endl << endl;
 
 	// load structure section
 	file.seekg(m_structure_section_start, ios::beg);
 	m_structure_section_data = loadStructureSection(file);
 
-	for (int i = 0; i < m_structure_section_data.parameter_nodes.size(); i++) {
-		ParameterNode node = m_structure_section_data.parameter_nodes[i];
-		cout << node << endl;
-	}
-
-	cout << "Structure Section Loaded" << endl;
-
 	return;
 
 }
 
-DataFoot::~DataFoot()
+Parameters::~Parameters()
 {
 
 }
 
-DataFoot::TableSectionData DataFoot::loadTableSection(fstream& file)
+Parameters::TableSectionData Parameters::loadTableSection(fstream& file)
 {
 	TableSectionData table_section_data;
 	
@@ -127,7 +102,7 @@ DataFoot::TableSectionData DataFoot::loadTableSection(fstream& file)
 	return table_section_data;
 }
 
-void DataFoot::printTableSectionData(TableSectionData table_section_data) {
+void Parameters::printTableSectionData(TableSectionData table_section_data) {
 	cout << "Table Section Data" << endl;
 	for (int i = 0; i < table_section_data.tables.size(); i++) {
 		cout << "Table " << i << endl;
@@ -139,7 +114,7 @@ void DataFoot::printTableSectionData(TableSectionData table_section_data) {
 
 }
 
-DataFoot::StructureSectionData DataFoot::loadStructureSection(fstream& file)
+Parameters::StructureSectionData Parameters::loadStructureSection(fstream& file)
 {
 	StructureSectionData structure_section;
 
@@ -182,7 +157,6 @@ DataFoot::StructureSectionData DataFoot::loadStructureSection(fstream& file)
 		int section_number = address_to_section_number[section_address];
 		int entry_length = structure_entry_lengths[section_number];
 
-
 		file.seekg(section_address, ios::beg);
 
 		int end_address;
@@ -208,7 +182,7 @@ DataFoot::StructureSectionData DataFoot::loadStructureSection(fstream& file)
 	return structure_section;
 }
 
-map<int, int> DataFoot::structure_entry_lengths = {
+map<int, int> Parameters::structure_entry_lengths = {
 	{0, 0x10},
 	{1, 0x4},
 	{2, 0x10},
