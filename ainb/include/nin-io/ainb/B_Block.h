@@ -29,6 +29,11 @@ public:
 		std::vector<TableValuePair> entries;
 	};
 
+	struct BodyData {
+		int value2; // 0x1c
+		int value3; // 0x44
+	};
+
 	void loadBody(std::fstream& file, StringList string_list);
 	
 	Table loadBodyTable(std::fstream& file, int length, StringList string_list);
@@ -41,13 +46,22 @@ public:
 		std::cout << "Unknown 1: " << block.m_unknown1 << std::endl;
 		std::cout << "Unknown 2: " << block.m_unknown2 << std::endl;
 		std::cout << "4 Byte Data Chunk: " << std::hex << block.m_data_chunk << std::endl;
+		std::cout << "16 Byte Data Chunk: ";
+		displayCharArrayAsHex(block.m_data_dump, 16);
 		//std::cout << "String Pointer: " << std::to_string(block.m_string_pointer) << std::endl;
-		if (block.m_array_length > 0) {
-			std::cout << "Array Length: " << std::to_string(block.m_array_length) << std::endl;
-			for (int i = 0; i < block.m_array_length; i++) {
-				std::cout << "Table Entry " << std::to_string(i) << ": " << std::hex << block.m_table.entries[i].value1 << ", " << block.m_table.entries[i].value2 << std::endl;
-			}
-		}
+
+		//std::cout << std::endl;
+		//std::cout << "Body Data:" << std::endl;
+		//std::cout << "Value 2: " << std::hex << block.m_body_data.value2 << std::endl;
+		//std::cout << "Value 3: " << std::hex << block.m_body_data.value3 << std::endl;
+		//std::cout << "Array Length: " << std::to_string(block.m_array_length) << std::endl;
+
+		//if (block.m_array_length > 0) {
+		//	std::cout << "Array Length: " << std::to_string(block.m_array_length) << std::endl;
+		//	for (int i = 0; i < block.m_array_length; i++) {
+		//		std::cout << "Table Entry " << std::to_string(i) << ": " << std::hex << block.m_table.entries[i].value1 << ", " << block.m_table.entries[i].value2 << std::endl;
+		//	}
+		//}
 		return os;
 	}
 private:
@@ -56,6 +70,7 @@ private:
 	int m_data_chunk; // 0x0c
 	// unknown values
 
+	BodyData m_body_data;	
 	Table m_table;
 
 	int m_unknown2; // 0x06

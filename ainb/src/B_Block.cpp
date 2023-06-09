@@ -64,6 +64,36 @@ void B_Block::loadBody(fstream& file, StringList string_list)
 	int current_pos = file.tellg();
 	file.seekg(m_dataPointer, ios::beg);
 
+
+
+	map<int, int> value_map;
+
+	int value_count = 0;
+	for (int i = 0; i < 18; i++) {
+		int key;
+		readIntFromStream(file, is_big_endian, 4, key);
+		int value;
+		readIntFromStream(file, is_big_endian, 4, value);
+		
+		if (key != 0) {
+			//cout << "Position: " << hex << 4*i << " | Value: " << hex << value << endl;
+			value_map[key] = value;
+			value_count += 1;
+		}
+
+	}
+
+	cout << *this << endl;
+
+	for (const auto& pair : value_map) {
+		cout << "Key: " << hex << pair.first << " | Value: " << hex << pair.second << endl;
+	}
+
+
+
+	cout << endl;
+
+
 	//int length = 0xa4/4;
 
 	//if (m_unknown1 == 0) {
@@ -74,12 +104,10 @@ void B_Block::loadBody(fstream& file, StringList string_list)
 	//}
 
 	// todo - figure out proper way to determine length
-	file.seekg(0x90, ios::cur);
+	file.seekg(m_dataPointer, ios::beg);
+	file.seekg(0xa4-0x1, ios::cur);
 
-	readIntFromStream(file, is_big_endian, 2, m_array_length);
-
-
-
+	readIntFromStream(file, is_big_endian, 1, m_array_length);
 
 	//Table table;
 
@@ -99,15 +127,34 @@ void B_Block::loadBody(fstream& file, StringList string_list)
 	//}
 
 	// todo - figure out proper way to determine length
-	file.seekg(0x12, ios::cur);
+	//file.seekg(0x12, ios::cur);
 
 	//cout << "Table Starting at: " << hex << file.tellg() << endl;
 
-	m_table = loadBodyTable(file, m_array_length, string_list);
+	if (m_array_length > 0) {
+		m_table = loadBodyTable(file, m_array_length, string_list);
+	}
 
 	//cout << "Table Ending at: " << hex << file.tellg() << endl;
 
+
+	if (m_array_length > 0) {
+		std::cout << "Array Length: " << std::to_string(m_array_length) << std::endl;
+		for (int i = 0; i < m_array_length; i++) {
+			std::cout << "Table Entry " << std::to_string(i) << ": " << std::hex << m_table.entries[i].value1 << ", " << m_table.entries[i].value2 << std::endl;
+		}
+	}
+
+	cout << endl;
+
 	file.seekg(current_pos, ios::beg);
+
+	if (value_count > (12+ m_array_length)) {
+		cout << endl << endl;
+		cout << "Went over: " << dec << value_count << endl;
+		cout << endl << endl;
+		cin.get();
+	}
 
 }
 

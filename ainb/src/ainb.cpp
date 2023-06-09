@@ -65,7 +65,7 @@ void AINB::load(fstream& file)
 
 	// find start of footer section
 	file.seekg(0x2c, ios::beg);
-	readIntFromStream(file, is_big_endian, 4, header_data.t_footer_start);
+	readIntFromStream(file, is_big_endian, 4, header_data.footer_start);
 
 	file.seekg(0x60, ios::beg);
 
@@ -123,56 +123,29 @@ void AINB::load(fstream& file)
 
 	cout << "Finished Loading Type B Blocks" << endl << endl;
 
-	cout << "Loading Data Body" << endl;
+	//cout << "Loading Data Body" << endl;
 
-	// todo
-	cout << endl;
+	//cout << endl;
 
 	cout << "Loading Data Foot" << endl;
 
 	DataFoot dataFoot(file, &string_list);
 
 	
-	DataFoot::StructureSectionData structure_data = dataFoot.getStructureSectionData();
+	//DataFoot::StructureSectionData structure_data = dataFoot.getStructureSectionData();
 
-	for (int i = 0; i < structure_data.parameter_nodes.size(); i++) {
-		ParameterNode node = structure_data.parameter_nodes[i];
-		cout << node << endl;
-		if (node.getBlockRef() < header_data.b_blocks && node.getBlockRef() > 0) {
-			cout << "Referenced Block: " << endl;
-			cout << b_blocks[node.getBlockRef()] << endl;
-		}
-	}
+	//for (int i = 0; i < structure_data.parameter_nodes.size(); i++) {
+	//	ParameterNode node = structure_data.parameter_nodes[i];
+	//	cout << node << endl;
+	//	if (node.getBlockRef() < header_data.b_blocks && node.getBlockRef() > 0) {
+	//		cout << "Referenced Block: " << endl;
+	//		cout << b_blocks[node.getBlockRef()] << endl;
+	//	}
+	//}
+
+
+
 
 	return;
 }
-
-void AINB::loadDataBody(fstream& file) {
-	// first entry in data body
-
-	// todo - figure out what the beginning of the entry data is
-
-	// check if entry has table
-	file.seekg(0x90, ios::cur);
-	cout << hex << file.tellg() << endl;
-	int has_table;
-	readIntFromStream(file, is_big_endian, 2, has_table);
-	if (has_table != 0) {
-		cout << "Entry has table" << endl;
-		cout << "Length: " << to_string(has_table) << endl;
-	}
-	else {
-		cout << "Entry does not have table" << endl;
-	}
-
-	//cout << endl;
-
-}
-
-void AINB::loadDataFoot(fstream& file)
-{
-	//DataFoot dataFoot(file);
-
-}
-
 

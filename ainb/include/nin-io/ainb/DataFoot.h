@@ -12,6 +12,12 @@ public:
 	DataFoot(std::fstream& file, StringList* string_list);
 	~DataFoot();
 
+private:
+	int m_table_section_start;
+	int m_structure_section_start;
+	int m_section_three_start;
+
+
 	struct TableEntry {
 		std::string name;
 		std::string var;
@@ -24,27 +30,15 @@ public:
 		std::vector<TableData> tables;
 	};
 
-	TableSectionData loadTableSection(std::fstream& file);
 
-	struct StructureEntry {
-		std::string name;
-		std::vector<StructureEntry> children;
-	};
 	struct StructureSectionData {
 		std::vector<ParameterNode> parameter_nodes;
 	};
-	StructureSectionData getStructureSectionData() {
-		return m_structure_section_data;
-	}
-
-private:
-	int m_table_section_start;
-	int m_structure_section_start;
-	int m_section_three_start;
 	TableSectionData m_table_section_data;
 	StructureSectionData m_structure_section_data;
 
-	StructureEntry parseStructureEntry(std::fstream& file);
+
+	TableSectionData loadTableSection(std::fstream& file);
 	StructureSectionData loadStructureSection(std::fstream& file);
 
 	StringList* m_string_list;

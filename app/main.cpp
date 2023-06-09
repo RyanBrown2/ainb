@@ -8,6 +8,7 @@ using namespace std;
 int main(int argc, char* argv[])
 {
     //const char* fileDir = "";
+    //const char* fileDir = "Assassin_Senior.action.interuptlargedamage.module.ainb";
     //const char* fileDir = "EquipEventNPC.event.root.ainb";
     //const char* fileDir = "HorseCreateFamiliarityIncreaseXLinkEvent.module.ainb";
     //const char* fileDir = "PlusMenuToMinusMenu.module.ainb";
