@@ -31,13 +31,17 @@ public:
 	};
 
 	struct BodyData {
-		int value2; // 0x1c
-		int value3; // 0x44
+		std::map<int, int> position_to_key;
+		std::map<int, int> value_map;
+		
+		Table table;
 	};
 
 	void loadBody(std::fstream& file, StringList string_list);
 
 	int getCommandId() { return m_command_id; }
+
+	BodyData getBodyData() { return m_body_data; }
 
 	friend std::ostream& operator<<(std::ostream& os, const B_Command block);
 private:
@@ -48,11 +52,11 @@ private:
 	// unknown values
 
 	BodyData m_body_data;	
-	Table m_table;
+	//Table m_table;
 
 	int m_unknown2; // 0x06
 	int m_array_length;
 
-	Table loadBodyTable(std::fstream& file, int length, StringList string_list);
+	void loadBodyTable(std::fstream& file, int length, StringList string_list);
 
 };

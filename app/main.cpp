@@ -30,7 +30,7 @@ YAML::Emitter& operator << (YAML::Emitter& out, A_Command& command) {
 }
 
 YAML::Emitter& operator << (YAML::Emitter& out, B_Command& command) {
-    out << YAML::Flow;
+    //out << YAML::Flow;
     out << YAML::BeginMap;
 
     out << YAML::Key << "name";
@@ -45,6 +45,65 @@ YAML::Emitter& operator << (YAML::Emitter& out, B_Command& command) {
         guid_string << hex << (static_cast<int>(guid[i]) & 0xFF);
     }
     out << YAML::Value << guid_string.str();
+
+    // Body Data
+
+    out << YAML::Key << "body";
+    out << YAML::Value;
+    out << YAML::BeginMap;
+
+    B_Command::BodyData body_data = command.getBodyData();
+    map<int, int> position_to_key = body_data.position_to_key;
+    map<int, int> value_map = body_data.value_map;
+
+    B_Command::Table table = body_data.table;
+
+    out << YAML::Key << "data";
+    out << YAML::Value;
+    out << YAML::Flow;
+    out << YAML::BeginSeq;
+
+    for (const auto& pair : position_to_key) {
+        int pos = pair.first;
+        int key = pair.second;
+        int value = value_map[key];
+
+        out << YAML::BeginMap;
+        out << YAML::Key << "position";
+        out << YAML::Value << pos;
+        out << YAML::Key << "key";
+        out << YAML::Value << key;
+        out << YAML::Key << "value";
+        out << YAML::Value << value;
+		out << YAML::EndMap;
+    }
+    out << YAML::EndSeq;
+
+    if (body_data.table.entries.size() == 0) {
+
+		out << YAML::EndMap;
+		out << YAML::EndMap;
+        return out;
+    }
+
+    out << YAML::Key << "table";
+    out << YAML::Value;
+    out << YAML::BeginSeq;
+    B_Command::Table body_table = body_data.table;
+    for (int i = 0; i < body_table.entries.size(); i++) {
+		int value = body_table.entries[i].value1;
+        string entry_string = body_table.entries[i].value2;
+        out << YAML::BeginMap;
+        out << YAML::Key << "string";
+        out << YAML::Value << entry_string;
+        out << YAML::Key << "value";
+        out << YAML::Value << value;
+		out << YAML::EndMap;
+    }
+    out << YAML::EndSeq;
+
+
+    out << YAML::EndMap;
 
     out << YAML::EndMap;
     return out;
@@ -113,8 +172,10 @@ int main(int argc, char* argv[])
         B_Command command = b_commands[i];
         out << command;
     }
-
     out << YAML::EndSeq;
+
+
+
 
     out << YAML::EndMap;
     assert(out.good());

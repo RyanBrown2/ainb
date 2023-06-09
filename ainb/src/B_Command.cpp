@@ -77,9 +77,8 @@ void B_Command::loadBody(fstream& file, StringList string_list)
 	int current_pos = file.tellg();
 	file.seekg(m_dataPointer, ios::beg);
 
-
-	map<int, int> section_to_key;
-	map<int, int> value_map;
+	//map<int, int> position_to_key;
+	//map<int, int> value_map;
 
 	int value_count = 0;
 	for (int i = 0; i < 18; i++) {
@@ -89,11 +88,10 @@ void B_Command::loadBody(fstream& file, StringList string_list)
 		readIntFromStream(file, is_big_endian, 4, value);
 		
 		if (key != 0) {
-			section_to_key[i] = key;
-			value_map[key] = value;
+			m_body_data.position_to_key[i] = key;
+			m_body_data.value_map[key] = value;
 			value_count += 1;
 		}
-
 	}
 
 	// todo - figure out proper way to determine length
@@ -109,19 +107,19 @@ void B_Command::loadBody(fstream& file, StringList string_list)
 	}
 
 	if (m_array_length > 0) {
-		m_table = loadBodyTable(file, m_array_length, string_list);
+		loadBodyTable(file, m_array_length, string_list);
 	}
 
 	file.seekg(current_pos, ios::beg);
 
 }
 
-B_Command::Table B_Command::loadBodyTable(fstream& file, int length, StringList string_list)
+void B_Command::loadBodyTable(fstream& file, int length, StringList string_list)
 {
-	Table table;
+	//Table table;
 
-	table.address = file.tellg();
-	table.length = length;
+	m_body_data.table.address = file.tellg();
+	m_body_data.table.length = length;
 
 	int* addresses = new int[length];
 	// load table addresses
@@ -142,9 +140,8 @@ B_Command::Table B_Command::loadBodyTable(fstream& file, int length, StringList 
 		
 		//entry.value2 = string_offset;
 	
-		table.entries.push_back(entry);
+		m_body_data.table.entries.push_back(entry);
 	}
 
-	return table;
 
 }
