@@ -9,9 +9,9 @@ ostream& operator<<(ostream& os, const B_Command command) {
 	os << "Data Pointer: " << hex << command.m_dataPointer << endl;
 	os << "Unknown 1: " << command.m_unknown1 << endl;
 	os << "Unknown 2: " << command.m_unknown2 << endl;
-	os << "4 Byte Data Chunk: " << hex << command.m_data_chunk << endl;
+	os << "Command ID: " << hex << command.m_command_id << endl;
 	os << "GUID: ";
-	displayCharArrayAsHex(os, command.m_data_dump, 16);
+	displayCharArrayAsHex(os, command.m_guid, 16);
 	return os;
 }
 
@@ -23,7 +23,7 @@ B_Command::B_Command() : BaseCommand(BlockType::B)
 	m_unknown2 = -1;
 
 	//m_dataChunk = new char[5];
-	m_data_chunk = -1;
+	m_command_id = -1;
 
 	m_array_length = -1;
 
@@ -56,7 +56,7 @@ void B_Command::load(fstream& file)
 	// 4 byte data chunk
 	file.seekg(m_address, ios::beg);
 	file.seekg(0xc, ios::cur);
-	readIntFromStream(file, is_big_endian, 4, m_data_chunk);
+	readIntFromStream(file, is_big_endian, 4, m_command_id);
 	//file.read(m_dataChunk, 4);
 	//m_dataChunk[4] = '\0';
 
@@ -68,8 +68,8 @@ void B_Command::load(fstream& file)
 	// get data chunk
 	file.seekg(m_address, ios::beg);
 	file.seekg(0x2c, ios::cur);
-	file.read(m_data_dump, 16);
-	m_data_dump[16] = '\0';
+	file.read(m_guid, 16);
+	m_guid[16] = '\0';
 }
 
 void B_Command::loadBody(fstream& file, StringList string_list)

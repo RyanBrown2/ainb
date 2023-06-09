@@ -18,7 +18,7 @@ public:
 	~AINB();
 	void load(std::fstream& file);
 
-	struct FileHeaderData {
+	struct AinbHeaderData {
 		char type[4]; // 0x00 | 3
 		int a_commands; // 0x0C | 4
 		int b_commands; // 0x10 | 4
@@ -29,7 +29,7 @@ public:
 	};
 
 	std::string getName();
-	FileHeaderData getHeaderData();
+	AinbHeaderData getHeaderData();
 
 	std::vector<A_Command> getACommands();
 	std::vector<B_Command> getBCommands();
@@ -41,9 +41,7 @@ private:
 	void loadDataBody(std::fstream& file);
 
 	std::string m_name;
-
-
-	FileHeaderData m_header_data;
+	AinbHeaderData m_header_data;
 
 	std::vector<A_Command> m_a_commands;
 	std::vector<B_Command> m_b_commands;	

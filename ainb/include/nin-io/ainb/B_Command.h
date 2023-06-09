@@ -17,6 +17,7 @@ public:
 
 	// temp public for testing
 	int m_unknown1; // 0x00
+	int getIndex() { return m_index; }
 
 	struct TableValuePair {
 		int value1;
@@ -35,14 +36,15 @@ public:
 	};
 
 	void loadBody(std::fstream& file, StringList string_list);
-	
-	Table loadBodyTable(std::fstream& file, int length, StringList string_list);
+
+	int getCommandId() { return m_command_id; }
 
 	friend std::ostream& operator<<(std::ostream& os, const B_Command block);
 private:
+
 	int m_index; // 0x02
 	int m_dataPointer; // 0x14
-	int m_data_chunk; // 0x0c
+	int m_command_id; // 0x0c
 	// unknown values
 
 	BodyData m_body_data;	
@@ -50,5 +52,7 @@ private:
 
 	int m_unknown2; // 0x06
 	int m_array_length;
+
+	Table loadBodyTable(std::fstream& file, int length, StringList string_list);
 
 };

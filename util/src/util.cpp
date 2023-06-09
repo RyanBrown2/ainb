@@ -24,6 +24,7 @@ void displayCharArrayAsHex(std::ostream& os, char* arr, int len)
     os << std::dec << std::endl;
 }
 
+
 void readIntFromStream(std::istream& stream, bool isBigEndian, int size, int& result)
 {
 	char* buffer = new char[size];

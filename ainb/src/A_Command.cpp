@@ -2,12 +2,12 @@
 
 using namespace std;
 
-ostream& operator<<(ostream& os, const A_Command block) {
-	os << block.m_name << endl;
-	os << "Address: " << block.m_address << endl;
-	os << "Unknown 2: " << hex << block.m_unknown2 << endl;
+ostream& operator<<(ostream& os, const A_Command command) {
+	os << command.m_name << endl;
+	os << "Address: " << command.m_address << endl;
+	os << "Unknown 2: " << hex << command.m_unknown2 << endl;
 	os << "GUID: ";
-	displayCharArrayAsHex(os, block.m_data_dump, 16);
+	displayCharArrayAsHex(os, command.m_guid, 16);
 	return os;
 }
 
@@ -29,7 +29,7 @@ void A_Command::load(fstream& file)
 	readIntFromStream(file, is_big_endian, 4, m_string_pointer);
 
 	// data
-	file.read(m_data_dump, 16);
+	file.read(m_guid, 16);
 
 	// unknown 2
 	readIntFromStream(file, is_big_endian, 4, m_unknown2);

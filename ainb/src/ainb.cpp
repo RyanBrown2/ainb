@@ -88,14 +88,14 @@ void AINB::load(fstream& file)
 	for (int i = 0; i < m_header_data.a_commands; i++) {
 		A_Command* aBlock = new A_Command();
 		aBlock->load(file);
-		aBlock->setString(string_list.getString(aBlock->getStringPointer()));
+		aBlock->setName(string_list.getString(aBlock->getStringPointer()));
 		m_a_commands.push_back(*aBlock);
 	}
 
 	for (int i = 0; i < m_header_data.b_commands; i++) {
 		B_Command* bBlock = new B_Command();
 		bBlock->load(file);
-		bBlock->setString(string_list.getString(bBlock->getStringPointer()));
+		bBlock->setName(string_list.getString(bBlock->getStringPointer()));
 		bBlock->loadBody(file, string_list);
 		m_b_commands.push_back(*bBlock);
 	}
@@ -109,7 +109,7 @@ string AINB::getName() {
 	return m_name;
 }
 
-AINB::FileHeaderData AINB::getHeaderData()
+AINB::AinbHeaderData AINB::getHeaderData()
 {
 	return m_header_data;
 }
