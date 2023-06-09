@@ -9,7 +9,7 @@ ParameterNode::ParameterNode()
 
 	m_name = "";
 
-	m_block_ref = -1;
+	m_tag = -1;
 	m_terminated = false;
 
 	m_follows_expected = true;
@@ -59,7 +59,7 @@ void ParameterNode::load(fstream& file, int length, int section_num)
 	
 
 	// get the tag
-	readIntFromStream(file, is_big_endian, 2, m_block_ref);
+	readIntFromStream(file, is_big_endian, 2, m_tag);
 	// 0x06 - current pos
 
 	file.seekg(0x2, ios::cur);
@@ -106,7 +106,7 @@ void ParameterNode::load(fstream& file, int length, int section_num)
 		}
 	}
 
-	if (m_block_ref == 0xFFFF) {
+	if (m_tag == 0xFFFF) {
 
 	}
 
@@ -123,5 +123,5 @@ void ParameterNode::loadStringList(StringList* string_list)
 }
 
 int ParameterNode::getBlockRef() {
-	return m_block_ref;
+	return m_tag;
 }

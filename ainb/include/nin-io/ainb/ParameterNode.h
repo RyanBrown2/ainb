@@ -17,10 +17,11 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const ParameterNode& node) {
 		os << "ParameterNode: " << node.m_name << std::endl;
+		os << "Section: " << std::to_string(node.m_section_num) << std::endl;
 		os << "Address: " << std::hex << node.m_address;
 		os << " | Length: " <<std::dec << node.m_length << std::endl;
 		os << "Terminated: " << (node.m_terminated ? "Yes" : "No") << std::endl;
-		os << "Tag: " << std::hex << node.m_block_ref << std::endl;
+		os << "Tag: " << std::hex << node.m_tag << std::endl;
 		if (node.m_second_string != "") {
 			os << "Second String: " << node.m_second_string << std::endl;
 		}
@@ -38,7 +39,7 @@ private:
 	std::string m_name;
 
 
-	int m_block_ref;
+	int m_tag;
 	bool m_terminated;
 
 	bool m_follows_expected;

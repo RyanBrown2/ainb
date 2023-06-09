@@ -66,6 +66,7 @@ void B_Block::loadBody(fstream& file, StringList string_list)
 
 
 
+	map<int, int> section_to_key;
 	map<int, int> value_map;
 
 	int value_count = 0;
@@ -77,6 +78,7 @@ void B_Block::loadBody(fstream& file, StringList string_list)
 		
 		if (key != 0) {
 			//cout << "Position: " << hex << 4*i << " | Value: " << hex << value << endl;
+			section_to_key[i] = key;
 			value_map[key] = value;
 			value_count += 1;
 		}
@@ -85,23 +87,17 @@ void B_Block::loadBody(fstream& file, StringList string_list)
 
 	cout << *this << endl;
 
-	for (const auto& pair : value_map) {
-		cout << "Key: " << hex << pair.first << " | Value: " << hex << pair.second << endl;
+	for (const auto& pair : section_to_key) {
+		int section = pair.first;
+		int key = pair.second;
+		int value = value_map[key];
+
+		cout << "Position: " << hex << section << " | Key: " << hex << key << " | Value: " << hex << value << endl;
 	}
 
 
 
 	cout << endl;
-
-
-	//int length = 0xa4/4;
-
-	//if (m_unknown1 == 0) {
-		//file.seekg(0x90, ios::cur);
-	//} else {
-	//	cin.get();
-	//	file.seekg(0x94, ios::cur);
-	//}
 
 	// todo - figure out proper way to determine length
 	file.seekg(m_dataPointer, ios::beg);
@@ -118,13 +114,6 @@ void B_Block::loadBody(fstream& file, StringList string_list)
 		file.seekg(current_pos, ios::beg);
 		return;
 	}
-
-	//if (m_unknown1 == 0) {
-		//file.seekg(0x12, ios::cur);
-	//} else {
-	//	cin.get();
-	//	file.seekg(0xE, ios::cur);
-	//}
 
 	// todo - figure out proper way to determine length
 	//file.seekg(0x12, ios::cur);
@@ -149,7 +138,8 @@ void B_Block::loadBody(fstream& file, StringList string_list)
 
 	file.seekg(current_pos, ios::beg);
 
-	if (value_count > (12+ m_array_length)) {
+	//if (value_count > (12+ m_array_length)) {
+	if (value_map.size() > 12) {
 		cout << endl << endl;
 		cout << "Went over: " << dec << value_count << endl;
 		cout << endl << endl;

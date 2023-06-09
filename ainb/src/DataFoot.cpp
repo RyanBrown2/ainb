@@ -52,6 +52,11 @@ DataFoot::DataFoot(fstream& file, StringList* string_list)
 	file.seekg(m_structure_section_start, ios::beg);
 	m_structure_section_data = loadStructureSection(file);
 
+	for (int i = 0; i < m_structure_section_data.parameter_nodes.size(); i++) {
+		ParameterNode node = m_structure_section_data.parameter_nodes[i];
+		cout << node << endl;
+	}
+
 	cout << "Structure Section Loaded" << endl;
 
 	return;
