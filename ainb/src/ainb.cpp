@@ -86,23 +86,85 @@ void AINB::load(fstream& file)
 	file.seekg(0x74, ios::beg);
 
 	for (int i = 0; i < m_header_data.a_commands; i++) {
-		A_Command* aBlock = new A_Command();
+		EntryPointCommand* aBlock = new EntryPointCommand();
 		aBlock->load(file);
 		aBlock->setName(string_list.getString(aBlock->getStringPointer()));
 		m_a_commands.push_back(*aBlock);
+		//cout << *aBlock << endl;
+		//cout << endl;
 	}
 
 	for (int i = 0; i < m_header_data.b_commands; i++) {
-		B_Command* bBlock = new B_Command();
+		ExecutionCommand* bBlock = new ExecutionCommand();
 		bBlock->load(file);
 		bBlock->setName(string_list.getString(bBlock->getStringPointer()));
 		bBlock->loadBody(file, string_list);
 		m_b_commands.push_back(*bBlock);
+		cout << *bBlock << endl;
+		cout << endl;
 	}
+
+	map<int, int> pos_cout; // testing to see how many times a position has a value
+	vector<int> unknown1s;
+	vector<int> unknown2s;
+
+	for (ExecutionCommand command : m_b_commands) {
+		ExecutionCommand::BodyData body_data = command.getBodyData();
+		for (const auto& pair : body_data.position_to_key) {
+			int pos = pair.first;
+			if (pos_cout.count(pos)) {
+				pos_cout[pos] += 1;
+			} else {
+				pos_cout[pos] = 1;
+			}
+		}
+
+		int unknown1 = command.m_unknown1;
+		int unknown2 = command.m_unknown2;
+
+		if (find(unknown1s.begin(), unknown1s.end(), unknown1) == unknown1s.end()) {
+			unknown1s.push_back(unknown1);
+		}
+
+		if (find(unknown2s.begin(), unknown2s.end(), unknown2) == unknown2s.end()) {
+			unknown2s.push_back(unknown2);
+		}
+		
+	}
+
+
+	for (const auto& pair : pos_cout) {
+		int pos = pair.first;
+		int count = pair.second;
+		cout << "Pos: " << hex << pos << " Count: " << dec << count << endl;
+	}
+
+	cout << "Unknown 1's: ";
+	for (int i = 0; i < unknown1s.size(); i++) {
+		cout << hex << unknown1s[i] << " ";
+	}
+	cout << endl;
+
+	cout << "Unknown 2's: ";
+	for (int i = 0; i < unknown2s.size(); i++) {
+		cout << hex << unknown2s[i] << " ";
+	}
+	cout << endl;
+
+	cout << endl;
+	
+	return;
 
 	Parameters parameters(file, &string_list);
 	
 	m_parameter_data = parameters.getData();
+
+	for (int i = 0; i < m_parameter_data.parameters.size(); i++) {
+		ParameterNode node = m_parameter_data.parameters[i];
+		cout << node << endl;
+
+		cout << endl;
+	}
 
 	return;
 }
@@ -116,12 +178,12 @@ AINB::AinbHeaderData AINB::getHeaderData()
 	return m_header_data;
 }
 
-vector<A_Command> AINB::getACommands()
+vector<EntryPointCommand> AINB::getACommands()
 {
 	return m_a_commands;
 }
 
-vector<B_Command> AINB::getBCommands()
+vector<ExecutionCommand> AINB::getBCommands()
 {
 	return m_b_commands;
 }

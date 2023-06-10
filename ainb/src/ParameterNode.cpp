@@ -122,6 +122,6 @@ void ParameterNode::loadStringList(StringList* string_list)
 	m_string_list = string_list;
 }
 
-int ParameterNode::getBlockRef() {
+int ParameterNode::getCommandRef() {
 	return m_tag;
 }

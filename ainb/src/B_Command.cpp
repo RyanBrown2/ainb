@@ -2,20 +2,38 @@
 
 using namespace std;
 
-ostream& operator<<(ostream& os, const B_Command command) {
+ostream& operator<<(ostream& os, ExecutionCommand command) {
 	os << command.m_name << endl;
-	os << "Address: " << command.m_address << endl;
+	os << "Address: " << hex << command.m_address << endl;
 	os << "Index: " << hex << command.m_index << endl;
 	os << "Data Pointer: " << hex << command.m_dataPointer << endl;
-	os << "Unknown 1: " << command.m_unknown1 << endl;
-	os << "Unknown 2: " << command.m_unknown2 << endl;
+	os << "Unknown 1: " << hex << command.m_unknown1 << endl;
+	os << "Unknown 2: " << hex << command.m_unknown2 << endl;
 	os << "Command ID: " << hex << command.m_command_id << endl;
 	os << "GUID: ";
 	displayCharArrayAsHex(os, command.m_guid, 16);
+
+	ExecutionCommand::BodyData body_data = command.getBodyData();
+	for (const auto& pair : body_data.position_to_key) {
+		int pos = pair.first;
+		int key = pair.second;
+		int value = body_data.value_map[key];
+
+		cout << "Pos: " << hex << pos << " Key: " << key << " Value: " << value << endl;
+	}
+
+	cout << "Table:" << endl;
+	for (int i = 0; i < body_data.table.entries.size(); i++) {
+		ExecutionCommand::TableValuePair pair = body_data.table.entries[i];
+		int val = pair.value1;
+		string name = pair.value2;
+
+		cout << "Name: " << name << " | Value: " << hex << val << endl;
+	}
 	return os;
 }
 
-B_Command::B_Command() : BaseCommand(BlockType::B)
+ExecutionCommand::ExecutionCommand() : BaseCommand(BlockType::B)
 {
 	m_index = -1;
 	m_dataPointer = -1;
@@ -30,12 +48,12 @@ B_Command::B_Command() : BaseCommand(BlockType::B)
 	
 }
 
-B_Command::~B_Command()
+ExecutionCommand::~ExecutionCommand()
 {
 
 }
 
-void B_Command::load(fstream& file)
+void ExecutionCommand::load(fstream& file)
 {
 	BaseCommand::load(file);
 
@@ -72,7 +90,7 @@ void B_Command::load(fstream& file)
 	m_guid[16] = '\0';
 }
 
-void B_Command::loadBody(fstream& file, StringList string_list)
+void ExecutionCommand::loadBody(fstream& file, StringList string_list)
 {
 	int current_pos = file.tellg();
 	file.seekg(m_dataPointer, ios::beg);
@@ -114,7 +132,7 @@ void B_Command::loadBody(fstream& file, StringList string_list)
 
 }
 
-void B_Command::loadBodyTable(fstream& file, int length, StringList string_list)
+void ExecutionCommand::loadBodyTable(fstream& file, int length, StringList string_list)
 {
 	//Table table;
 

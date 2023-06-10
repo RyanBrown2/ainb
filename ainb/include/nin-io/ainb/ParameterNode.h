@@ -13,10 +13,16 @@ public:
 	void loadStringList(StringList* string_list);
 	void load(std::fstream& file, int length, int section_num);
 
-	int getBlockRef();
+	int getCommandRef();
+
+	int t_index = -1;
+	void setIndex(int index) { t_index = index; }
+
+	std::string getName() { return m_name; }
 
 	friend std::ostream& operator<<(std::ostream& os, const ParameterNode& node) {
 		os << "ParameterNode: " << node.m_name << std::endl;
+		os << "Index: " << node.t_index << std::endl;
 		os << "Section: " << std::to_string(node.m_section_num) << std::endl;
 		os << "Address: " << std::hex << node.m_address;
 		os << " | Length: " <<std::dec << node.m_length << std::endl;

@@ -5,7 +5,7 @@
 #include <string>
 #include "nin-io/util/util.h"
 #include "BaseCommand.h"
-#include "A_Command.h"
+#include "EntryPointCommand.h"
 #include "B_Command.h"
 #include "StringList.h"
 #include "ParameterNode.h"
@@ -31,8 +31,8 @@ public:
 	std::string getName();
 	AinbHeaderData getHeaderData();
 
-	std::vector<A_Command> getACommands();
-	std::vector<B_Command> getBCommands();
+	std::vector<EntryPointCommand> getACommands();
+	std::vector<ExecutionCommand> getBCommands();
 
 	Parameters::ParameterData getParameterData() { return m_parameter_data; }
 	
@@ -44,8 +44,8 @@ private:
 	std::string m_name;
 	AinbHeaderData m_header_data;
 
-	std::vector<A_Command> m_a_commands;
-	std::vector<B_Command> m_b_commands;
+	std::vector<EntryPointCommand> m_a_commands;
+	std::vector<ExecutionCommand> m_b_commands;
 
 	Parameters::ParameterData m_parameter_data;
 

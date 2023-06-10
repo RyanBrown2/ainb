@@ -4,14 +4,14 @@
 #include "nin-io/util/util.h"
 #include "BaseCommand.h"
 
-class A_Command : public BaseCommand
+class EntryPointCommand : public BaseCommand
 {
 public:
-	A_Command();
-	~A_Command();
+	EntryPointCommand();
+	~EntryPointCommand();
 	void load(std::fstream& file);
 
-	friend std::ostream& operator<<(std::ostream& os, const A_Command block);
+	friend std::ostream& operator<<(std::ostream& os, const EntryPointCommand block);
 
 private:
 	int m_unknown2;

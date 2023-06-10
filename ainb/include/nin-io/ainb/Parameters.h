@@ -37,9 +37,7 @@ public:
 private:
 	int m_table_section_start;
 	int m_structure_section_start;
-	int m_section_three_start;
-
-
+	int m_section_3_start;
 
 	TableSectionData m_table_section_data;
 	StructureSectionData m_structure_section_data;

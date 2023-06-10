@@ -7,16 +7,18 @@
 #include "StringList.h"
 #include "nin-io/util/util.h"
 
-class B_Command : public BaseCommand
+class ExecutionCommand : public BaseCommand
 {
 public:
-	B_Command();
-	~B_Command();
+	ExecutionCommand();
+	~ExecutionCommand();
 	void load(std::fstream& file);
 
 
 	// temp public for testing
 	int m_unknown1; // 0x00
+	int m_unknown2; // 0x06
+
 	int getIndex() { return m_index; }
 
 	struct TableValuePair {
@@ -43,7 +45,7 @@ public:
 
 	BodyData getBodyData() { return m_body_data; }
 
-	friend std::ostream& operator<<(std::ostream& os, const B_Command block);
+	friend std::ostream& operator<<(std::ostream& os, const ExecutionCommand block);
 private:
 
 	int m_index; // 0x02
@@ -54,7 +56,7 @@ private:
 	BodyData m_body_data;	
 	//Table m_table;
 
-	int m_unknown2; // 0x06
+
 	int m_array_length;
 
 	void loadBodyTable(std::fstream& file, int length, StringList string_list);
