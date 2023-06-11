@@ -5,6 +5,7 @@
 #include <string>
 #include "nin-io/util/util.h"
 #include "StringList.h"
+#include "ParameterHandler.h"
 
 class AINB
 {
@@ -33,9 +34,12 @@ private:
 	static const bool is_big_endian = false;
 
 	FileHeaderData m_file_header_data;
+	void loadFileHeaderData(std::fstream& file);
 	
+	// String List
 	StringList* m_string_list = nullptr;
 
-	void loadFileHeaderData(std::fstream& file);
+	ParameterHandler* m_parameter_handler = nullptr;
+
 
 };

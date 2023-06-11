@@ -69,6 +69,15 @@ void AINB::load(fstream& file)
 	m_string_list = new StringList(file);
 
 
+	// PARAMETERS
+	m_parameter_handler = new ParameterHandler(m_string_list);
+
+	// load the parameter table
+	file.seekg(m_file_header_data.parameter_table_start_address, ios::beg);
+	m_parameter_handler->loadTableParameters(file, m_file_header_data.parameter_structure_start_address);
+
+
+
 	return;
 }
 
