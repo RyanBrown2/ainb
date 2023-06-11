@@ -32,9 +32,25 @@ public:
 		std::vector<TableValuePair> entries;
 	};
 
+	struct BodyDataStructure {
+		std::vector<int> sections;
+
+		std::map<int, int> section_to_key;
+		std::map<int, int> section_to_value;
+
+		void addSection(int section, int key, int value) {
+			sections.push_back(section);
+			section_to_key[section] = key;
+			section_to_value[section] = value;
+		}
+	};
+
 	struct BodyData {
 		std::map<int, int> position_to_key;
 		std::map<int, int> value_map;
+
+		BodyDataStructure data_structure;
+		
 		
 		Table table;
 	};

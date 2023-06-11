@@ -1,9 +1,24 @@
 #include "nin-io/ainb/Ainb.h"
 #include <iostream>
 #include <fstream>
+#include <numeric>
 #include <vector>
 
 using namespace std;
+
+double compute_average(std::vector<int>& vi) {
+
+	double sum = 0;
+
+	// iterate over all elements
+	for (int p : vi) {
+
+		//std::cout << "p is " << p << std::endl;
+		sum = sum + p;
+	}
+
+	return (sum / vi.size());
+}
 
 AINB::AINB()
 {
@@ -105,13 +120,17 @@ void AINB::load(fstream& file)
 	}
 
 	map<int, int> pos_cout; // testing to see how many times a position has a value
-	vector<int> unknown1s;
-	vector<int> unknown2s;
+	//vector<int> unknown1s;
+	//vector<int> unknown2s;
+	map<int, vector<int>> unknowns;
 
 	for (ExecutionCommand command : m_b_commands) {
 		ExecutionCommand::BodyData body_data = command.getBodyData();
 		for (const auto& pair : body_data.position_to_key) {
 			int pos = pair.first;
+			int key = pair.second;
+			int value = body_data.value_map[key];
+			unknowns[pos].push_back(key);
 			if (pos_cout.count(pos)) {
 				pos_cout[pos] += 1;
 			} else {
@@ -119,16 +138,13 @@ void AINB::load(fstream& file)
 			}
 		}
 
-		int unknown1 = command.m_unknown1;
-		int unknown2 = command.m_unknown2;
+		//if (find(unknown1s.begin(), unknown1s.end(), unknown1) == unknown1s.end()) {
+		//	unknown1s.push_back(unknown1);
+		//}
 
-		if (find(unknown1s.begin(), unknown1s.end(), unknown1) == unknown1s.end()) {
-			unknown1s.push_back(unknown1);
-		}
-
-		if (find(unknown2s.begin(), unknown2s.end(), unknown2) == unknown2s.end()) {
-			unknown2s.push_back(unknown2);
-		}
+		//if (find(unknown2s.begin(), unknown2s.end(), unknown2) == unknown2s.end()) {
+		//	unknown2s.push_back(unknown2);
+		//}
 		
 	}
 
@@ -139,25 +155,34 @@ void AINB::load(fstream& file)
 		cout << "Pos: " << hex << pos << " Count: " << dec << count << endl;
 	}
 
-	cout << "Unknown 1's: ";
-	for (int i = 0; i < unknown1s.size(); i++) {
-		cout << hex << unknown1s[i] << " ";
-	}
-	cout << endl;
+	//cout << endl;
 
-	cout << "Unknown 2's: ";
-	for (int i = 0; i < unknown2s.size(); i++) {
-		cout << hex << unknown2s[i] << " ";
-	}
-	cout << endl;
+	//for (const auto& pair : unknowns) {
+	//	int pos = pair.first;
+	//	vector<int> keys = pair.second;
+
+	//	cout << "Pos: " << hex << pos << " Average: " << dec << compute_average(keys) << endl;
+
+	//}
 
 	cout << endl;
 	
-	return;
+	//return;
 
 	Parameters parameters(file, &string_list);
+	return;
 	
 	m_parameter_data = parameters.getData();
+
+	for (int i = 0; i < m_parameter_data.tables.size(); i++) {
+		Parameters::TableData table_entries = m_parameter_data.tables[i];
+	}
+
+	//for (const auto& pair : parameters.t_structure_subsection_addresses) {
+	//	int section = pair.second;
+	//	int address = pair.first;
+	//	cout << "Section: " << hex << section << " Address: " << hex << address << endl;
+	//}
 
 	for (int i = 0; i < m_parameter_data.parameters.size(); i++) {
 		ParameterNode node = m_parameter_data.parameters[i];
@@ -187,4 +212,6 @@ vector<ExecutionCommand> AINB::getBCommands()
 {
 	return m_b_commands;
 }
+
+
 

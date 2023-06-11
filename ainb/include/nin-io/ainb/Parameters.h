@@ -18,37 +18,54 @@ public:
 	};
 	struct TableData {
 		int address;
+		int table_num;
 		std::vector<TableEntry> entries;
 	};
-	struct TableSectionData {
-		std::vector<TableData> tables;
-	};
 	struct StructureSectionData {
-		std::vector<ParameterNode> parameter_nodes;
+		std::map<int, std::vector<ParameterNode>> structure_entries;
+		//std::vector<ParameterNode> parameter_nodes;
 	};
 
 	struct ParameterData {
-		std::vector<TableEntry> table;
+		std::vector<TableData> tables;
+		std::vector<TableEntry> table_entries;
 		std::vector<ParameterNode> parameters;
 	};
 
 	ParameterData getData() { return m_data; }
+
+
+	TableEntry getTableEntry(int table_num, int index);
+	ParameterNode getParameterNode(int section_num, int index);
+
+	// temporary to see which subsections of structure section are being used
+	std::map<int, int> t_structure_subsection_addresses;
 
 private:
 	int m_table_section_start;
 	int m_structure_section_start;
 	int m_section_3_start;
 
-	TableSectionData m_table_section_data;
-	StructureSectionData m_structure_section_data;
+	// this contains all the tables mapped to which number they are
+	std::map<int, TableData> m_table_data_map;
+
+	// this contains all the structure nodes
+	//StructureSectionData m_structure_section_data;
+	std::map<int, std::vector<ParameterNode>> m_structure_section_data;
+
+	void loadTableSection(std::fstream& file);
+	void loadStructureSection(std::fstream& file);
 
 
-	TableSectionData loadTableSection(std::fstream& file);
-	StructureSectionData loadStructureSection(std::fstream& file);
+
+
+	// old stuff below, cleaning up
+
+
 
 	StringList* m_string_list;
 
-	static void printTableSectionData(TableSectionData table_section_data);
+	//void printTableSectionData(TableSectionData table_section_data);
 
 	ParameterData m_data;
 

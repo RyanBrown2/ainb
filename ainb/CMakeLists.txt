@@ -4,7 +4,7 @@ add_library(${PROJECT_NAME}
 	src/ainb.cpp
 	"src/BaseCommand.cpp"
 	"src/EntryPointCommand.cpp"
-	"src/B_Command.cpp"
+	"src/ExecutionCommand.cpp"
 	"src/StringList.cpp"
 	"src/Parameters.cpp"
 	"src/ParameterNode.cpp"

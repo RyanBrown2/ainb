@@ -8,7 +8,7 @@ Parameters::Parameters(fstream& file, StringList* string_list)
 {
 	m_string_list = string_list;
 
-	// find start of the table section
+	// find start of the table_entries section
 	file.seekg(0x2c, ios::beg);
 	readIntFromStream(file, is_big_endian, 4, m_table_section_start);
 
@@ -26,25 +26,27 @@ Parameters::Parameters(fstream& file, StringList* string_list)
 	int section_four_start;
 	readIntFromStream(file, is_big_endian, 4, section_four_start);
 
-	// load table section
+	// load table_entries section
 	file.seekg(m_table_section_start, ios::beg);
-	m_table_section_data = loadTableSection(file);
+	loadTableSection(file);
 
-	printTableSectionData(m_table_section_data);
+	//m_data.tables = m_table_section_data.tables;
 
-	for (int i = 0; i < m_table_section_data.tables.size(); i++) {
-		TableData table = m_table_section_data.tables[i];
-		for (int j = 0; j < table.entries.size(); j++) {
-			m_data.table.push_back(table.entries[j]);
-		}
-	}
+	//printTableSectionData(m_table_section_data);
+
+
+	//for (int i = 0; i < m_table_section_data.tables.size(); i++) {
+	//	TableData table_entries = m_table_section_data.tables[i];
+	//	for (int j = 0; j < table_entries.entries.size(); j++) {
+	//		m_data.table_entries.push_back(table_entries.entries[j]);
+	//	}
+	//}
 
 	//m_data.tables = m_table_section_data.tables;
 
 	// load structure section
 	file.seekg(m_structure_section_start, ios::beg);
-	m_structure_section_data = loadStructureSection(file);
-	m_data.parameters = m_structure_section_data.parameter_nodes;
+	loadStructureSection(file);
 
 
 	return;
@@ -56,12 +58,12 @@ Parameters::~Parameters()
 
 }
 
-Parameters::TableSectionData Parameters::loadTableSection(fstream& file)
+void Parameters::loadTableSection(fstream& file)
 {
-	TableSectionData table_section_data;
-	
 	vector<int> table_section_addresses;
+	vector<int> table_nums;
 
+	int index = 0;
 	int current_pos = file.tellg();
 	for (int i = 0; i < 6; i++) {
 		file.seekg(current_pos, ios::beg);
@@ -74,7 +76,17 @@ Parameters::TableSectionData Parameters::loadTableSection(fstream& file)
 		if (entry_address == m_structure_section_start) {
 			break;
 		}
+
+		if (i > 0) {
+			if (entry_address == table_section_addresses[index - 1]) {
+				table_section_addresses.pop_back();
+				table_nums.pop_back();
+				index -= 1;
+			}
+		}
 		table_section_addresses.push_back(entry_address);
+		table_nums.push_back(i);
+		index += 1;
 	}
 
 	for (int i = 0; i < table_section_addresses.size(); i++) {
@@ -82,6 +94,7 @@ Parameters::TableSectionData Parameters::loadTableSection(fstream& file)
 		int current_pos = table_section_addresses[i];
 		file.seekg(current_pos, ios::beg);
 		table_data.address = current_pos;
+		table_data.table_num = table_nums[i];
 
 		int end_pos;
 		if (i + 1 < table_section_addresses.size()) {
@@ -108,37 +121,24 @@ Parameters::TableSectionData Parameters::loadTableSection(fstream& file)
 			table_data.entries.push_back(entry);
 			current_pos = file.tellg();
 		}
-
-		table_section_data.tables.push_back(table_data);
-
+		m_table_data_map[table_nums[i]] = table_data;
 	}
-
-	return table_section_data;
 }
 
-void Parameters::printTableSectionData(TableSectionData table_section_data) {
-	cout << "Table Section Data" << endl;
-	int index = 0;
-	for (int i = 0; i < table_section_data.tables.size(); i++) {
-		cout << "Table " << i << endl;
-		for (int j = 0; j < table_section_data.tables[i].entries.size(); j++) {
-			cout << "Entry " << hex << index << ": " << table_section_data.tables[i].entries[j].name << " | ";
-			index += 1;
-			cout << table_section_data.tables[i].entries[j].var << endl;
-		}
-	}
 
-}
-
-Parameters::StructureSectionData Parameters::loadStructureSection(fstream& file)
+Parameters::TableEntry Parameters::getTableEntry(int table_num, int index)
 {
-	StructureSectionData structure_section;
+	return m_table_data_map[table_num].entries[index];
+}
+
+
+void Parameters::loadStructureSection(fstream& file)
+{
+	//StructureSectionData structure_section;
 
 	vector<int> section_addresses;
 
 	map<int, int> address_to_section_number;
-
-
 
 	// load addresses
 	int last_vector_index = 0;
@@ -167,10 +167,7 @@ Parameters::StructureSectionData Parameters::loadStructureSection(fstream& file)
 
 	}
 
-	int index = 0;
-
-
-
+	t_structure_subsection_addresses = address_to_section_number;
 
 	for (int i = 0; i < section_addresses.size(); i++) {
 
@@ -192,7 +189,7 @@ Parameters::StructureSectionData Parameters::loadStructureSection(fstream& file)
 
 		vector<ParameterNode> nodes;
 
-
+		int index = 0;
 		while (file.tellg() < end_address) {
 			ParameterNode node;
 			node.loadStringList(m_string_list);
@@ -200,12 +197,19 @@ Parameters::StructureSectionData Parameters::loadStructureSection(fstream& file)
 			node.setIndex(index);
 			index += 1;
 			nodes.push_back(node);
-			structure_section.parameter_nodes.push_back(node);
+			//structure_section.parameter_nodes.push_back(node);
 		}
+
+		m_structure_section_data[section_number] = nodes;
 
 	}
 
-	return structure_section;
+	//return structure_section;
+}
+
+ParameterNode Parameters::getParameterNode(int section_num, int index)
+{
+	return m_structure_section_data[section_num][index];
 }
 
 map<int, int> Parameters::structure_entry_lengths = {
