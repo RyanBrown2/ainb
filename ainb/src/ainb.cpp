@@ -76,6 +76,13 @@ void AINB::load(fstream& file)
 	file.seekg(m_file_header_data.parameter_table_start_address, ios::beg);
 	m_parameter_handler->loadTableParameters(file, m_file_header_data.parameter_structure_start_address);
 
+	// TODO: there's a potential function section after this that needs to be handled
+
+	// COMMANDS
+
+	file.seekg(0x74, ios::beg);
+
+	
 
 
 	return;

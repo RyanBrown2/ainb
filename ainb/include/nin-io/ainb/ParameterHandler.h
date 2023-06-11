@@ -32,8 +32,8 @@ public:
 	void loadTableParameters(std::fstream& file, int end_address);
 	void loadStructureParameters(std::fstream& file, int end_address);
 
-	void getParameterFromTable(int table_num, int parameter_num);
-	void getParameterFromStructure(int section_num, int parameter_num);
+	TableParameter getParameterFromTable(int table_num, int parameter_num);
+	StructureParameter getParameterFromStructure(int section_num, int parameter_num);
 private:
 
 	StringList* m_string_list = nullptr;

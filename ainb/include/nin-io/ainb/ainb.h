@@ -31,7 +31,7 @@ public:
 	FileHeaderData getFileHeaderData();
 	
 private:
-	static const bool is_big_endian = false;
+
 
 	FileHeaderData m_file_header_data;
 	void loadFileHeaderData(std::fstream& file);
@@ -42,4 +42,5 @@ private:
 	ParameterHandler* m_parameter_handler = nullptr;
 
 
+	static const bool is_big_endian = false;
 };

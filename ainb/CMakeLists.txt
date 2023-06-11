@@ -4,7 +4,7 @@ add_library(${PROJECT_NAME}
 	src/ainb.cpp
 	src/StringList.cpp
 	src/ParameterHandler.cpp
-)
+ "include/nin-io/ainb/EntryPointCommand.h" "src/EntryPointCommand.cpp")
 
 target_link_libraries(${PROJECT_NAME}
 	nin-io::util

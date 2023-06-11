@@ -140,14 +140,14 @@ void ParameterHandler::loadStructureParameters(fstream& file, int end_address)
 }
 
 
-void ParameterHandler::getParameterFromTable(int table_num, int parameter_num)
+ParameterHandler::TableParameter ParameterHandler::getParameterFromTable(int table_num, int parameter_num)
 {
-
+	return m_table_parameters[table_num][parameter_num];
 }
 
-void ParameterHandler::getParameterFromStructure(int section_num, int parameter_num)
+ParameterHandler::StructureParameter ParameterHandler::getParameterFromStructure(int section_num, int parameter_num)
 {
-
+	return m_structure_parameters[section_num][parameter_num];
 }
 
 
