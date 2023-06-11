@@ -1,4 +1,8 @@
 #include "nin-io/ainb/StringList.h"
+#include <iostream>
+#include <fstream>
+#include <map>
+#include <string>
 
 using namespace std;
 

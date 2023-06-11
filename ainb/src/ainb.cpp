@@ -3,25 +3,13 @@
 #include <fstream>
 #include <numeric>
 #include <vector>
+#include "nin-io/ainb/StringList.h"
 
 using namespace std;
 
-double compute_average(std::vector<int>& vi) {
-
-	double sum = 0;
-
-	// iterate over all elements
-	for (int p : vi) {
-
-		//std::cout << "p is " << p << std::endl;
-		sum = sum + p;
-	}
-
-	return (sum / vi.size());
-}
-
 AINB::AINB()
 {
+
 }
 
 AINB::~AINB()
@@ -29,189 +17,63 @@ AINB::~AINB()
 
 }
 
-void AINB::load(fstream& file)
-{
-	// Header Data
-
+void AINB::loadFileHeaderData(fstream& file) {
+	file.clear();
 	file.seekg(0, ios::beg);
 
-	// Reading Header Data
-	file.read(m_header_data.type, 3);
-	m_header_data.type[3] = '\0';
+	// type
+	file.read(m_file_header_data.type, 3);
+	m_file_header_data.type[3] = '\0';
 
-	// Check if file is AINB
-	if (strcmp(m_header_data.type, "AIB") != 0) {
-		cout << "File is not AINB" << endl;
-		return;
-	}
+	// address section pointer
+	readIntFromStream(file, is_big_endian, 1, m_file_header_data.address_section_pointer);
 
-	int headerDataStart;
-	readIntFromStream(file, is_big_endian, 1, headerDataStart);
+	// entry point command count
+	file.seekg(0x0c, ios::beg);
+	readIntFromStream(file, is_big_endian, 4, m_file_header_data.entry_point_command_count);
 
-	// find number of type A commands
-	file.seekg(0xC, ios::beg);
-	readIntFromStream(file, is_big_endian, 4, m_header_data.a_commands);
+	// execution command count
+	readIntFromStream(file, is_big_endian, 4, m_file_header_data.execution_command_count);
 
-	// find number of type B commands
-	readIntFromStream(file, is_big_endian, 4, m_header_data.b_commands);
+	// unknown value
+	readIntFromStream(file, is_big_endian, 4, m_file_header_data.unknown_value);
 
-	cout << endl;
+	// command body start address
+	file.seekg(m_file_header_data.address_section_pointer, ios::beg);
+	readIntFromStream(file, is_big_endian, 4, m_file_header_data.command_body_start_address);
 
-	// find end address of command section
-	file.seekg(0x20, ios::beg);
-	readIntFromStream(file, is_big_endian, 4, m_header_data.data_body_start);
+	// string list start address
+	readIntFromStream(file, is_big_endian, 4, m_file_header_data.string_list_start_address);
 
-	// find start of string list
-	readIntFromStream(file, is_big_endian, 4, m_header_data.string_section_start);
+	// four bytes before string list start address
+	readIntFromStream(file, is_big_endian, 4, m_file_header_data.four_bytes_before_string_list);
 
-	// find start of parameter section
-	file.seekg(0x2c, ios::beg);
-	readIntFromStream(file, is_big_endian, 4, m_header_data.footer_start);
-
-	file.seekg(0x60, ios::beg);
-
-	// find file root name offset
-	int root_name_pointer;
-	readIntFromStream(file, is_big_endian, 4, root_name_pointer);
-
-	// find file type (sequence, logic, etc)
-	int fileType;
-	readIntFromStream(file, is_big_endian, 4, fileType);
-
-	//if (fileType == 2) {
-	//	cout << "File Type: Sequence" << endl;
-	//}
-	//else if (fileType == 1) {
-	//	cout << "File Type: Logic" << endl;
-	//}
-	//else {
-	//	cout << "File Type: Unknown" << endl;
-	//}
-
-	file.seekg(m_header_data.string_section_start, ios::beg);
-	StringList string_list(file);
-
-	// get file name
-	m_name = string_list.getString(0);
-
-	//cout << "Root Name: " << string_list.getString(root_name_pointer) << endl << endl;
-
-	// Start Parsing Commands
-
-	file.seekg(0x74, ios::beg);
-
-	for (int i = 0; i < m_header_data.a_commands; i++) {
-		EntryPointCommand* aBlock = new EntryPointCommand();
-		aBlock->load(file);
-		aBlock->setName(string_list.getString(aBlock->getStringPointer()));
-		m_a_commands.push_back(*aBlock);
-		//cout << *aBlock << endl;
-		//cout << endl;
-	}
-
-	for (int i = 0; i < m_header_data.b_commands; i++) {
-		ExecutionCommand* bBlock = new ExecutionCommand();
-		bBlock->load(file);
-		bBlock->setName(string_list.getString(bBlock->getStringPointer()));
-		bBlock->loadBody(file, string_list);
-		m_b_commands.push_back(*bBlock);
-		cout << *bBlock << endl;
-		cout << endl;
-	}
-
-	map<int, int> pos_cout; // testing to see how many times a position has a value
-	//vector<int> unknown1s;
-	//vector<int> unknown2s;
-	map<int, vector<int>> unknowns;
-
-	for (ExecutionCommand command : m_b_commands) {
-		ExecutionCommand::BodyData body_data = command.getBodyData();
-		for (const auto& pair : body_data.position_to_key) {
-			int pos = pair.first;
-			int key = pair.second;
-			int value = body_data.value_map[key];
-			unknowns[pos].push_back(key);
-			if (pos_cout.count(pos)) {
-				pos_cout[pos] += 1;
-			} else {
-				pos_cout[pos] = 1;
-			}
-		}
-
-		//if (find(unknown1s.begin(), unknown1s.end(), unknown1) == unknown1s.end()) {
-		//	unknown1s.push_back(unknown1);
-		//}
-
-		//if (find(unknown2s.begin(), unknown2s.end(), unknown2) == unknown2s.end()) {
-		//	unknown2s.push_back(unknown2);
-		//}
-		
-	}
-
-
-	for (const auto& pair : pos_cout) {
-		int pos = pair.first;
-		int count = pair.second;
-		cout << "Pos: " << hex << pos << " Count: " << dec << count << endl;
-	}
-
-	//cout << endl;
-
-	//for (const auto& pair : unknowns) {
-	//	int pos = pair.first;
-	//	vector<int> keys = pair.second;
-
-	//	cout << "Pos: " << hex << pos << " Average: " << dec << compute_average(keys) << endl;
-
-	//}
-
-	cout << endl;
+	// parameter table start address
+	readIntFromStream(file, is_big_endian, 4, m_file_header_data.parameter_table_start_address);
 	
-	//return;
+	// parameter subsection 3
+	readIntFromStream(file, is_big_endian, 4, m_file_header_data.parameter_subsection_three_start_address);
 
-	Parameters parameters(file, &string_list);
-	return;
-	
-	m_parameter_data = parameters.getData();
+	// parameter structure start address
+	readIntFromStream(file, is_big_endian, 4, m_file_header_data.parameter_structure_start_address);
 
-	for (int i = 0; i < m_parameter_data.tables.size(); i++) {
-		Parameters::TableData table_entries = m_parameter_data.tables[i];
-	}
+}
 
-	//for (const auto& pair : parameters.t_structure_subsection_addresses) {
-	//	int section = pair.second;
-	//	int address = pair.first;
-	//	cout << "Section: " << hex << section << " Address: " << hex << address << endl;
-	//}
+void AINB::load(fstream& file)
+{
+	// load the file's header data
+	loadFileHeaderData(file);
 
-	for (int i = 0; i < m_parameter_data.parameters.size(); i++) {
-		ParameterNode node = m_parameter_data.parameters[i];
-		cout << node << endl;
+	// load the string list
+	file.seekg(m_file_header_data.string_list_start_address, ios::beg);
+	m_string_list = new StringList(file);
 
-		cout << endl;
-	}
 
 	return;
 }
 
-string AINB::getName() {
-	return m_name;
-}
-
-AINB::AinbHeaderData AINB::getHeaderData()
+AINB::FileHeaderData AINB::getFileHeaderData()
 {
-	return m_header_data;
+	return m_file_header_data;
 }
-
-vector<EntryPointCommand> AINB::getACommands()
-{
-	return m_a_commands;
-}
-
-vector<ExecutionCommand> AINB::getBCommands()
-{
-	return m_b_commands;
-}
-
-
 

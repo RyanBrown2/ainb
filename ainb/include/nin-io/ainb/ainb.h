@@ -4,12 +4,7 @@
 #include <vector>
 #include <string>
 #include "nin-io/util/util.h"
-#include "BaseCommand.h"
-#include "EntryPointCommand.h"
-#include "ExecutionCommand.h"
 #include "StringList.h"
-#include "ParameterNode.h"
-#include "Parameters.h"
 
 class AINB
 {
@@ -18,35 +13,29 @@ public:
 	~AINB();
 	void load(std::fstream& file);
 
-	struct AinbHeaderData {
-		char type[4]; // 0x00 | 3
-		int a_commands; // 0x0C | 4
-		int b_commands; // 0x10 | 4
-		int data_body_start; // 0x20 | 4
-		int string_section_start; // 0x24 | 4
-
-		int footer_start; // 0x2c | 4
+	struct FileHeaderData {
+		char type[4]; // 0x00
+		int address_section_pointer = -1; // 0x03 
+		int entry_point_command_count = -1; // 0x0c
+		int execution_command_count = -1; // 0x10
+		int unknown_value = -1; // 0x14
+		int command_body_start_address = -1; // 0x20
+		int string_list_start_address = -1; // 0x24
+		int four_bytes_before_string_list = -1; // 0x28
+		int parameter_table_start_address = -1; // 0x2c
+		int parameter_subsection_three_start_address = -1; // 0x30
+		int parameter_structure_start_address = -1; // 0x34
 	};
 
-	std::string getName();
-	AinbHeaderData getHeaderData();
-
-	std::vector<EntryPointCommand> getACommands();
-	std::vector<ExecutionCommand> getBCommands();
-
-	Parameters::ParameterData getParameterData() { return m_parameter_data; }
+	FileHeaderData getFileHeaderData();
 	
 private:
 	static const bool is_big_endian = false;
-	void loadFooter(std::fstream& file);
-	void loadDataBody(std::fstream& file);
 
-	std::string m_name;
-	AinbHeaderData m_header_data;
+	FileHeaderData m_file_header_data;
+	
+	StringList* m_string_list = nullptr;
 
-	std::vector<EntryPointCommand> m_a_commands;
-	std::vector<ExecutionCommand> m_b_commands;
-
-	Parameters::ParameterData m_parameter_data;
+	void loadFileHeaderData(std::fstream& file);
 
 };
