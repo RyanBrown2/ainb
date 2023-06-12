@@ -7,7 +7,7 @@ add_library(${PROJECT_NAME}
 	src/EntryPointCommand.cpp
 	src/ExecutionCommand.cpp
 	src/CommandBody.cpp
- "include/nin-io/ainb/CommandSequence.h" "src/CommandSequence.cpp")
+ "include/nin-io/ainb/SequenceHandler.h" "src/SequenceHandler.cpp")
 
 target_link_libraries(${PROJECT_NAME}
 	nin-io::util

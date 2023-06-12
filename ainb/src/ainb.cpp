@@ -75,6 +75,7 @@ void AINB::load(fstream& file)
 	// load the parameter table
 	file.seekg(m_file_header_data.parameter_table_start_address, ios::beg);
 	m_parameter_handler->loadTableParameters(file, m_file_header_data.parameter_structure_start_address);
+	m_parameter_handler->loadStructureParameters(file, m_file_header_data.parameter_subsection_three_start_address);
 
 	// TODO: there's a potential function section after this that needs to be handled
 
@@ -106,6 +107,8 @@ void AINB::load(fstream& file)
 	}
 
 
+	// load the sequences
+	m_sequence_handler = new SequenceHandler();
 
 	return;
 }
@@ -119,6 +122,8 @@ void AINB::loadSequences()
 {
 	for (int i = 0; i < m_entry_point_commands.size(); i++) {
 		EntryPointCommand* command = &m_entry_point_commands[i];
+
+
 	}
 }
 

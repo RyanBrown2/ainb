@@ -44,6 +44,29 @@ void CommandBody::load(fstream& file)
 	}
 
 	// TODO: load table
+	file.seekg(m_address, ios::beg);
+	file.seekg(0xa3, ios::cur);
+
+	int table_size;
+	readIntFromStream(file, is_big_endian, 1, table_size);
+
+	if (table_size == 0) {
+		return;
+	}
+
+	for (int i = 0; i < table_size; i++) {
+		TableKeyValuePair pair;
+		readIntFromStream(file, is_big_endian, 4, pair.index);
+
+		int string_tag;
+		readIntFromStream(file, is_big_endian, 4, string_tag);
+		pair.parameter = m_string_list->getString(string_tag);
+
+		//int table_value;
+		//readIntFromStream(file, is_big_endian, 1, table_value);
+		//m_table.push_back(table_value);
+	}
+	
 }
 
 //void CommandBody::setCommandReference(ExecutionCommand* command)

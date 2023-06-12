@@ -19,8 +19,16 @@ public:
 	void load(std::fstream& file);
 	int getAddress() { return m_address; };
 
-	void setCommandReference(ExecutionCommand* command) { m_command = command; };
-	ExecutionCommand* getCommandReference() { return m_command; };
+	void setCommandReference(ExecutionCommand* command) { m_command = command; }
+	ExecutionCommand* getCommandReference() { return m_command; }
+
+	struct TableKeyValuePair {
+		std::string parameter;
+		int index;
+	};
+
+	std::vector<TableKeyValuePair> getCallTable() { return m_call_table; }
+
 private:
 	int m_address;
 
@@ -32,6 +40,8 @@ private:
 	std::map<int, int> m_table_values;
 	std::map<int, int> m_structure_parameters;
 	std::map<int, int> m_structure_values;
+
+	std::vector<TableKeyValuePair> m_call_table;
 
 	static const bool is_big_endian = false;
 };

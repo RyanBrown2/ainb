@@ -9,6 +9,7 @@
 #include "EntryPointCommand.h"
 #include "ExecutionCommand.h"
 #include "CommandBody.h"
+#include "SequenceHandler.h"
 
 class AINB
 {
@@ -50,6 +51,8 @@ private:
 
 	//std::vector<CommandBody> m_command_bodies;
 	std::map<int, CommandBody> m_command_bodies;
+
+	SequenceHandler* m_sequence_handler = nullptr;
 
 	void loadSequences();
 
