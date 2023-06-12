@@ -18,10 +18,13 @@ ostream& operator<<(ostream& os, ExecutionCommand command) {
 
 ExecutionCommand::ExecutionCommand()
 {
+	m_address = -1;
 	m_index = -1;
 	m_data_pointer = -1;
 	m_unknown1 = -1;
 	m_unknown2 = -1;
+	m_guid = new char[17];
+	m_guid[16] = '\0';
 
 	m_command_id = -1;
 }

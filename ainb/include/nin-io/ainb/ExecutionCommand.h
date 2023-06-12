@@ -25,7 +25,7 @@ private:
 	std::string m_name;
 	int m_address;
 
-	char m_guid[17];
+	char* m_guid;
 
 	int m_index; // 0x02
 	int m_data_pointer; // 0x14
@@ -34,7 +34,6 @@ private:
 	// unknown values
 	int m_unknown1; // 0x00
 	int m_unknown2; // 0x06
-
 
 	static const bool is_big_endian = false;
 

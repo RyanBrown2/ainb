@@ -93,7 +93,18 @@ void AINB::load(fstream& file)
 		command.load(file, m_string_list);
 		m_execution_commands.push_back(command);
 	}
-	
+
+	// COMMAND BODIES
+	for (int i = 0; i < m_execution_commands.size(); i++) {
+		ExecutionCommand* command = &m_execution_commands[i];
+		CommandBody body(m_string_list);
+		body.load(file);
+		//body.setCommandReference(command);
+		//command->setBody(body);
+		m_command_bodies[body.getAddress()] = body;
+		//m_command_bodies.push_back(body);
+	}
+
 
 
 	return;
@@ -102,5 +113,12 @@ void AINB::load(fstream& file)
 AINB::FileHeaderData AINB::getFileHeaderData()
 {
 	return m_file_header_data;
+}
+
+void AINB::loadSequences()
+{
+	for (int i = 0; i < m_entry_point_commands.size(); i++) {
+		EntryPointCommand* command = &m_entry_point_commands[i];
+	}
 }
 

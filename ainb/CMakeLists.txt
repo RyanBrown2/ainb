@@ -6,7 +6,8 @@ add_library(${PROJECT_NAME}
 	src/ParameterHandler.cpp
 	src/EntryPointCommand.cpp
 	src/ExecutionCommand.cpp
-)
+	src/CommandBody.cpp
+ "include/nin-io/ainb/CommandSequence.h" "src/CommandSequence.cpp")
 
 target_link_libraries(${PROJECT_NAME}
 	nin-io::util

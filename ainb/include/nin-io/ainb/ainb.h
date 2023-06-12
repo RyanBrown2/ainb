@@ -8,6 +8,7 @@
 #include "ParameterHandler.h"
 #include "EntryPointCommand.h"
 #include "ExecutionCommand.h"
+#include "CommandBody.h"
 
 class AINB
 {
@@ -47,6 +48,10 @@ private:
 
 	std::vector<ExecutionCommand> m_execution_commands;
 
+	//std::vector<CommandBody> m_command_bodies;
+	std::map<int, CommandBody> m_command_bodies;
+
+	void loadSequences();
 
 	static const bool is_big_endian = false;
 };
