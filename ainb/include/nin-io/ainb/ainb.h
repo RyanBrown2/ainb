@@ -6,6 +6,8 @@
 #include "nin-io/util/util.h"
 #include "StringList.h"
 #include "ParameterHandler.h"
+#include "EntryPointCommand.h"
+#include "ExecutionCommand.h"
 
 class AINB
 {
@@ -40,6 +42,10 @@ private:
 	StringList* m_string_list = nullptr;
 
 	ParameterHandler* m_parameter_handler = nullptr;
+
+	std::vector<EntryPointCommand> m_entry_point_commands;
+
+	std::vector<ExecutionCommand> m_execution_commands;
 
 
 	static const bool is_big_endian = false;

@@ -82,6 +82,17 @@ void AINB::load(fstream& file)
 
 	file.seekg(0x74, ios::beg);
 
+	for (int i = 0; i < m_file_header_data.entry_point_command_count; i++) {
+		EntryPointCommand command;
+		command.load(file, m_string_list);
+		m_entry_point_commands.push_back(command);
+	}
+
+	for (int i = 0; i < m_file_header_data.execution_command_count; i++) {
+		ExecutionCommand command;
+		command.load(file, m_string_list);
+		m_execution_commands.push_back(command);
+	}
 	
 
 
