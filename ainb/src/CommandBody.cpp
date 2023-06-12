@@ -54,17 +54,24 @@ void CommandBody::load(fstream& file)
 		return;
 	}
 
+	vector<int> entry_addresses;
 	for (int i = 0; i < table_size; i++) {
-		TableKeyValuePair pair;
+		int entry_address;
+		readIntFromStream(file, is_big_endian, 4, entry_address);
+		entry_addresses.push_back(entry_address);
+	}
+
+	for (int i = 0; i < table_size; i++) {
+		file.seekg(entry_addresses[i], ios::beg);
+
+		CallTableEntry pair;
 		readIntFromStream(file, is_big_endian, 4, pair.index);
 
 		int string_tag;
 		readIntFromStream(file, is_big_endian, 4, string_tag);
 		pair.parameter = m_string_list->getString(string_tag);
 
-		//int table_value;
-		//readIntFromStream(file, is_big_endian, 1, table_value);
-		//m_table.push_back(table_value);
+		m_call_table.push_back(pair);
 	}
 	
 }

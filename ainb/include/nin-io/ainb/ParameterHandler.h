@@ -36,7 +36,7 @@ public:
 	StructureParameter getParameterFromStructure(int section_num, int parameter_num);
 private:
 
-	StringList* m_string_list = nullptr;
+	StringList* m_string_list;
 
 	std::map<int, std::vector<TableParameter>> m_table_parameters;
 

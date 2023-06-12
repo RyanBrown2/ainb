@@ -2,12 +2,12 @@
 
 using namespace std;
 
-ostream& operator<<(ostream& os, EntryPointCommand command) {
-	os << command.m_name << endl;
-	os << "Address: " << hex << command.m_address << endl;
-	os << "Execute Index: " << hex << command.m_execution_command_index << endl;
+ostream& operator<<(ostream& os, EntryPointCommand node_command) {
+	os << node_command.m_name << endl;
+	os << "Address: " << hex << node_command.m_address << endl;
+	os << "Execute Index: " << hex << node_command.m_execution_command_index << endl;
 	os << "GUID: ";
-	displayCharArrayAsHex(os, command.m_guid, 16);
+	displayCharArrayAsHex(os, node_command.m_guid, 16);
 	return os;
 }
 

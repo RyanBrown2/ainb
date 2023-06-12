@@ -19,7 +19,7 @@ public:
 	void load(std::fstream& file);
 
 	struct FileHeaderData {
-		char type[4]; // 0x00
+		char* type = new char[4]; // 0x00
 		int address_section_pointer = -1; // 0x03 
 		int entry_point_command_count = -1; // 0x0c
 		int execution_command_count = -1; // 0x10
@@ -33,6 +33,7 @@ public:
 	};
 
 	FileHeaderData getFileHeaderData();
+	std::vector<SequenceHandler::SequenceNode*>* getSequences();
 	
 private:
 
@@ -53,7 +54,7 @@ private:
 	std::map<int, CommandBody> m_command_bodies;
 
 	SequenceHandler* m_sequence_handler = nullptr;
-
+	std::vector<SequenceHandler::SequenceNode*> m_sequences;
 	void loadSequences();
 
 	static const bool is_big_endian = false;

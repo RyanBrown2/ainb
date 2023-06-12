@@ -61,15 +61,6 @@ void ParameterHandler::loadTableParameters(fstream& file, int end_address)
 
 			table_parameter.load(file, m_string_list);
 
-			// get name
-			//int name_string_tag;
-			//readIntFromStream(file, is_big_endian, 4, name_string_tag);
-			//table_parameter.name = m_string_list->getString(name_string_tag);
-
-			//file.seekg(0x4, ios::cur); // skip 4 bytes, assumed to be 0x00000000
-			//// get value
-			//readIntFromStream(file, is_big_endian, 4, table_parameter.value);
-
 			m_table_parameters[table_nums[i]].push_back(table_parameter);
 			current_pos = file.tellg();
 		}

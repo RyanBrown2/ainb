@@ -11,48 +11,108 @@ SequenceHandler::~SequenceHandler()
 
 }
 
+SequenceHandler::SequenceNode* SequenceHandler::createEntryNode(EntryPointCommand* command)
+{
+	SequenceNode* node = new SequenceNode();
+	node->caller = nullptr;
+	int command_index = command->getExecutionIndex();
+	node->node_command = &m_execution_commands->at(command_index);
+	node->node_body = &m_command_bodies->at(node->node_command->getBodyAddress());
+	node->call_table = node->node_body->getCallTable();
+
+	// create new caller history
+	node->caller_history = new unordered_map<int, SequenceNode*>();
+	
+	// create callees
+	loadCallTable(node);
+
+	return node;
+}
+
+SequenceHandler::SequenceNode* SequenceHandler::createExecutionNode(ExecutionCommand* command)
+{
+	SequenceNode* node = new SequenceNode();
+	node->caller = nullptr;
+	node->node_command = command;
+	node->node_body = &m_command_bodies->at(node->node_command->getBodyAddress());
+	node->call_table = node->node_body->getCallTable();
+
+	// create new caller history
+	node->caller_history = new unordered_map<int, SequenceNode*>();
+
+	// create callees
+	loadCallTable(node);
+
+	return node;
+}
+
+
 SequenceHandler::SequenceNode* SequenceHandler::loadSequence(SequenceNode* caller_node, int command_index)
 {
-	ExecutionCommand command = m_execution_commands[command_index];
-	CommandBody command_body = m_command_bodies[command.getBodyAddress()];
+	SequenceNode* node = new SequenceNode();
+	node->caller = caller_node;
+	node->node_command = &m_execution_commands->at(command_index);
+	node->node_body = &m_command_bodies->at(node->node_command->getBodyAddress());
+	node->call_table = node->node_body->getCallTable();
+	node->caller_history = caller_node->caller_history;
 
-	SequenceNode node;
-	node.caller = caller_node;
-	node.command = &command;
-	node.command_body = &command_body;
+	// create callees
+	loadCallTable(node);
 
-	vector<CommandBody::TableKeyValuePair> call_table = command_body.getCallTable();
-	vector<int> unique_command_indices;
-	for (int i = 0; i < call_table.size(); i++) {
-		CallTableEntry entry;
-		entry.index = call_table[i].index;
-		entry.parameter = call_table[i].parameter;
-		node.call_table.push_back(entry);
+	return node;
+}
 
-		if (find(unique_command_indices.begin(), unique_command_indices.end(), entry.index) == unique_command_indices.end()) {
-			unique_command_indices.push_back(entry.index);
+void SequenceHandler::loadCallTable(SequenceNode* node)
+{
+	vector<int> ordered_indices; // store the order that indices are called in
+	for (int i = 0; i < node->call_table->size(); i++) {
+		CommandBody::CallTableEntry call_table_entry = node->call_table->at(i);
+
+		node->sorted_call_table[call_table_entry.index].push_back(call_table_entry.parameter);
+
+		// check if the last index called is the same as this one
+		if (ordered_indices.size() > 0 && ordered_indices.back() != call_table_entry.index) {
+			ordered_indices.push_back(call_table_entry.index);
+		} else if (ordered_indices.size() == 0) {
+			ordered_indices.push_back(call_table_entry.index);
 		}
 	}
 
-	for (int i = 0; i < unique_command_indices.size(); i++) {
-		node.callees.push_back(loadSequence(&node, unique_command_indices[i]));
+	// add current node to caller history
+	node->caller_history->insert({ node->node_command->getIndex(), node });
+
+	// iterate through the call table in order
+	for (int i = 0; i < ordered_indices.size(); i++) {
+		int index = ordered_indices[i];
+		vector<string> parameters = node->sorted_call_table[index];
+
+		// create callee
+
+		// make sure no loops are created
+		auto it = node->caller_history->find(index);
+		if (it != node->caller_history->end()) {
+			// loop detected
+			node->callees.push_back(node->caller_history->at(index));
+		} else {
+			node->callees.push_back(loadSequence(node, index)); // recursively create nodes
+		}
 	}
 
+	node->caller_history->erase(node->node_command->getIndex());
 
-	return &node;
 }
 
-void SequenceHandler::setEntryPointCommands(vector<EntryPointCommand> entry_point_commands)
+void SequenceHandler::setEntryPointCommands(vector<EntryPointCommand>* entry_point_commands)
 {
 	m_entry_point_commands = entry_point_commands;
 }
 
-void SequenceHandler::setExecutionCommands(vector<ExecutionCommand> execution_commands)
+void SequenceHandler::setExecutionCommands(vector<ExecutionCommand>* execution_commands)
 {
 	m_execution_commands = execution_commands;
 }
 
-void SequenceHandler::setCommandBodies(map<int, CommandBody> command_bodies)
+void SequenceHandler::setCommandBodies(map<int, CommandBody>* command_bodies)
 {
 	m_command_bodies = command_bodies;
 }

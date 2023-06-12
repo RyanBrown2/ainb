@@ -99,7 +99,9 @@ void AINB::load(fstream& file)
 	for (int i = 0; i < m_execution_commands.size(); i++) {
 		ExecutionCommand* command = &m_execution_commands[i];
 		CommandBody body(m_string_list);
+		file.seekg(command->getBodyAddress(), ios::beg);
 		body.load(file);
+		body.setCommandReference(command);
 		//body.setCommandReference(command);
 		//command->setBody(body);
 		m_command_bodies[body.getAddress()] = body;
@@ -109,6 +111,7 @@ void AINB::load(fstream& file)
 
 	// load the sequences
 	m_sequence_handler = new SequenceHandler();
+	loadSequences();
 
 	return;
 }
@@ -120,10 +123,21 @@ AINB::FileHeaderData AINB::getFileHeaderData()
 
 void AINB::loadSequences()
 {
+	m_sequence_handler->setEntryPointCommands(&m_entry_point_commands);
+	m_sequence_handler->setExecutionCommands(&m_execution_commands);
+	m_sequence_handler->setCommandBodies(&m_command_bodies);
+	m_sequence_handler->setParameterHandler(m_parameter_handler);
+
 	for (int i = 0; i < m_entry_point_commands.size(); i++) {
-		EntryPointCommand* command = &m_entry_point_commands[i];
+		//EntryPointCommand* command = &m_entry_point_commands[i];
+		//SequenceHandler::SequenceNode* entry_node = m_sequence_handler->createEntryNode(command);
 
-
+		m_sequences.push_back(m_sequence_handler->createEntryNode(&m_entry_point_commands[i]));
 	}
+}
+
+vector<SequenceHandler::SequenceNode*>* AINB::getSequences()
+{
+	return &m_sequences;
 }
 
