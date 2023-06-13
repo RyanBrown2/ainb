@@ -1,6 +1,8 @@
 .vs/
 out/
+build/
 researchFiles/
+CMakeFiles/
 *.ainb
 *.byml
 *.bgyml

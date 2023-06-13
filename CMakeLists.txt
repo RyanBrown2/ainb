@@ -2,7 +2,6 @@ cmake_minimum_required (VERSION 3.5)
 
 project(nin-io)
 
-
 include(FetchContent)
 FetchContent_Declare(yaml-cpp
   GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
@@ -14,6 +13,15 @@ if(NOT yaml-cpp_POPULATED)
   add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
 endif()
 
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+add_executable("ainb_parse" "cmd/ainb.cpp")
+
+target_link_libraries("ainb_parse"
+	nin-io::ainb
+	nin-io::util
+	yaml-cpp::yaml-cpp
+)
+
 add_subdirectory(util)
 add_subdirectory(ainb)
-add_subdirectory(app)
+

@@ -7,7 +7,7 @@ add_library(${PROJECT_NAME}
 	src/EntryPointCommand.cpp
 	src/ExecutionCommand.cpp
 	src/CommandBody.cpp
- "include/nin-io/ainb/SequenceHandler.h" "src/SequenceHandler.cpp")
+	src/SequenceHandler.cpp)
 
 target_link_libraries(${PROJECT_NAME}
 	nin-io::util
@@ -17,4 +17,5 @@ add_library(nin-io::ainb ALIAS ${PROJECT_NAME})
 
 target_include_directories( ${PROJECT_NAME}
 	PUBLIC ${PROJECT_SOURCE_DIR}/include
+	PRIVATE ${PROJECT_SOURCE_DIR}/src
 )

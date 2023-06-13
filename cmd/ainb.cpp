@@ -55,7 +55,15 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 
 int main(int argc, char* argv[])
 {
-	//const char* fileDir = "";
+
+	if (argc < 2) {
+		std::cout << "Usage: nin-io <file>" << std::endl;
+		return 1;
+
+	}
+
+	const char* fileDir = argv[1];
+	cout << "Opening file: " << fileDir << endl;
 	//const char* fileDir = "BeforeInitializeOpeningField.module.ainb";
 	//const char* fileDir = "KorokCarry_EventStarter.event.root.ainb";
 	//const char* fileDir = "Pouch.module.ainb";
@@ -63,7 +71,7 @@ int main(int argc, char* argv[])
 	//const char* fileDir = "FastLoadOff.module.ainb";
 	//const char* fileDir = "LargeDungeonWater_AllinArea_895e.logic.module.ainb";
 	//const char* fileDir = "Set_Defense_Karakara_ee67.logic.module.ainb";
-	const char* fileDir = "CustomHouseControlActor.event.root.ainb";
+	//const char* fileDir = "CustomHouseControlActor.event.root.ainb";
 	//const char* fileDir = "Npc_Ganondorf_Human.event.root.ainb";
 
 	fstream file;
@@ -96,6 +104,7 @@ int main(int argc, char* argv[])
 	out << YAML::Value << file_header_data.execution_command_count;
 
 	// users probably won't need this data, just for debugging
+	/*
 	out << YAML::Key << "command_body_start_address";
 	out << YAML::Value << file_header_data.command_body_start_address;
 	out << YAML::Comment("users probably won't need this data, just for debugging");
@@ -111,6 +120,7 @@ int main(int argc, char* argv[])
 	out << YAML::Key << "parameter_structure_start_address";
 	out << YAML::Value << file_header_data.parameter_structure_start_address;
 	out << YAML::Comment("users probably won't need this data, just for debugging");
+	*/
 	// END OF HEADER DATA
 
 	if (file_header_data.entry_point_command_count == 0) {
@@ -136,11 +146,12 @@ int main(int argc, char* argv[])
 	out << YAML::EndMap;
 
 	assert(out.good());
-	cout << out.c_str() << endl;
+	//cout << out.c_str() << endl;
 
 	ofstream fout;
 	string outDir = ainb.getName() + ".yml";
 	fout.open(outDir);
+	cout << "Writing data to: " << outDir << endl;
 	fout << out.c_str();
 	fout.close();
 
