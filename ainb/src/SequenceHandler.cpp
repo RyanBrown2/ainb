@@ -84,7 +84,7 @@ void SequenceHandler::loadCallTable(SequenceNode* node)
 	// iterate through the call table in order
 	for (int i = 0; i < node->ordered_param_indices.size(); i++) {
 		int index = node->ordered_param_indices[i];
-		vector<string> parameters = node->sorted_call_table[index];
+		vector<string> parameters = node->sorted_call_table.at(index);
 
 		// create callee
 
@@ -94,7 +94,13 @@ void SequenceHandler::loadCallTable(SequenceNode* node)
 			// loop detected
 			node->return_callees.push_back(node->caller_history->at(index));
 		} else {
-			node->callees.push_back(loadSequence(node, index)); // recursively create nodes
+			try {
+				node->callees.push_back(loadSequence(node, index)); // recursively create nodes
+			} catch (const std::out_of_range& oor) {
+				int caller_index = node->caller->node_command->getIndex();
+				cerr << "Potentially Bad Data | ";
+				cerr << "Command with index " << caller_index << " tried calling command with index " << index << endl;
+			}
 		}
 	}
 

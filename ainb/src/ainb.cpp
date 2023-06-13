@@ -128,7 +128,7 @@ void AINB::loadSequences()
 	for (int i = 0; i < m_entry_point_commands.size(); i++) {
 		//EntryPointCommand* command = &m_entry_point_commands[i];
 		//SequenceHandler::SequenceNode* entry_node = m_sequence_handler->createEntryNode(command);
-
+		//m_sequences.push_back(entry_node);
 		m_sequences.push_back(m_sequence_handler->createEntryNode(&m_entry_point_commands[i]));
 	}
 }
