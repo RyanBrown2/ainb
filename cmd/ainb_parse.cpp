@@ -108,8 +108,8 @@ YAML::Emitter& operator << (YAML::Emitter& out, ParameterHandler::StructureParam
 	out << YAML::BeginMap;
 	out << YAML::Key << "name";
 	out << YAML::Value << param.name;
-	out << YAML::Key << "address";
-	out << YAML::Value << param.address;
+	//out << YAML::Key << "address";
+	//out << YAML::Value << param.address;
 	if (param.section_num == 10) {
 		out << YAML::Key << "second_string";
 		out << YAML::Key << param.second_string;
