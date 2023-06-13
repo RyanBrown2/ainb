@@ -64,17 +64,17 @@ SequenceHandler::SequenceNode* SequenceHandler::loadSequence(SequenceNode* calle
 
 void SequenceHandler::loadCallTable(SequenceNode* node)
 {
-	vector<int> ordered_indices; // store the order that indices are called in
+	//vector<int> ordered_indices; // store the order that indices are called in
 	for (int i = 0; i < node->call_table->size(); i++) {
 		CommandBody::CallTableEntry call_table_entry = node->call_table->at(i);
 
 		node->sorted_call_table[call_table_entry.index].push_back(call_table_entry.parameter);
 
 		// check if the last index called is the same as this one
-		if (ordered_indices.size() > 0 && ordered_indices.back() != call_table_entry.index) {
-			ordered_indices.push_back(call_table_entry.index);
-		} else if (ordered_indices.size() == 0) {
-			ordered_indices.push_back(call_table_entry.index);
+		if (node->ordered_param_indices.size() > 0 && node->ordered_param_indices.back() != call_table_entry.index) {
+			node->ordered_param_indices.push_back(call_table_entry.index);
+		} else if (node->ordered_param_indices.size() == 0) {
+			node->ordered_param_indices.push_back(call_table_entry.index);
 		}
 	}
 
@@ -82,8 +82,8 @@ void SequenceHandler::loadCallTable(SequenceNode* node)
 	node->caller_history->insert({ node->node_command->getIndex(), node });
 
 	// iterate through the call table in order
-	for (int i = 0; i < ordered_indices.size(); i++) {
-		int index = ordered_indices[i];
+	for (int i = 0; i < node->ordered_param_indices.size(); i++) {
+		int index = node->ordered_param_indices[i];
 		vector<string> parameters = node->sorted_call_table[index];
 
 		// create callee
@@ -92,7 +92,7 @@ void SequenceHandler::loadCallTable(SequenceNode* node)
 		auto it = node->caller_history->find(index);
 		if (it != node->caller_history->end()) {
 			// loop detected
-			node->callees.push_back(node->caller_history->at(index));
+			node->return_callees.push_back(node->caller_history->at(index));
 		} else {
 			node->callees.push_back(loadSequence(node, index)); // recursively create nodes
 		}

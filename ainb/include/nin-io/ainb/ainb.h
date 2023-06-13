@@ -34,9 +34,11 @@ public:
 
 	FileHeaderData getFileHeaderData();
 	std::vector<SequenceHandler::SequenceNode*>* getSequences();
+
+	std::string getName();
 	
 private:
-
+	std::string m_name;
 
 	FileHeaderData m_file_header_data;
 	void loadFileHeaderData(std::fstream& file);

@@ -28,8 +28,10 @@ public:
 		CommandBody* node_body = nullptr;
 		std::vector<CommandBody::CallTableEntry>* call_table = nullptr;
 		// index to parameters
+		std::vector<int> ordered_param_indices; // store the order that indices are called in
 		std::map<int, std::vector<std::string>> sorted_call_table;
 		std::vector<SequenceNode*> callees;
+		std::vector<SequenceNode*> return_callees;
 		std::unordered_map<int, SequenceNode*>* caller_history;
 	};
 

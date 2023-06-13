@@ -10,6 +10,48 @@
 
 using namespace std;
 
+YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* node) {
+	//out << YAML::Flow;
+	out << YAML::BeginMap;
+	
+	out << YAML::Key << "command_name";
+	out << YAML::Value << node->node_command->getName();
+	out << YAML::Key << "index";
+	out << YAML::Value << node->node_command->getIndex();
+	out << YAML::Key << "parameters";
+		out << YAML::Flow;
+	out << YAML::Value << YAML::BeginMap;
+
+	vector<int>* ordered_parameters = &node->ordered_param_indices;
+	map<int, vector<string>>* sorted_call_table = &node->sorted_call_table;
+	for (int i = 0; i < ordered_parameters->size(); i++) {
+		int index = ordered_parameters->at(i);
+		vector<string> params = sorted_call_table->at(index);
+		out << YAML::Key << index;
+		out << YAML::Value << params;
+	}
+	//for (auto& pair : *sorted_call_table) {
+
+	//	out << YAML::Key << pair.first;
+	//	out << YAML::Value << pair.second;
+	//}
+
+	out << YAML::EndMap;
+	
+	vector<SequenceHandler::SequenceNode*>* callees = &node->callees;
+
+	out << YAML::Key << "callees";
+	out << YAML::Value << YAML::BeginSeq;
+	for (int i = 0; i < callees->size(); i++) {
+		out << callees->at(i);
+	}
+	out << YAML::EndSeq;
+
+
+
+	out << YAML::EndMap;
+	return out;
+}
 
 int main(int argc, char* argv[])
 {
@@ -79,27 +121,15 @@ int main(int argc, char* argv[])
 	}
 
 	// SEQUENCE DATA
-	out << YAML::Key << "sequence_data";
+	out << YAML::Key << "sequences";
 	out << YAML::Value << YAML::BeginSeq;
 	
 	vector<SequenceHandler::SequenceNode*>* sequences = ainb.getSequences();
 
-	SequenceHandler::SequenceNode* node = sequences->at(0);
-	out << YAML::BeginMap;
-	out << YAML::Key << "sequence_name";
-	out << YAML::Value << node->node_command->getName();
-
-	out << YAML::EndMap;
-
-	//for (int i = 0; i < sequences.size(); i++) {
-	//	SequenceHandler::SequenceNode* node = sequences[i];
-	//	out << YAML::BeginMap;
-	//	
-
-
-	//	out << YAML::EndMap;
-	//}
-
+	for (int i = 0; i < sequences->size(); i++) {
+		SequenceHandler::SequenceNode* sequence_root = sequences->at(i);
+		out << sequence_root;
+	}
 
 	out << YAML::EndSeq;
 
@@ -108,6 +138,11 @@ int main(int argc, char* argv[])
 	assert(out.good());
 	cout << out.c_str() << endl;
 
+	ofstream fout;
+	string outDir = ainb.getName() + ".yml";
+	fout.open(outDir);
+	fout << out.c_str();
+	fout.close();
 
 	return 0;
 }
