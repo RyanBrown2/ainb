@@ -1,4 +1,4 @@
-#include "nin-io/ainb/Ainb.h"
+#include "nin-io/ainb/ainb.h"
 #include <iostream>
 #include <fstream>
 #include <numeric>

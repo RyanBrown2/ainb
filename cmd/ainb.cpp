@@ -19,7 +19,7 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 	out << YAML::Key << "index";
 	out << YAML::Value << node->node_command->getIndex();
 	out << YAML::Key << "parameters";
-		out << YAML::Flow;
+	out << YAML::Flow;
 	out << YAML::Value << YAML::BeginMap;
 
 	vector<int>* ordered_parameters = &node->ordered_param_indices;
@@ -30,11 +30,6 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 		out << YAML::Key << index;
 		out << YAML::Value << params;
 	}
-	//for (auto& pair : *sorted_call_table) {
-
-	//	out << YAML::Key << pair.first;
-	//	out << YAML::Value << pair.second;
-	//}
 
 	out << YAML::EndMap;
 	
@@ -47,8 +42,6 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 	}
 	out << YAML::EndSeq;
 
-
-
 	out << YAML::EndMap;
 	return out;
 }
@@ -57,9 +50,8 @@ int main(int argc, char* argv[])
 {
 
 	if (argc < 2) {
-		std::cout << "Usage: nin-io <file>" << std::endl;
+		std::cout << "Usage: ainb-parse <file>" << std::endl;
 		return 1;
-
 	}
 
 	const char* fileDir = argv[1];
@@ -146,7 +138,6 @@ int main(int argc, char* argv[])
 	out << YAML::EndMap;
 
 	assert(out.good());
-	//cout << out.c_str() << endl;
 
 	ofstream fout;
 	string outDir = ainb.getName() + ".yml";
