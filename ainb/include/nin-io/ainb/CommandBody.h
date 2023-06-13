@@ -29,6 +29,15 @@ public:
 
 	std::vector<CallTableEntry>* getCallTable() { return &m_call_table; }
 
+	struct Parameter {
+		int section_num = -1;
+		int index = -1;
+		int value = -1;
+	};
+
+	std::vector<Parameter>* getTableParameters();
+	std::vector<Parameter>* getStructureParameters();
+
 private:
 	int m_address;
 
@@ -36,11 +45,13 @@ private:
 
 	ExecutionCommand *m_command = nullptr;
 
-	std::map<int, int> m_table_parameters;
-	std::map<int, int> m_table_values;
-	std::map<int, int> m_structure_parameters;
-	std::map<int, int> m_structure_values;
+	//std::map<int, int> m_table_parameters;
+	//std::map<int, int> m_table_values;
+	//std::map<int, int> m_structure_parameters;
+	//std::map<int, int> m_structure_values;
 
+	std::vector<Parameter> m_table_parameters;
+	std::vector<Parameter> m_section_parameters;
 	std::vector<CallTableEntry> m_call_table;
 
 	static const bool is_big_endian = false;

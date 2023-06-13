@@ -70,7 +70,6 @@ void AINB::load(fstream& file)
 
 	m_name = m_string_list->getString(0);
 
-
 	// PARAMETERS
 	m_parameter_handler = new ParameterHandler(m_string_list);
 

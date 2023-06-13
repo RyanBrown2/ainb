@@ -18,7 +18,48 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 	out << YAML::Value << node->node_command->getName();
 	out << YAML::Key << "index";
 	out << YAML::Value << node->node_command->getIndex();
+
+	// Parameters
+
 	out << YAML::Key << "parameters";
+	out << YAML::Flow;
+	out << YAML::Value << YAML::BeginMap;
+
+	out << YAML::Key << "table_params";
+	vector<CommandBody::Parameter>* table_params = node->node_body->getTableParameters();
+	out << YAML::Value << YAML::BeginSeq;
+	for (int i = 0; i < table_params->size(); i++) {
+		out << YAML::BeginMap;
+		out << YAML::Key << "section_num";
+		out << YAML::Value << table_params->at(i).section_num;
+		out << YAML::Key << "index";
+		out << YAML::Value << table_params->at(i).index;
+		out << YAML::Key << "value";
+		out << YAML::Value << table_params->at(i).value;
+		out << YAML::EndMap;
+	}
+
+	out << YAML::EndSeq;
+	out << YAML::Key << "structure_params";
+	vector<CommandBody::Parameter>* structure_params = node->node_body->getStructureParameters();
+	out << YAML::Value << YAML::BeginSeq;
+	for (int i = 0; i < structure_params->size(); i++) {
+		out << YAML::BeginMap;
+		out << YAML::Key << "section_num";
+		out << YAML::Value << structure_params->at(i).section_num;
+		out << YAML::Key << "index";
+		out << YAML::Value << structure_params->at(i).index;
+		out << YAML::Key << "value";
+		out << YAML::Value << structure_params->at(i).value;
+		out << YAML::EndMap;
+	}
+
+	out << YAML::EndSeq;
+	out << YAML::EndMap;
+
+	// Call Table
+
+	out << YAML::Key << "call_table";
 	out << YAML::Flow;
 	out << YAML::Value << YAML::BeginMap;
 
@@ -49,13 +90,13 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 int main(int argc, char* argv[])
 {
 
-	if (argc < 2) {
-		std::cout << "Usage: ainb-parse <file>" << std::endl;
-		return 1;
-	}
+	//if (argc < 2) {
+	//	std::cout << "Usage: ainb-parse <file>" << std::endl;
+	//	return 1;
+	//}
 
-	const char* fileDir = argv[1];
-	cout << "Opening file: " << fileDir << endl;
+	//const char* fileDir = argv[1];
+
 	//const char* fileDir = "BeforeInitializeOpeningField.module.ainb";
 	//const char* fileDir = "KorokCarry_EventStarter.event.root.ainb";
 	//const char* fileDir = "Pouch.module.ainb";
@@ -63,8 +104,9 @@ int main(int argc, char* argv[])
 	//const char* fileDir = "FastLoadOff.module.ainb";
 	//const char* fileDir = "LargeDungeonWater_AllinArea_895e.logic.module.ainb";
 	//const char* fileDir = "Set_Defense_Karakara_ee67.logic.module.ainb";
-	//const char* fileDir = "CustomHouseControlActor.event.root.ainb";
+	const char* fileDir = "CustomHouseControlActor.event.root.ainb";
 	//const char* fileDir = "Npc_Ganondorf_Human.event.root.ainb";
+	cout << "Opening file: " << fileDir << endl;
 
 	fstream file;
 	file.open(fileDir, fstream::in | fstream::out | std::ios::binary);

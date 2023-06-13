@@ -26,21 +26,29 @@ void CommandBody::load(fstream& file)
 	for (int i = 0; i < 6; i++) {
 		int param_num;
 		readIntFromStream(file, is_big_endian, 4, param_num);
-		m_table_parameters[i] = param_num;
 
 		int param_value;
 		readIntFromStream(file, is_big_endian, 4, param_value);
-		m_table_values[i] = param_value;
+
+		Parameter parameter;
+		parameter.section_num = i;
+		parameter.index = param_num;
+		parameter.value = param_value;
+		m_table_parameters.push_back(parameter);
 	}
 
 	for (int i = 0; i < 12; i++) {
 		int param_num;
 		readIntFromStream(file, is_big_endian, 4, param_num);
-		m_structure_parameters[i] = param_num;
 
 		int param_value;
 		readIntFromStream(file, is_big_endian, 4, param_value);
-		m_structure_values[i] = param_value;
+
+		Parameter parameter;
+		parameter.section_num = i;
+		parameter.index = param_num;
+		parameter.value = param_value;
+		m_section_parameters.push_back(parameter);
 	}
 
 	// TODO: load table
@@ -76,8 +84,12 @@ void CommandBody::load(fstream& file)
 	
 }
 
-//void CommandBody::setCommandReference(ExecutionCommand* command)
-//{
-//	m_command = command;
-//}
+vector<CommandBody::Parameter>* CommandBody::getTableParameters()
+{
+	return &m_table_parameters;
+}
 
+vector<CommandBody::Parameter>* CommandBody::getStructureParameters()
+{
+	return &m_section_parameters;
+}
