@@ -98,6 +98,7 @@ void SequenceHandler::loadCallTable(SequenceNode* node)
 		}
 	}
 
+	// once all callees are created, remove current node from caller history
 	node->caller_history->erase(node->node_command->getIndex());
 
 }

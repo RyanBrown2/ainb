@@ -34,6 +34,8 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 		out << YAML::Value << table_params->at(i).section_num;
 		out << YAML::Key << "index";
 		out << YAML::Value << table_params->at(i).index;
+		//out << YAML::Key << "param_name";
+		//out << YAML::Value << table_params->at(i).param_name;
 		out << YAML::Key << "value";
 		out << YAML::Value << table_params->at(i).value;
 		out << YAML::EndMap;
@@ -49,6 +51,8 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 		out << YAML::Value << structure_params->at(i).section_num;
 		out << YAML::Key << "index";
 		out << YAML::Value << structure_params->at(i).index;
+		//out << YAML::Key << "param_name";
+		//out << YAML::Value << structure_params->at(i).param_name;
 		out << YAML::Key << "value";
 		out << YAML::Value << structure_params->at(i).value;
 		out << YAML::EndMap;
@@ -87,25 +91,46 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 	return out;
 }
 
+YAML::Emitter& operator << (YAML::Emitter& out, ParameterHandler::TableParameter param)
+{
+	out << YAML::BeginMap;
+	out << YAML::Key << "name";
+	out << YAML::Value << param.name;
+	out << YAML::Key << "value";
+	out << YAML::Value << param.value;
+
+	out << YAML::EndMap;
+	return out;
+}
+
+YAML::Emitter& operator << (YAML::Emitter& out, ParameterHandler::StructureParameter param)
+{
+	out << YAML::BeginMap;
+	out << YAML::Key << "name";
+	out << YAML::Value << param.name;
+	out << YAML::Key << "address";
+	out << YAML::Value << param.address;
+	if (param.section_num == 10) {
+		out << YAML::Key << "second_string";
+		out << YAML::Key << param.second_string;
+	} else {
+		out << YAML::Key << "tag";
+		out << YAML::Value << param.tag;
+	}
+
+	out << YAML::EndMap;
+	return out;
+}
+
 int main(int argc, char* argv[])
 {
 
-	//if (argc < 2) {
-	//	std::cout << "Usage: ainb-parse <file>" << std::endl;
-	//	return 1;
-	//}
+	if (argc < 2) {
+		std::cout << "Usage: ainb-parse <file>" << std::endl;
+		return 1;
+	}
 
-	//const char* fileDir = argv[1];
-
-	//const char* fileDir = "BeforeInitializeOpeningField.module.ainb";
-	//const char* fileDir = "KorokCarry_EventStarter.event.root.ainb";
-	//const char* fileDir = "Pouch.module.ainb";
-	//const char* fileDir = "B-7_cdd7.logic.root.ainb";
-	//const char* fileDir = "FastLoadOff.module.ainb";
-	//const char* fileDir = "LargeDungeonWater_AllinArea_895e.logic.module.ainb";
-	//const char* fileDir = "Set_Defense_Karakara_ee67.logic.module.ainb";
-	const char* fileDir = "CustomHouseControlActor.event.root.ainb";
-	//const char* fileDir = "Npc_Ganondorf_Human.event.root.ainb";
+	const char* fileDir = argv[1];
 	cout << "Opening file: " << fileDir << endl;
 
 	fstream file;
@@ -157,25 +182,91 @@ int main(int argc, char* argv[])
 	*/
 	// END OF HEADER DATA
 
+	// PARAMETER DATA
+	out << YAML::Key << "parameters";
+
+	out << YAML::Value << YAML::BeginMap;
+	ParameterHandler* parameter_handler = ainb.getParameterHandler();
+	out << YAML::Key << "active_tables";
+	out << YAML::Value << parameter_handler->getActiveTables();
+	out << YAML::Key << "active_structures";
+	out << YAML::Value << parameter_handler->getActiveStructures();
+
+
+	out << YAML::Key << "parameter_tables";
+	out << YAML::Value << YAML::BeginSeq;
+	vector<int> active_tables = parameter_handler->getActiveTables();
+	for (int i = 0; i < active_tables.size(); i++) {
+		out << YAML::BeginMap;
+		int table_index = active_tables[i];
+		out << YAML::Key << "tabel_index";
+		out << YAML::Value << table_index;
+
+		out << YAML::Key << "parameters";
+		out << YAML::Value << YAML::BeginSeq;
+		vector<ParameterHandler::TableParameter>* table_parameters = parameter_handler->getTableParameters(table_index);
+		for (int i = 0; i < table_parameters->size(); i++) {
+			out << table_parameters->at(i);
+		}
+		out << YAML::EndSeq;
+		out << YAML::EndMap;
+	}
+
+
+	out << YAML::EndSeq;
+
+	out << YAML::Key << "parameter_structures";
+	out << YAML::Value << YAML::BeginSeq;
+	vector<int> active_structures = parameter_handler->getActiveStructures();
+	for (int i = 0; i < active_structures.size(); i++) {
+		out << YAML::BeginMap;
+		int structure_index = active_structures[i];
+		out << YAML::Key << "structure_index";
+		out << YAML::Value << structure_index;
+
+		out << YAML::Key << "parameters";
+		out << YAML::Value << YAML::BeginSeq;
+		vector<ParameterHandler::StructureParameter>* structure_parameters = parameter_handler->getStructureParameters(structure_index);
+		for (int i = 0; i < structure_parameters->size(); i++) {
+			out << structure_parameters->at(i);
+		}
+		out << YAML::EndSeq;
+		out << YAML::EndMap;
+	}
+
+	out << YAML::EndSeq;
+
+	out << YAML::EndMap;
+
+	// END OF PARAMETER DATA
+
+	// SEQUENCE DATA
+
 	if (file_header_data.entry_point_command_count == 0) {
 		out << YAML::EndMap;
 		assert(out.good());
-		cout << out.c_str() << endl;
+		cout << "No entry point commands found, most likely a logic file" << endl;
+		cout << "Library doesn't parse the command sequence of logic files yet, exiting" << endl;
+		ofstream fout;
+		string outDir = ainb.getName() + ".yml";
+		fout.open(outDir);
+		cout << "Writing data to: " << outDir << endl;
+		fout << out.c_str();
+		fout.close();
 		return 0;
 	}
 
-	// SEQUENCE DATA
 	out << YAML::Key << "sequences";
 	out << YAML::Value << YAML::BeginSeq;
-	
 	vector<SequenceHandler::SequenceNode*>* sequences = ainb.getSequences();
-
 	for (int i = 0; i < sequences->size(); i++) {
 		SequenceHandler::SequenceNode* sequence_root = sequences->at(i);
 		out << sequence_root;
 	}
-
 	out << YAML::EndSeq;
+	// END OF SEQUENCE DATA
+
+
 
 	out << YAML::EndMap;
 

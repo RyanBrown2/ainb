@@ -99,16 +99,12 @@ void AINB::load(fstream& file)
 	// COMMAND BODIES
 	for (int i = 0; i < m_execution_commands.size(); i++) {
 		ExecutionCommand* command = &m_execution_commands[i];
-		CommandBody body(m_string_list);
+		CommandBody body(m_string_list, m_parameter_handler);
 		file.seekg(command->getBodyAddress(), ios::beg);
 		body.load(file);
 		body.setCommandReference(command);
-		//body.setCommandReference(command);
-		//command->setBody(body);
 		m_command_bodies[body.getAddress()] = body;
-		//m_command_bodies.push_back(body);
 	}
-
 
 	// load the sequences
 	m_sequence_handler = new SequenceHandler();

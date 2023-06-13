@@ -8,9 +8,10 @@ CommandBody::CommandBody()
 	m_address = -1;
 }
 
-CommandBody::CommandBody(StringList* string_list)
+CommandBody::CommandBody(StringList* string_list, ParameterHandler* parameter_handler)
 {
 	m_string_list = string_list;
+	m_parameter_handler = parameter_handler;
 	m_address = -1;
 
 }
@@ -34,6 +35,8 @@ void CommandBody::load(fstream& file)
 		parameter.section_num = i;
 		parameter.index = param_num;
 		parameter.value = param_value;
+		//parameter.param_name = m_parameter_handler->getParameterFromTable(i, param_num).name;
+
 		m_table_parameters.push_back(parameter);
 	}
 
@@ -48,6 +51,8 @@ void CommandBody::load(fstream& file)
 		parameter.section_num = i;
 		parameter.index = param_num;
 		parameter.value = param_value;
+		//parameter.param_name = m_parameter_handler->getParameterFromStructure(i, param_num).name;
+
 		m_section_parameters.push_back(parameter);
 	}
 

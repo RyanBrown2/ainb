@@ -56,6 +56,8 @@ void ParameterHandler::loadTableParameters(fstream& file, int end_address)
 			end_pos = end_address;
 		}
 
+		m_active_tables.push_back(table_nums[i]);
+
 		while (current_pos < end_pos) {
 			TableParameter table_parameter;
 
@@ -105,7 +107,6 @@ void ParameterHandler::loadStructureParameters(fstream& file, int end_address)
 	for (int i = 0; i < section_addresses.size(); i++) {
 
 		int section_address = section_addresses[i];
-
 		// get entry lengths for section
 		int section_number = address_to_section_number[section_address];
 		int entry_length = structure_entry_lengths[section_number];
@@ -120,9 +121,11 @@ void ParameterHandler::loadStructureParameters(fstream& file, int end_address)
 			end_pos= end_address;
 		}
 
+		m_active_structures.push_back(section_number);
+		
 
 		int index = 0;
-		while (file.tellg() < end_address) {
+		while (file.tellg() < end_pos) {
 			StructureParameter parameter;
 			parameter.load(file, m_string_list, section_number);
 			m_structure_parameters[section_number].push_back(parameter);
@@ -139,6 +142,16 @@ ParameterHandler::TableParameter ParameterHandler::getParameterFromTable(int tab
 ParameterHandler::StructureParameter ParameterHandler::getParameterFromStructure(int section_num, int parameter_num)
 {
 	return m_structure_parameters[section_num][parameter_num];
+}
+
+vector<ParameterHandler::TableParameter>* ParameterHandler::getTableParameters(int table_num)
+{
+	return &m_table_parameters[table_num];
+}
+
+vector<ParameterHandler::StructureParameter>* ParameterHandler::getStructureParameters(int section_num)
+{
+	return &m_structure_parameters[section_num];
 }
 
 
@@ -173,6 +186,9 @@ void ParameterHandler::StructureParameter::load(fstream& file, StringList* strin
 
 	int end_pos = (int)file.tellg() + ParameterHandler::structure_entry_lengths[section_num];
 
+	address = (int)file.tellg();
+	StructureParameter::section_num = section_num;
+
 	int name_tag;
 	readIntFromStream(file, is_big_endian, 2, name_tag);
 	StructureParameter::name = string_list->getString(name_tag);
@@ -185,11 +201,18 @@ void ParameterHandler::StructureParameter::load(fstream& file, StringList* strin
 		return;
 	}
 
-	// get the tag
-	readIntFromStream(file, is_big_endian, 2, tag);
+	// if this is section 10, then we have a special case
+	if (section_num == 10) {
+		int second_string_tag;
+		readIntFromStream(file, is_big_endian, 2, second_string_tag);
+		StructureParameter::second_string = string_list->getString(second_string_tag);
+	} else {
+		// get the tag
+		readIntFromStream(file, is_big_endian, 2, tag);
+	}
 	// 0x06 - current pos
 
-	//file.seekg(0x2, ios::cur);
+	file.seekg(0x2, ios::cur);
 	// 0x08 - current pos
 
 	if (file.tellg() >= end_pos) {
@@ -199,6 +222,7 @@ void ParameterHandler::StructureParameter::load(fstream& file, StringList* strin
 	// TODO: finish loading the parameter data
 
 	file.seekg(end_pos, ios::beg);
+	return;
 }
 
 

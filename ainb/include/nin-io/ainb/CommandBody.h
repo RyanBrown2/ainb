@@ -7,15 +7,17 @@
 #include "nin-io/util/util.h"
 #include "StringList.h"
 #include "ExecutionCommand.h"
+#include "ParameterHandler.h"
 
 class CommandBody
 {
 public:
 	CommandBody();
-	CommandBody(StringList* string_list);
+	CommandBody(StringList* string_list, ParameterHandler* parameter_handler);
 	~CommandBody();
 
 	void setStringList(StringList* string_list) { m_string_list = string_list; }
+	void setParameterHandler(ParameterHandler* parameter_handler) { m_parameter_handler = parameter_handler; }
 	void load(std::fstream& file);
 	int getAddress() { return m_address; };
 
@@ -29,9 +31,11 @@ public:
 
 	std::vector<CallTableEntry>* getCallTable() { return &m_call_table; }
 
+	// TODO: potentailly use parameter structs from ParameterHandler.h
 	struct Parameter {
 		int section_num = -1;
 		int index = -1;
+		std::string param_name = "";
 		int value = -1;
 	};
 
@@ -42,13 +46,9 @@ private:
 	int m_address;
 
 	StringList* m_string_list = nullptr;
+	ParameterHandler* m_parameter_handler = nullptr;
 
-	ExecutionCommand *m_command = nullptr;
-
-	//std::map<int, int> m_table_parameters;
-	//std::map<int, int> m_table_values;
-	//std::map<int, int> m_structure_parameters;
-	//std::map<int, int> m_structure_values;
+	ExecutionCommand* m_command = nullptr;
 
 	std::vector<Parameter> m_table_parameters;
 	std::vector<Parameter> m_section_parameters;

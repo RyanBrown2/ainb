@@ -36,6 +36,7 @@ public:
 	std::vector<SequenceHandler::SequenceNode*>* getSequences();
 
 	std::string getName();
+	ParameterHandler* getParameterHandler() { return m_parameter_handler; }
 	
 private:
 	std::string m_name;
