@@ -23,35 +23,56 @@ CommandBody::~CommandBody()
 
 void CommandBody::load(fstream& file)
 {
+
+	vector<int>* active_tables = m_parameter_handler->getActiveTables();
+
 	m_address = file.tellg();
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < active_tables->size(); i++) {
+		int table_num = active_tables->at(i);
+		file.seekg(m_address, ios::beg);
+		file.seekg(8 * table_num, ios::cur);
+
 		int param_num;
 		readIntFromStream(file, is_big_endian, 4, param_num);
+
+		if (param_num == 0) {
+			continue;
+		}
 
 		int param_value;
 		readIntFromStream(file, is_big_endian, 4, param_value);
 
 		Parameter parameter;
-		parameter.section_num = i;
+		parameter.section_num = table_num;
 		parameter.index = param_num;
 		parameter.value = param_value;
-		//parameter.param_name = m_parameter_handler->getParameterFromTable(i, param_num).name;
+		parameter.param_name = m_parameter_handler->getParameterFromTable(table_num, param_num).name;
 
 		m_table_parameters.push_back(parameter);
 	}
 
-	for (int i = 0; i < 12; i++) {
+	vector<int>* active_structures = m_parameter_handler->getActiveStructures();
+
+	for (int i = 0; i < active_structures->size(); i++) {
+		int structure_num = active_structures->at(i);
+		file.seekg(m_address + 0x30, ios::beg);
+		file.seekg(8 * structure_num, ios::cur);
+
 		int param_num;
 		readIntFromStream(file, is_big_endian, 4, param_num);
+
+		if (param_num == 0) {
+			continue;
+		}
 
 		int param_value;
 		readIntFromStream(file, is_big_endian, 4, param_value);
 
 		Parameter parameter;
-		parameter.section_num = i;
+		parameter.section_num = structure_num;
 		parameter.index = param_num;
 		parameter.value = param_value;
-		//parameter.param_name = m_parameter_handler->getParameterFromStructure(i, param_num).name;
+		parameter.param_name = m_parameter_handler->getParameterFromStructure(structure_num, param_num).name;
 
 		m_section_parameters.push_back(parameter);
 	}

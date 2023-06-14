@@ -14,8 +14,9 @@ public:
 	~ParameterHandler();
 
 	struct TableParameter {
-		std::string name;
-		int value;
+		std::string name = "";
+		int value = -1;
+		int address = -1;
 
 		void load(std::fstream& file, StringList* string_list);
 	};
@@ -34,8 +35,8 @@ public:
 	void loadTableParameters(std::fstream& file, int end_address);
 	void loadStructureParameters(std::fstream& file, int end_address);
 
-	std::vector<int> getActiveTables() { return m_active_tables; }
-	std::vector<int> getActiveStructures() { return m_active_structures; }
+	std::vector<int>* getActiveTables() { return &m_active_tables; }
+	std::vector<int>* getActiveStructures() { return &m_active_structures; }
 
 	TableParameter getParameterFromTable(int table_num, int parameter_num);
 	StructureParameter getParameterFromStructure(int section_num, int parameter_num);

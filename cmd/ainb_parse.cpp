@@ -22,20 +22,21 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 	// Parameters
 
 	out << YAML::Key << "parameters";
-	out << YAML::Flow;
+
 	out << YAML::Value << YAML::BeginMap;
 
 	out << YAML::Key << "table_params";
+	out << YAML::Flow;
 	vector<CommandBody::Parameter>* table_params = node->node_body->getTableParameters();
 	out << YAML::Value << YAML::BeginSeq;
 	for (int i = 0; i < table_params->size(); i++) {
 		out << YAML::BeginMap;
-		out << YAML::Key << "section_num";
+		out << YAML::Key << "table_num";
 		out << YAML::Value << table_params->at(i).section_num;
 		out << YAML::Key << "index";
 		out << YAML::Value << table_params->at(i).index;
-		//out << YAML::Key << "param_name";
-		//out << YAML::Value << table_params->at(i).param_name;
+		out << YAML::Key << "param_name";
+		out << YAML::Value << table_params->at(i).param_name;
 		out << YAML::Key << "value";
 		out << YAML::Value << table_params->at(i).value;
 		out << YAML::EndMap;
@@ -43,6 +44,7 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 
 	out << YAML::EndSeq;
 	out << YAML::Key << "structure_params";
+	out << YAML::Flow;
 	vector<CommandBody::Parameter>* structure_params = node->node_body->getStructureParameters();
 	out << YAML::Value << YAML::BeginSeq;
 	for (int i = 0; i < structure_params->size(); i++) {
@@ -51,8 +53,8 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 		out << YAML::Value << structure_params->at(i).section_num;
 		out << YAML::Key << "index";
 		out << YAML::Value << structure_params->at(i).index;
-		//out << YAML::Key << "param_name";
-		//out << YAML::Value << structure_params->at(i).param_name;
+		out << YAML::Key << "param_name";
+		out << YAML::Value << structure_params->at(i).param_name;
 		out << YAML::Key << "value";
 		out << YAML::Value << structure_params->at(i).value;
 		out << YAML::EndMap;
@@ -96,6 +98,8 @@ YAML::Emitter& operator << (YAML::Emitter& out, ParameterHandler::TableParameter
 	out << YAML::BeginMap;
 	out << YAML::Key << "name";
 	out << YAML::Value << param.name;
+	out << YAML::Key << "address";
+	out << YAML::Value << param.address;
 	out << YAML::Key << "value";
 	out << YAML::Value << param.value;
 
@@ -108,8 +112,8 @@ YAML::Emitter& operator << (YAML::Emitter& out, ParameterHandler::StructureParam
 	out << YAML::BeginMap;
 	out << YAML::Key << "name";
 	out << YAML::Value << param.name;
-	//out << YAML::Key << "address";
-	//out << YAML::Value << param.address;
+	out << YAML::Key << "address";
+	out << YAML::Value << param.address;
 	if (param.section_num == 10) {
 		out << YAML::Key << "second_string";
 		out << YAML::Key << param.second_string;
@@ -163,7 +167,6 @@ int main(int argc, char* argv[])
 	out << YAML::Value << file_header_data.execution_command_count;
 
 	// users probably won't need this data, just for debugging
-	/*
 	out << YAML::Key << "command_body_start_address";
 	out << YAML::Value << file_header_data.command_body_start_address;
 	out << YAML::Comment("users probably won't need this data, just for debugging");
@@ -179,7 +182,6 @@ int main(int argc, char* argv[])
 	out << YAML::Key << "parameter_structure_start_address";
 	out << YAML::Value << file_header_data.parameter_structure_start_address;
 	out << YAML::Comment("users probably won't need this data, just for debugging");
-	*/
 	// END OF HEADER DATA
 
 	// PARAMETER DATA
@@ -188,23 +190,28 @@ int main(int argc, char* argv[])
 	out << YAML::Value << YAML::BeginMap;
 	ParameterHandler* parameter_handler = ainb.getParameterHandler();
 	out << YAML::Key << "active_tables";
-	out << YAML::Value << parameter_handler->getActiveTables();
+	out << YAML::Flow;
+	out << YAML::Value << *parameter_handler->getActiveTables();
 	out << YAML::Key << "active_structures";
-	out << YAML::Value << parameter_handler->getActiveStructures();
+	out << YAML::Flow;
+	out << YAML::Value << *parameter_handler->getActiveStructures();
 
 
 	out << YAML::Key << "parameter_tables";
 	out << YAML::Value << YAML::BeginSeq;
-	vector<int> active_tables = parameter_handler->getActiveTables();
-	for (int i = 0; i < active_tables.size(); i++) {
+	vector<int>* active_tables = parameter_handler->getActiveTables();
+	for (int i = 0; i < active_tables->size(); i++) {
 		out << YAML::BeginMap;
-		int table_index = active_tables[i];
+		int table_index = active_tables->at(i);
 		out << YAML::Key << "tabel_index";
 		out << YAML::Value << table_index;
 
+		vector<ParameterHandler::TableParameter>* table_parameters = parameter_handler->getTableParameters(table_index);
+		out << YAML::Key << "length";
+		out << YAML::Value << table_parameters->size();
 		out << YAML::Key << "parameters";
 		out << YAML::Value << YAML::BeginSeq;
-		vector<ParameterHandler::TableParameter>* table_parameters = parameter_handler->getTableParameters(table_index);
+
 		for (int i = 0; i < table_parameters->size(); i++) {
 			out << table_parameters->at(i);
 		}
@@ -217,16 +224,18 @@ int main(int argc, char* argv[])
 
 	out << YAML::Key << "parameter_structures";
 	out << YAML::Value << YAML::BeginSeq;
-	vector<int> active_structures = parameter_handler->getActiveStructures();
-	for (int i = 0; i < active_structures.size(); i++) {
+	vector<int>* active_structures = parameter_handler->getActiveStructures();
+	for (int i = 0; i < active_structures->size(); i++) {
 		out << YAML::BeginMap;
-		int structure_index = active_structures[i];
+		int structure_index = active_structures->at(i);
 		out << YAML::Key << "structure_index";
 		out << YAML::Value << structure_index;
 
+		vector<ParameterHandler::StructureParameter>* structure_parameters = parameter_handler->getStructureParameters(structure_index);
+		out << YAML::Key << "length";
+		out << YAML::Value << structure_parameters->size();
 		out << YAML::Key << "parameters";
 		out << YAML::Value << YAML::BeginSeq;
-		vector<ParameterHandler::StructureParameter>* structure_parameters = parameter_handler->getStructureParameters(structure_index);
 		for (int i = 0; i < structure_parameters->size(); i++) {
 			out << structure_parameters->at(i);
 		}

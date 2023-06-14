@@ -1,5 +1,5 @@
 #include "nin-io/ainb/ParameterHandler.h"
-
+#include <stdexcept>
 
 using namespace std;
 
@@ -57,6 +57,10 @@ void ParameterHandler::loadTableParameters(fstream& file, int end_address)
 		}
 
 		m_active_tables.push_back(table_nums[i]);
+
+		// create null parameter at index 0
+		TableParameter null_parameter;
+		m_table_parameters[table_nums[i]].push_back(null_parameter);
 
 		while (current_pos < end_pos) {
 			TableParameter table_parameter;
@@ -124,7 +128,10 @@ void ParameterHandler::loadStructureParameters(fstream& file, int end_address)
 		m_active_structures.push_back(section_number);
 		
 
-		int index = 0;
+		// create null parameter at index 0
+		StructureParameter null_parameter;
+		m_structure_parameters[section_number].push_back(null_parameter);
+
 		while (file.tellg() < end_pos) {
 			StructureParameter parameter;
 			parameter.load(file, m_string_list, section_number);
@@ -136,12 +143,18 @@ void ParameterHandler::loadStructureParameters(fstream& file, int end_address)
 
 ParameterHandler::TableParameter ParameterHandler::getParameterFromTable(int table_num, int parameter_num)
 {
-	return m_table_parameters[table_num][parameter_num];
+	try {
+		return m_table_parameters.at(table_num).at(parameter_num);
+	}
+	catch (out_of_range) {
+		cerr << "Tried getting parameter index " << to_string(parameter_num) << " from table " << to_string(table_num) << endl;
+		throw std::invalid_argument("Invalid parameter index");
+	}
 }
 
 ParameterHandler::StructureParameter ParameterHandler::getParameterFromStructure(int section_num, int parameter_num)
 {
-	return m_structure_parameters[section_num][parameter_num];
+	return m_structure_parameters.at(section_num).at(parameter_num);
 }
 
 vector<ParameterHandler::TableParameter>* ParameterHandler::getTableParameters(int table_num)
@@ -172,6 +185,8 @@ map<int, int> ParameterHandler::structure_entry_lengths = {
 
 void ParameterHandler::TableParameter::load(fstream& file, StringList* string_list)
 {
+	address = file.tellg();
+
 	int name_tag;
 	readIntFromStream(file, is_big_endian, 4, name_tag);
 	TableParameter::name = string_list->getString(name_tag);

@@ -101,8 +101,9 @@ void AINB::load(fstream& file)
 		ExecutionCommand* command = &m_execution_commands[i];
 		CommandBody body(m_string_list, m_parameter_handler);
 		file.seekg(command->getBodyAddress(), ios::beg);
-		body.load(file);
 		body.setCommandReference(command);
+		body.load(file);
+
 		m_command_bodies[body.getAddress()] = body;
 	}
 
