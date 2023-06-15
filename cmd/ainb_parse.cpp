@@ -10,6 +10,8 @@
 
 using namespace std;
 
+
+
 YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* node) {
 	//out << YAML::Flow;
 	out << YAML::BeginMap;
@@ -18,6 +20,14 @@ YAML::Emitter& operator << (YAML::Emitter& out, SequenceHandler::SequenceNode* n
 	out << YAML::Value << node->node_command->getName();
 	out << YAML::Key << "index";
 	out << YAML::Value << node->node_command->getIndex();
+	out << YAML::Key << "command_id";
+	out << YAML::Value << node->node_command->getCommandID();
+	out << YAML::Key << "guid";
+	out << YAML::Value << rawToHex(node->node_command->getGuid(), 16);
+	out << YAML::Key << "unknown_1";
+	out << YAML::Value << node->node_command->getUnknown1();
+	out << YAML::Key << "unknown_2";
+	out << YAML::Value << node->node_command->getUnknown2();
 
 	// Parameters
 
@@ -269,8 +279,11 @@ int main(int argc, char* argv[])
 	out << YAML::Value << YAML::BeginSeq;
 	vector<SequenceHandler::SequenceNode*>* sequences = ainb.getSequences();
 	for (int i = 0; i < sequences->size(); i++) {
+		out << YAML::BeginMap;
 		SequenceHandler::SequenceNode* sequence_root = sequences->at(i);
-		out << sequence_root;
+		out << YAML::Key << "sequence_root";
+		out << YAML::Value << sequence_root;
+		out << YAML::EndMap;
 	}
 	out << YAML::EndSeq;
 	// END OF SEQUENCE DATA

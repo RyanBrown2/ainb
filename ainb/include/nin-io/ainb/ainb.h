@@ -11,6 +11,10 @@
 #include "CommandBody.h"
 #include "SequenceHandler.h"
 
+//#ifdef __cplusplus
+//	extern "C" {
+//#endif
+
 class AINB
 {
 public:

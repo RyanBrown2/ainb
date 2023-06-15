@@ -18,6 +18,12 @@ public:
 	int getAddress() { return m_address; }
 	int getBodyAddress() { return m_body_pointer; }
 
+	int getCommandID() { return m_command_id; }
+	char* getGuid() { return m_guid; }
+
+	int getUnknown1() { return m_unknown1; }
+	int getUnknown2() { return m_unknown2; }
+
 	friend std::ostream& operator<<(std::ostream& os, const ExecutionCommand block);
 
 private:

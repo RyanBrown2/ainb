@@ -32,3 +32,20 @@ void readIntFromStream(std::istream& stream, bool isBigEndian, int size, int& re
 	result = convertHexCharArrayToInt(buffer, isBigEndian, size);
 	delete[] buffer;
 }
+
+char* rawToHex(const char* rawData, int length)
+{
+	std::stringstream hexStream;
+	hexStream << std::hex << std::setfill('0');
+
+	for (std::size_t i = 0; i < length; ++i)
+	{
+		hexStream << std::setw(2) << static_cast<unsigned int>(static_cast<unsigned char>(rawData[i]));
+	}
+
+	std::string hexString = hexStream.str();
+	char* hexData = new char[hexString.length() + 1];
+	std::strcpy(hexData, hexString.c_str());
+
+	return hexData;
+}

@@ -66,7 +66,7 @@ void ExecutionCommand::load(fstream& file, StringList* string_list)
 	file.seekg(0x14, ios::cur);
 	readIntFromStream(file, is_big_endian, 4, m_body_pointer);
 
-	// get data chunk
+	// get guid chunk
 	file.seekg(m_address, ios::beg);
 	file.seekg(0x2c, ios::cur);
 	file.read(m_guid, 16);
