@@ -17,11 +17,12 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 add_executable("ainb_parse" "cmd/ainb_parse.cpp")
 
 target_link_libraries("ainb_parse"
-	nin-io::ainb
 	nin-io::util
+	nin-io::ainb
 	yaml-cpp::yaml-cpp
 )
 
 add_subdirectory(util)
 add_subdirectory(ainb)
+add_subdirectory(wrapper)
 
