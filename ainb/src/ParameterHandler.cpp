@@ -189,7 +189,7 @@ void ParameterHandler::TableParameter::load(fstream& file, StringList* string_li
 
 	int name_tag;
 	readIntFromStream(file, is_big_endian, 4, name_tag);
-	TableParameter::name = string_list->getString(name_tag);
+	TableParameter::name = string_list->getStringFromPos(name_tag);
 
 	file.seekg(4, ios::cur);
 
@@ -206,7 +206,7 @@ void ParameterHandler::StructureParameter::load(fstream& file, StringList* strin
 
 	int name_tag;
 	readIntFromStream(file, is_big_endian, 2, name_tag);
-	StructureParameter::name = string_list->getString(name_tag);
+	StructureParameter::name = string_list->getStringFromPos(name_tag);
 	// 0x02 - current pos
 
 	file.seekg(0x2, ios::cur);
@@ -220,7 +220,7 @@ void ParameterHandler::StructureParameter::load(fstream& file, StringList* strin
 	if (section_num == 10) {
 		int second_string_tag;
 		readIntFromStream(file, is_big_endian, 2, second_string_tag);
-		StructureParameter::second_string = string_list->getString(second_string_tag);
+		StructureParameter::second_string = string_list->getStringFromPos(second_string_tag);
 	} else {
 		// get the tag
 		readIntFromStream(file, is_big_endian, 2, tag);

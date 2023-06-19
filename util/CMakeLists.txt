@@ -1,6 +1,6 @@
 project (util)
 
-add_library(${PROJECT_NAME} 
+add_library(${PROJECT_NAME}
 	src/util.cpp
 )
 

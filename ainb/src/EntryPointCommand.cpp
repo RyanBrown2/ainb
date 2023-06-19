@@ -30,7 +30,7 @@ void EntryPointCommand::load(fstream& file, StringList* string_list)
 
 	int name_tag;
 	readIntFromStream(file, is_big_endian, 4, name_tag);
-	m_name = string_list->getString(name_tag);
+	m_name = string_list->getStringFromPos(name_tag);
 
 	file.read(m_guid, 16);
 	m_guid[16] = '\0';

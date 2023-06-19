@@ -52,7 +52,7 @@ void ExecutionCommand::load(fstream& file, StringList* string_list)
 	// string pointer
 	int name_tag;
 	readIntFromStream(file, is_big_endian, 4, name_tag);
-	m_name = string_list->getString(name_tag);
+	m_name = string_list->getStringFromPos(name_tag);
 
 	// 4 byte data chunk
 	file.seekg(m_address, ios::beg);

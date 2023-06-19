@@ -12,7 +12,12 @@ public:
 	StringList(std::fstream& file);
 	~StringList();
 
-	std::string getString(int pos);
+	std::string getStringFromPos(int pos);
+	int* getPosFromString(std::string str);
+	void finalize();
 private:
-	std::map<int, std::string> m_string_map;
+	std::map<int, std::string> m_string_loaded_map;
+
+	std::map<std::string, int*> m_string_data;
+
 };

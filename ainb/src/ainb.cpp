@@ -68,7 +68,7 @@ void AINB::load(fstream& file)
 	file.seekg(m_file_header_data.string_list_start_address, ios::beg);
 	m_string_list = new StringList(file);
 
-	m_name = m_string_list->getString(0);
+	m_name = m_string_list->getStringFromPos(0);
 
 	// PARAMETERS
 	m_parameter_handler = new ParameterHandler(m_string_list);

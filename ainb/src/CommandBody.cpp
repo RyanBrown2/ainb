@@ -103,7 +103,7 @@ void CommandBody::load(fstream& file)
 
 		int string_tag;
 		readIntFromStream(file, is_big_endian, 4, string_tag);
-		pair.parameter = m_string_list->getString(string_tag);
+		pair.parameter = m_string_list->getStringFromPos(string_tag);
 
 		m_call_table.push_back(pair);
 	}

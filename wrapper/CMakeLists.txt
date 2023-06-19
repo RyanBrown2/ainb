@@ -3,8 +3,8 @@ project (nin-io-wrapper)
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/wrapper )
 
 add_library(${PROJECT_NAME} SHARED
-	"ainb_wrapper.cpp"
-)
+	"ainb/ainb_wrapper.cpp"
+	"ainb/StringList.cpp")
 
 target_link_libraries(${PROJECT_NAME}
 	nin-io::ainb

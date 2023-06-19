@@ -21,7 +21,7 @@ StringList::StringList(fstream& file)
 		string current_string = raw_string.substr(current_pos, null_pos - current_pos);
 
 		if (last_null) {
-			m_string_map[current_pos - 1] = current_string;
+			m_string_loaded_map[current_pos - 1] = current_string;
 			last_null = false;
 		}
 
@@ -29,7 +29,7 @@ StringList::StringList(fstream& file)
 			last_null = true;
 		}
 
-		m_string_map[current_pos] = current_string;
+		m_string_loaded_map[current_pos] = current_string;
 		null_pos++;
 		current_pos = null_pos;
 	}	
@@ -39,7 +39,27 @@ StringList::~StringList()
 {
 }
 
-string StringList::getString(int pos)
+string StringList::getStringFromPos(int pos)
 {
-	return m_string_map[pos];
+	return m_string_loaded_map[pos];
+}
+
+int* StringList::getPosFromString(string str)
+{
+	if (!m_string_data.count(str)) {
+		int* pos = new int;
+		*pos = -1;
+		m_string_data[str] = pos;
+	}
+	return m_string_data[str];
+}
+
+void StringList::finalize()
+{
+	int last_pos = 0;
+	for (auto it = m_string_data.begin(); it != m_string_data.end(); it++) {
+		string str = it->first;
+		*it->second = last_pos;
+		last_pos += str.length() + 1;
+	}
 }

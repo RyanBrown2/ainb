@@ -1,6 +1,6 @@
 project (ainb)
 
-add_library(${PROJECT_NAME} 
+add_library(${PROJECT_NAME} SHARED
 	src/ainb.cpp
 	src/StringList.cpp
 	src/ParameterHandler.cpp
