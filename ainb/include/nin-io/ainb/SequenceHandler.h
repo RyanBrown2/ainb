@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include "nin-io/util/util.h"
 #include "StringList.h"
 #include "ParameterHandler.h"
@@ -32,12 +33,14 @@ public:
 		std::map<int, std::vector<std::string>> sorted_call_table;
 		std::vector<SequenceNode*> callees;
 		std::vector<SequenceNode*> return_callees;
-		std::unordered_map<int, SequenceNode*>* caller_history;
+		std::unordered_map<int, SequenceNode*>* caller_history = nullptr;
 	};
 
 	SequenceNode* createEntryNode(EntryPointCommand* command);
 	SequenceNode* createExecutionNode(ExecutionCommand* command);
 	SequenceNode* loadSequence(SequenceNode* caller_node, int command_index);
+
+	std::unordered_set<int>* getLoadedNodes();
 
 private:
 
@@ -50,5 +53,10 @@ private:
 	
 	ParameterHandler* m_parameter_handler = nullptr;
 
+	std::unordered_set<int> m_loaded_nodes;
+
 	void loadCallTable(SequenceNode* node);
+
+
+
 };

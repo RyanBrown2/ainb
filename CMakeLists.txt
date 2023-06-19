@@ -26,6 +26,6 @@ target_link_libraries("ainb_parse"
 
 add_subdirectory(util)
 add_subdirectory(ainb)
-#add_subdirectory(wrapper)
+add_subdirectory(wrapper)
 
 

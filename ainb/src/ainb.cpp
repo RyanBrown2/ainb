@@ -111,6 +111,19 @@ void AINB::load(fstream& file)
 	m_sequence_handler = new SequenceHandler();
 	loadSequences();
 
+	// if there are no sequences, create sequence from first command
+
+	if (m_sequences.size() == 0) {
+
+		for (int i = 0; i < m_file_header_data.execution_command_count; i++)
+		{
+			if (m_sequence_handler->getLoadedNodes()->count(i)) {
+				continue;
+			}
+			m_sequences.push_back(m_sequence_handler->createExecutionNode(&m_execution_commands[i]));
+		}
+	}
+
 	return;
 }
 

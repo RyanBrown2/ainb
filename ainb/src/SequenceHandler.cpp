@@ -22,6 +22,10 @@ SequenceHandler::SequenceNode* SequenceHandler::createEntryNode(EntryPointComman
 
 	// create new caller history
 	node->caller_history = new unordered_map<int, SequenceNode*>();
+
+	if (!m_loaded_nodes.count(node->node_command->getIndex())) {
+		m_loaded_nodes.insert(node->node_command->getIndex());
+	}
 	
 	// create callees
 	loadCallTable(node);
@@ -40,6 +44,10 @@ SequenceHandler::SequenceNode* SequenceHandler::createExecutionNode(ExecutionCom
 	// create new caller history
 	node->caller_history = new unordered_map<int, SequenceNode*>();
 
+	if (!m_loaded_nodes.count(node->node_command->getIndex())) {
+		m_loaded_nodes.insert(node->node_command->getIndex());
+	}
+
 	// create callees
 	loadCallTable(node);
 
@@ -55,6 +63,10 @@ SequenceHandler::SequenceNode* SequenceHandler::loadSequence(SequenceNode* calle
 	node->node_body = &m_command_bodies->at(node->node_command->getBodyAddress());
 	node->call_table = node->node_body->getCallTable();
 	node->caller_history = caller_node->caller_history;
+
+	if (!m_loaded_nodes.count(node->node_command->getIndex())) {
+		m_loaded_nodes.insert(node->node_command->getIndex());
+	}
 
 	// create callees
 	loadCallTable(node);
@@ -127,4 +139,9 @@ void SequenceHandler::setCommandBodies(map<int, CommandBody>* command_bodies)
 void SequenceHandler::setParameterHandler(ParameterHandler* parameter_handler)
 {
 	m_parameter_handler = parameter_handler;
+}
+
+unordered_set<int>* SequenceHandler::getLoadedNodes()
+{
+	return &m_loaded_nodes;
 }

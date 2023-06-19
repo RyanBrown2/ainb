@@ -11,10 +11,6 @@
 #include "CommandBody.h"
 #include "SequenceHandler.h"
 
-//#ifdef __cplusplus
-//	extern "C" {
-//#endif
-
 class AINB
 {
 public:
@@ -41,6 +37,8 @@ public:
 
 	std::string getName();
 	ParameterHandler* getParameterHandler() { return m_parameter_handler; }
+
+	std::vector<ExecutionCommand>* getExecutionCommands() { return &m_execution_commands; }
 	
 private:
 	std::string m_name;

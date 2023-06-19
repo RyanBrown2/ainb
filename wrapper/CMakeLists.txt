@@ -4,7 +4,7 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/wrapper )
 
 add_library(${PROJECT_NAME} SHARED
 	"ainb/ainb_wrapper.cpp"
-	"ainb/StringList.cpp")
+	 "ainb/SequenceNode.cpp" "ainb/SequenceNode.h")
 
 target_link_libraries(${PROJECT_NAME}
 	nin-io::ainb

@@ -29,7 +29,7 @@ void AINB_FILE::loadFile(string file_dir)
 	CComBSTR temp(m_ainb->getName().c_str());
 	m_name = temp.Detach();
 
-	//m_name = SysAllocString((m_ainb->getName().c_str()));
+	m_file_header_data = m_ainb->getFileHeaderData();
 
 	file.close();
 }
@@ -37,4 +37,14 @@ void AINB_FILE::loadFile(string file_dir)
 BSTR AINB_FILE::getName()
 {
 	return m_name;
+}
+
+int AINB_FILE::getEntryPointCount()
+{
+	return m_file_header_data.entry_point_command_count;
+}
+
+int AINB_FILE::getExecutionCommandCount()
+{
+	return m_file_header_data.execution_command_count;
 }

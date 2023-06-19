@@ -177,6 +177,7 @@ int main(int argc, char* argv[])
 	out << YAML::Value << file_header_data.execution_command_count;
 
 	// users probably won't need this data, just for debugging
+	/*
 	out << YAML::Key << "command_body_start_address";
 	out << YAML::Value << file_header_data.command_body_start_address;
 	out << YAML::Comment("users probably won't need this data, just for debugging");
@@ -192,6 +193,7 @@ int main(int argc, char* argv[])
 	out << YAML::Key << "parameter_structure_start_address";
 	out << YAML::Value << file_header_data.parameter_structure_start_address;
 	out << YAML::Comment("users probably won't need this data, just for debugging");
+	*/
 	// END OF HEADER DATA
 
 	// PARAMETER DATA
@@ -262,17 +264,8 @@ int main(int argc, char* argv[])
 	// SEQUENCE DATA
 
 	if (file_header_data.entry_point_command_count == 0) {
-		out << YAML::EndMap;
-		assert(out.good());
-		cout << "No entry point commands found, most likely a logic file" << endl;
-		cout << "Library doesn't parse the command sequence of logic files yet, exiting" << endl;
-		ofstream fout;
-		string outDir = ainb.getName() + ".yml";
-		fout.open(outDir);
-		cout << "Writing data to: " << outDir << endl;
-		fout << out.c_str();
-		fout.close();
-		return 0;
+		cout << "No entry point commands found, most likely a logic file | ";
+		cout << "Manually parsing sequences" << endl;
 	}
 
 	out << YAML::Key << "sequences";
