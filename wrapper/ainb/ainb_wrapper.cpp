@@ -58,10 +58,5 @@ AINB_FILE::ExportedSequenceNode AINB_FILE::toExportedSequenceNode(SequenceHandle
 	exported_sequence_node.index = sequence_node->node_command->getIndex();
 	exported_sequence_node.command_id = sequence_node->node_command->getCommandID();
 	exported_sequence_node.guid = CComBSTR(sequence_node->node_command->getGuid()).Detach();
-
-	int call_table_size = 2;
-	exported_sequence_node.test = new int[call_table_size];
-	exported_sequence_node.test[0] = 1;
-	exported_sequence_node.test[1] = 2;
 	return exported_sequence_node;
 }

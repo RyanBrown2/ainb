@@ -34,6 +34,10 @@ public:
 		std::vector<SequenceNode*> callees;
 		std::vector<SequenceNode*> return_callees;
 		std::unordered_map<int, SequenceNode*>* caller_history = nullptr;
+
+		int getIndex() {
+			return node_command->getIndex();
+		}
 	};
 
 	SequenceNode* createEntryNode(EntryPointCommand* command);

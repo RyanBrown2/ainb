@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
 	cout << "Opening file: " << fileDir << endl;
 
 	fstream file;
-	file.open(fileDir, fstream::in | fstream::out | std::ios::binary);
+	file.open(fileDir, fstream::in | fstream::out | ios::binary);
 
 	if (file.fail()) {
 		std::cout << "Failed to open file" << std::endl;
@@ -287,12 +287,20 @@ int main(int argc, char* argv[])
 
 	assert(out.good());
 
-	ofstream fout;
-	string outDir = ainb.getName() + ".yml";
-	fout.open(outDir);
-	cout << "Writing data to: " << outDir << endl;
-	fout << out.c_str();
-	fout.close();
+	//ofstream fout;
+	//string outDir = ainb.getName() + ".yml";
+	//fout.open(outDir);
+	//cout << "Writing data to: " << outDir << endl;
+	//fout << out.c_str();
+	//fout.close();
+
+	string ainb_copy_dir = "test.ainb";
+	fstream ainb_copy;
+	ainb_copy.open(ainb_copy_dir, fstream::out | ios::binary);
+	cout << "Writing data to: " << ainb_copy_dir << endl;
+	ainb.writeTo(ainb_copy);
+
+	ainb_copy.close();
 
 	return 0;
 }

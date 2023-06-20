@@ -26,6 +26,7 @@ public:
 
 	struct CallTableEntry {
 		int index = -1; // index of the command to call
+		ExecutionCommand* command = nullptr;
 		std::string parameter = "";
 	};
 

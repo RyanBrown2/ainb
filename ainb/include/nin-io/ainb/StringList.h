@@ -15,6 +15,7 @@ public:
 	std::string getStringFromPos(int pos);
 	int* getPosFromString(std::string str);
 	void finalize();
+	void writeToFile(std::fstream& file);
 private:
 	std::map<int, std::string> m_string_loaded_map;
 	std::map<std::string, int*> m_string_data;

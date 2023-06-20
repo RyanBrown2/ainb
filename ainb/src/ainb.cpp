@@ -1,8 +1,4 @@
 #include "nin-io/ainb/ainb.h"
-#include <iostream>
-#include <fstream>
-#include <numeric>
-#include <vector>
 #include "nin-io/ainb/StringList.h"
 
 using namespace std;
@@ -107,12 +103,24 @@ void AINB::load(fstream& file)
 		m_command_bodies[body.getAddress()] = body;
 	}
 
+	// replace command indices with command pointers
+	for (int i = 0; i < m_command_bodies.size(); i++) {
+		CommandBody* body = &m_command_bodies[i];
+
+		for (int j = 0; j < body->getCallTable()->size(); j++) {
+			CommandBody::CallTableEntry* entry = &body->getCallTable()->at(j);
+			if (entry->index >= m_execution_commands.size()) {
+				continue;
+			}
+			entry->command = &m_execution_commands[entry->index];
+		}
+	}
+
 	// load the sequences
 	m_sequence_handler = new SequenceHandler();
 	loadSequences();
 
-	// if there are no sequences, create sequence from first command
-
+	// if there are no entry points, load manually
 	if (m_sequences.size() == 0) {
 
 		for (int i = 0; i < m_file_header_data.execution_command_count; i++)
@@ -155,5 +163,72 @@ vector<SequenceHandler::SequenceNode*>* AINB::getSequences()
 string AINB::getName()
 {
 	return m_name;
+}
+
+void AINB::writeTo(fstream& file)
+{
+
+	// finalize data
+
+	// entry points
+	for (int i = 0; i < m_entry_point_commands.size(); i++) {
+		EntryPointCommand* command = &m_entry_point_commands[i];
+		string name = command->getName();
+		m_string_list->getPosFromString(name); // load the string into the string list
+	}
+
+	// execution commands
+	for (int i = 0; i < m_execution_commands.size(); i++) {
+		ExecutionCommand* command = &m_execution_commands[i];
+		string name = command->getName();
+		m_string_list->getPosFromString(name); // load the string into the string list
+	}
+
+	// write data to file
+	m_string_list->finalize();
+
+	int start_pos = file.tellg();
+
+	file.write("AIB", 3);
+
+	// todo: header data
+	file.seekg(0x74, ios::beg);
+
+	// writing entry point data
+	for (int i = 0; i < m_entry_point_commands.size(); i++) {
+		EntryPointCommand* command = &m_entry_point_commands[i];
+		int name_pos = *m_string_list->getPosFromString(command->getName());
+		file.write(reinterpret_cast<char*>(&name_pos), 4);
+		file.write(command->getGUID(), 16);
+		int execution_index = command->getExecutionIndex();
+		file.write(reinterpret_cast<char*>(&execution_index), 4);
+	}
+
+	// writing execution command data
+	for (int i = 0; i < m_execution_commands.size(); i++) {
+		ExecutionCommand* command = &m_execution_commands[i];
+		int unknown1 = command->getUnknown1();
+		file.write(reinterpret_cast<char*>(&unknown1), 2);
+		int command_index = command->getIndex();
+		file.write(reinterpret_cast<char*>(&command_index), 4);
+		int unknown2 = command->getUnknown2();
+		file.write(reinterpret_cast<char*>(&unknown2), 2);
+		int name_pos = *m_string_list->getPosFromString(command->getName());
+		file.write(reinterpret_cast<char*>(&name_pos), 4);
+		int command_id = command->getCommandID();
+		file.write(reinterpret_cast<char*>(&command_id), 4);
+		file.seekg(0x4, ios::cur);
+		int command_body_address = command->getBodyAddress(); // todo: this is wrong, need to calculate it
+		file.write(reinterpret_cast<char*>(&command_body_address), 4);
+		
+		file.seekg(0x14, ios::cur);
+		file.write(command->getGuid(), 16);
+
+	}
+
+
+	// string list
+	m_string_list->writeToFile(file);
+
 }
 

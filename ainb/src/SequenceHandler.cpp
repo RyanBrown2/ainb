@@ -64,8 +64,8 @@ SequenceHandler::SequenceNode* SequenceHandler::loadSequence(SequenceNode* calle
 	node->call_table = node->node_body->getCallTable();
 	node->caller_history = caller_node->caller_history;
 
-	if (!m_loaded_nodes.count(node->node_command->getIndex())) {
-		m_loaded_nodes.insert(node->node_command->getIndex());
+	if (!m_loaded_nodes.count(node->getIndex())) {
+		m_loaded_nodes.insert(node->getIndex());
 	}
 
 	// create callees

@@ -63,3 +63,11 @@ void StringList::finalize()
 		last_pos += str.length() + 1;
 	}
 }
+
+void StringList::writeToFile(fstream& file)
+{
+	for (auto pair : m_string_data) {
+		string str = pair.first;
+		file.write(str.c_str(), str.length() + 1);
+	}
+}

@@ -13,6 +13,7 @@ public:
 
 	std::string getName() { return m_name; }
 	int getExecutionIndex() { return m_execution_command_index; }
+	char* getGUID() { return m_guid; }
 
 	friend std::ostream& operator<<(std::ostream& os, const EntryPointCommand block);
 

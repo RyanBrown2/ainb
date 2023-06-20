@@ -39,6 +39,8 @@ public:
 	ParameterHandler* getParameterHandler() { return m_parameter_handler; }
 
 	std::vector<ExecutionCommand>* getExecutionCommands() { return &m_execution_commands; }
+
+	void writeTo(std::fstream& stream);
 	
 private:
 	std::string m_name;

@@ -23,7 +23,7 @@ public:
 
 	struct ExportedCallTableEntry {
 		int index; // index of the command to call
-		//BSTR parameter; // parameter to pass to the command
+		BSTR parameter; // parameter to pass to the command
 	};
 
 	struct ExportedSequenceNode {
@@ -32,8 +32,6 @@ public:
 		int index;
 		int command_id;
 		BSTR guid;
-		//ExportedCallTableEntry* call_table_entries;
-		int* test;
 	};
 
 	ExportedSequenceNode getTestNode() {
@@ -85,6 +83,11 @@ extern "C" __declspec(dllexport) int GetExecutionCommandCount(AINB_FILE * ainb_f
 extern "C" __declspec(dllexport) AINB_FILE::ExportedSequenceNode GetTestNode(AINB_FILE * ainb_file)
 {
 	return ainb_file->getTestNode();
+}
+
+extern "C" __declspec(dllexport) void GetCallTable(AINB_FILE * ainb_file, AINB_FILE::ExportedSequenceNode * node, AINB_FILE::ExportedCallTableEntry* array)
+{
+
 }
 
 
