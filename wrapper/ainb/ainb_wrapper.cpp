@@ -31,6 +31,8 @@ void AINB_FILE::loadFile(string file_dir)
 
 	m_file_header_data = m_ainb->getFileHeaderData();
 
+	m_test_node = m_ainb->getSequences()->at(0);
+
 	file.close();
 }
 
@@ -47,4 +49,19 @@ int AINB_FILE::getEntryPointCount()
 int AINB_FILE::getExecutionCommandCount()
 {
 	return m_file_header_data.execution_command_count;
+}
+
+AINB_FILE::ExportedSequenceNode AINB_FILE::toExportedSequenceNode(SequenceHandler::SequenceNode* sequence_node)
+{
+	ExportedSequenceNode exported_sequence_node;
+	exported_sequence_node.name = CComBSTR(sequence_node->node_command->getName().c_str()).Detach();
+	exported_sequence_node.index = sequence_node->node_command->getIndex();
+	exported_sequence_node.command_id = sequence_node->node_command->getCommandID();
+	exported_sequence_node.guid = CComBSTR(sequence_node->node_command->getGuid()).Detach();
+
+	int call_table_size = 2;
+	exported_sequence_node.test = new int[call_table_size];
+	exported_sequence_node.test[0] = 1;
+	exported_sequence_node.test[1] = 2;
+	return exported_sequence_node;
 }

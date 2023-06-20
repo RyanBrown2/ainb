@@ -4,6 +4,7 @@
 #include <fstream>
 #include <comdef.h>
 #include <atlbase.h>
+#include <unordered_map>
 #include "nin-io/ainb/ainb.h"
 
 
@@ -20,11 +21,37 @@ public:
 	int getEntryPointCount();
 	int getExecutionCommandCount();
 
+	struct ExportedCallTableEntry {
+		int index; // index of the command to call
+		//BSTR parameter; // parameter to pass to the command
+	};
+
+	struct ExportedSequenceNode {
+		//ExportedSequenceNode* caller = nullptr;
+		BSTR name;
+		int index;
+		int command_id;
+		BSTR guid;
+		//ExportedCallTableEntry* call_table_entries;
+		int* test;
+	};
+
+	ExportedSequenceNode getTestNode() {
+		return toExportedSequenceNode(m_test_node);
+	}
+
 private:
 	AINB* m_ainb;
 	BSTR m_name;
 
 	AINB::FileHeaderData m_file_header_data;
+
+	SequenceHandler::SequenceNode* m_test_node;
+
+	std::unordered_map<ExportedSequenceNode*, SequenceHandler::SequenceNode*> m_exported_sequence_node_map;
+
+	ExportedSequenceNode toExportedSequenceNode(SequenceHandler::SequenceNode* sequence_node);
+	
 };
 
 
@@ -54,11 +81,10 @@ extern "C" __declspec(dllexport) int GetExecutionCommandCount(AINB_FILE * ainb_f
 	return ainb_file->getExecutionCommandCount();
 }
 
-extern "C" __declspec(dllexport) int TestFunc(char* text)
+
+extern "C" __declspec(dllexport) AINB_FILE::ExportedSequenceNode GetTestNode(AINB_FILE * ainb_file)
 {
-	std::cout << "TestFunction" << std::endl;
-	std::cout << text << std::endl;
-	return 0;
+	return ainb_file->getTestNode();
 }
 
 
