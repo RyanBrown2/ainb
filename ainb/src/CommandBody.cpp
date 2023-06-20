@@ -77,7 +77,7 @@ void CommandBody::load(fstream& file)
 		m_section_parameters.push_back(parameter);
 	}
 
-	// TODO: load table
+	// load table
 	file.seekg(m_address, ios::beg);
 	file.seekg(0xa3, ios::cur);
 

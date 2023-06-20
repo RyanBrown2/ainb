@@ -47,6 +47,7 @@ private:
 
 	StringList* m_string_list;
 
+	// table_num to vector of parameters
 	std::map<int, std::vector<TableParameter>> m_table_parameters;
 
 	std::map<int, std::vector<StructureParameter>> m_structure_parameters;

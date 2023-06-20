@@ -287,12 +287,12 @@ int main(int argc, char* argv[])
 
 	assert(out.good());
 
-	//ofstream fout;
-	//string outDir = ainb.getName() + ".yml";
-	//fout.open(outDir);
-	//cout << "Writing data to: " << outDir << endl;
-	//fout << out.c_str();
-	//fout.close();
+	ofstream fout;
+	string outDir = ainb.getName() + ".yml";
+	fout.open(outDir);
+	cout << "Writing data to: " << outDir << endl;
+	fout << out.c_str();
+	fout.close();
 
 	string ainb_copy_dir = "test.ainb";
 	fstream ainb_copy;
