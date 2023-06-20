@@ -57,7 +57,7 @@ private:
 
 	std::vector<ExecutionCommand> m_execution_commands;
 
-	//std::vector<CommandBody> m_command_bodies;
+	// address to body
 	std::map<int, CommandBody> m_command_bodies;
 
 	SequenceHandler* m_sequence_handler = nullptr;
