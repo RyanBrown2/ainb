@@ -60,13 +60,13 @@ int main(int argc, char* argv[])
 	output << out.c_str();
 	output.close();
 
-	return 0;
-
 	string ainb_copy_dir = "test.ainb";
 	fstream ainb_copy;
 	ainb_copy.open(ainb_copy_dir, fstream::out | ios::binary);
 	cout << "Writing data to: " << ainb_copy_dir << endl;
 	ainb->writeToFile(ainb_copy);
+
+	//ainb_copy.write("Test", 4);
 
 	ainb_copy.close();
 

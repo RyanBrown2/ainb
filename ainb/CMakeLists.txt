@@ -7,7 +7,7 @@ add_library(${PROJECT_NAME}
 	
 	
 	
-	)
+	 "include/nin-io/ainb/StringList.h" "src/StringList.cpp")
 
 target_link_libraries(${PROJECT_NAME}
 	nin-io::util

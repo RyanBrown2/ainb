@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "nin-io/util/util.h"
+#include "StringList.h"
 
 class AINB
 {
@@ -15,6 +16,8 @@ public:
 		char* type = new char[4];
 		int entry_point_command_count = -1;
 		int execution_command_count = -1;
+		int command_end_pos = -1;
+		int string_list_pos = -1;
 	};
 
 	void loadFromFile(std::fstream& file);
@@ -27,6 +30,8 @@ public:
 
 private:
 	FileHeaderData m_file_header_data;
+
+	StringList* m_string_list = nullptr;
 
 	static const bool is_big_endian = false;
 };
