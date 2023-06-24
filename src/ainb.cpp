@@ -7,6 +7,9 @@ using namespace ainb;
 AINB::AINB(LPSTREAM stream) {
 	m_stream = stream;
 	parseHeader();
+
+	m_string_list = new StringList(&m_header_data.string_list_start_pos);
+	m_string_list->loadFromStream(m_stream);
 }
 
 AINB::~AINB() {
@@ -14,13 +17,17 @@ AINB::~AINB() {
 }
 
 void AINB::parseHeader() {
-	streamSeek(m_stream, 0, BEGIN);
+	streamSeek(m_stream, 0, START);
 	m_stream->Read(m_header_data.type, 3, NULL);
 	m_header_data.type[3] = '\0';
 
-	streamSeek(m_stream, 0x0c, BEGIN);
+	streamSeek(m_stream, 0x0c, START);
 	readIntFromStream(m_stream, m_header_data.entry_command_count);
 	readIntFromStream(m_stream, m_header_data.execution_command_count);
+
+	streamSeek(m_stream, 0x24, START);
+	readIntFromStream(m_stream, m_header_data.string_list_start_pos);
+
 }
 
 int AINB::getEntryCommandCount() {
@@ -29,6 +36,10 @@ int AINB::getEntryCommandCount() {
 
 int AINB::getExecutionCommandCount() {
 	return m_header_data.execution_command_count;
+}
+
+void AINB::writeToStream(LPSTREAM stream) {
+	stream->Write(m_header_data.type, 3, NULL);
 }
 
 AINB* Create(LPSTREAM stream) {
@@ -46,3 +57,8 @@ int GetEntryCommandCount(AINB* ainb) {
 int GetExecutionCommandCount(AINB* ainb) {
 	return ainb->getExecutionCommandCount();
 }
+
+void Write(AINB* ainb, LPSTREAM stream) {
+	ainb->writeToStream(stream);
+}
+

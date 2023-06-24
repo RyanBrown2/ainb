@@ -12,7 +12,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_library(ainb SHARED
 	./src/ainb.cpp
 	./src/include/ainb/ainb.h
-  "src/include/ainb/util.h")
+  "src/include/ainb/util.h" "src/include/ainb/StringList.h" "src/StringList.cpp")
 
 target_include_directories(ainb PUBLIC ./src/include)
 target_include_directories(ainb PRIVATE ./src)
