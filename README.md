@@ -2,6 +2,9 @@
 Library for AINB files.
 
 ## Building For Command Line Usage
+I'm currently rewriting the library to be cleaner. So the command line functionality isn't working in the latest push. Please use a prior commit:
+```git reset --hard 24a759888d02b599f49970be0a20178bbfdc1a96```
+
 First clone the repository and then run:
 
 ```
