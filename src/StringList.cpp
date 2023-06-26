@@ -32,18 +32,19 @@ void StringList::loadFromStream(LPSTREAM stream)
 	while ((null_pos = raw_string.find('\0', null_pos)) != string::npos) {
 		string current_string = raw_string.substr(current_pos, null_pos - current_pos);
 
-		if (last_null) {
-			m_loaded_string_data[current_pos - 1] = current_string;
-			last_null = false;
-		}
+		//if (last_null) {
+		//	m_loaded_string_data[current_pos - 1] = current_string;
+		//	last_null = false;
+		//}
 
-		if (current_string.length() == 0) {
-			last_null = true;
-		}
+		//if (current_string.length() == 0) {
+		//	last_null = true;
+		//}
 
 		m_loaded_string_data[current_pos] = current_string;
 		null_pos++;
 		current_pos = null_pos;
+		//cout << current_string << endl;
 	}
 }
 

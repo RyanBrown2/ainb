@@ -6,25 +6,29 @@
 #include <ocidl.h>
 #include "util.h"
 
-namespace ainb {
-	class StringList {
-	public:
-		StringList(int* start_pos);
-		~StringList();
+namespace ainb 
+{
 
-		void loadFromStream(LPSTREAM stream);
+class StringList 
+{
+public:
+	StringList(int* start_pos);
+	~StringList();
 
-		std::string getStringFromOffset(int offset);
-		int* getOffsetFromString(std::string str);
-		void finalize();
-		void writeToStream(LPSTREAM stream);
-	private:
-		int* m_start_pos = nullptr;
+	void loadFromStream(LPSTREAM stream);
 
-		// offset to string
-		std::map<int, std::string> m_loaded_string_data;
+	std::string getStringFromOffset(int offset);
+	int* getOffsetFromString(std::string str);
+	void finalize();
+	void writeToStream(LPSTREAM stream);
+private:
+	int* m_start_pos = nullptr;
 
-		// string to offset pointer
-		std::map<std::string, int*> m_string_data;
-	};
+	// offset to string
+	std::map<int, std::string> m_loaded_string_data;
+
+	// string to offset pointer
+	std::map<std::string, int*> m_string_data;
+};
+
 }

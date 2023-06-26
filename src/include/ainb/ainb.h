@@ -5,6 +5,8 @@
 #include <ocidl.h>
 #include "util.h"
 #include "StringList.h"
+#include "SequenceNode.h"
+#include "SequenceHandler.h"
 
 namespace ainb {
 
@@ -15,6 +17,8 @@ public:
 
 	int getEntryCommandCount();
 	int getExecutionCommandCount();
+
+	SequenceNode* getSequenceNode(int index);
 
 	void writeToStream(LPSTREAM stream);
 
@@ -32,9 +36,10 @@ private:
 	HeaderData m_header_data;
 
 	StringList* m_string_list;
+	SequenceHandler* m_sequence_handler;
 
 	void parseHeader();
-
+	void parseCommandHeads();
 };
 
 }
@@ -45,5 +50,6 @@ extern "C" {
 	__declspec(dllexport) int GetEntryCommandCount(ainb::AINB* ainb);
 	__declspec(dllexport) int GetExecutionCommandCount(ainb::AINB* ainb);
 	__declspec(dllexport) void Write(ainb::AINB* ainb, LPSTREAM stream);
+	__declspec(dllexport) ainb::SequenceNode::NodeData GetSequenceNodeData(ainb::AINB* ainb, int index);
 }
 
