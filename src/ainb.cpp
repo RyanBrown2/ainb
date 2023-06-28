@@ -59,6 +59,7 @@ void AINB::parseParameters()
 	streamSeek(m_stream, m_header_data.parameter_structure_start, START);
 	m_parameter_handler->loadStructureParameters(m_stream, m_header_data.parameter_structure_end);
 
+	return;
 	// temp for debugging
 	vector<int>* active_tables = m_parameter_handler->getActiveTables();
 	for (int i = 0; i < active_tables->size(); i++)
@@ -105,14 +106,26 @@ SequenceNode* AINB::getSequenceNode(int index)
 	return m_sequence_handler->getSequenceNode(index);
 }
 
-void AINB::getTableParameter(int section_num, int index)
+AINB::ParameterStruct AINB::getTableParameter(int section_num, int index)
 {
-
+	ParameterStruct return_struct;
+	ParameterHandler::TableParameter* parameter = m_parameter_handler->getParameterFromTable(section_num, index);
+	return_struct.address = parameter->address;
+	_bstr_t converted_name(parameter->name.c_str());
+	return_struct.name = SysAllocString(converted_name);
+	return_struct.value = parameter->value;
+	return return_struct;
 }
 
-void AINB::getStructureParameter(int section_num, int index)
+AINB::ParameterStruct AINB::getStructureParameter(int section_num, int index)
 {
-
+	ParameterStruct return_struct;
+	ParameterHandler::StructureParameter* parameter = m_parameter_handler->getParameterFromStructure(section_num, index);
+	return_struct.address = parameter->address;
+	_bstr_t converted_name(parameter->name.c_str());
+	return_struct.name = SysAllocString(converted_name);
+	return_struct.value = parameter->tag;
+	return return_struct;
 }
 
 AINB* Create(LPSTREAM stream)
@@ -146,3 +159,12 @@ SequenceNode::NodeData GetSequenceNodeData(AINB* ainb, int index)
 	return node->getData();
 }
 
+AINB::ParameterStruct GetTableParameter(AINB* ainb, int section_num, int param_num)
+{
+	return ainb->getTableParameter(section_num, param_num);
+}
+
+AINB::ParameterStruct GetStructureParameter(AINB* ainb, int section_num, int param_num)
+{
+	return ainb->getStructureParameter(section_num, param_num);
+}

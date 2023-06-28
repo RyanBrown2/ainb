@@ -23,12 +23,19 @@ public:
 
 	void writeToStream(LPSTREAM stream); // todo
 
+	struct ParameterStruct {
+		int address;
+		BSTR name;
+		int value;
+	};
+
 	// todo: decide on data return types
-	void getTableParameter(int section_num, int index);
-	void getStructureParameter(int section_num, int index);
+	ParameterStruct getTableParameter(int section_num, int index);
+	ParameterStruct getStructureParameter(int section_num, int index);
 
 	int getTableParameterCount(int section_num);
 	int getStructureParameterCount(int section_num);
+
 
 private:
 	LPSTREAM m_stream;
@@ -66,5 +73,7 @@ extern "C" {
 	__declspec(dllexport) int GetExecutionCommandCount(ainb::AINB* ainb);
 	__declspec(dllexport) void Write(ainb::AINB* ainb, LPSTREAM stream);
 	__declspec(dllexport) ainb::SequenceNode::NodeData GetSequenceNodeData(ainb::AINB* ainb, int index);
+	__declspec(dllexport) ainb::AINB::ParameterStruct GetTableParameter(ainb::AINB*, int section_num, int param_num);
+	__declspec(dllexport) ainb::AINB::ParameterStruct GetStructureParameter(ainb::AINB*, int section_num, int param_num);
 }
 

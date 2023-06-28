@@ -15,6 +15,7 @@ public:
 	~ParameterHandler();
 
 	struct TableParameter {
+		int address = -1;
 		int index = -1;
 		std::string name = "";
 		int value = 0;
@@ -23,6 +24,7 @@ public:
 	};
 
 	struct StructureParameter {
+		int address = -1;
 		int index = -1;
 		std::string name = "";
 		int tag = -1;
@@ -38,8 +40,8 @@ public:
 	std::vector<int>* getActiveTables() { return &m_active_tables; }
 	std::vector<int>* getActiveStructures() { return &m_active_structures; }
 
-	TableParameter getParameterFromTable(int table_num, int parameter_num);
-	StructureParameter getParameterFromStructure(int section_num, int parameter_num);
+	TableParameter* getParameterFromTable(int table_num, int parameter_num);
+	StructureParameter* getParameterFromStructure(int section_num, int parameter_num);
 
 	std::vector<TableParameter>* getTableParameters(int table_num);
 	std::vector<StructureParameter>* getStructureParameters(int section_num);

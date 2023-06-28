@@ -145,10 +145,10 @@ void ParameterHandler::loadStructureParameters(LPSTREAM stream, int end_address)
 	}
 }
 
-ParameterHandler::TableParameter ParameterHandler::getParameterFromTable(int table_num, int parameter_num)
+ParameterHandler::TableParameter* ParameterHandler::getParameterFromTable(int table_num, int parameter_num)
 {
 	try {
-		return m_table_parameters.at(table_num).at(parameter_num);
+		return &m_table_parameters.at(table_num).at(parameter_num);
 	}
 	catch (out_of_range) {
 		cerr << "Tried getting parameter index " << to_string(parameter_num) << " from table " << to_string(table_num) << endl;
@@ -156,9 +156,15 @@ ParameterHandler::TableParameter ParameterHandler::getParameterFromTable(int tab
 	}
 }
 
-ParameterHandler::StructureParameter ParameterHandler::getParameterFromStructure(int section_num, int parameter_num)
+ParameterHandler::StructureParameter* ParameterHandler::getParameterFromStructure(int section_num, int parameter_num)
 {
-	return m_structure_parameters.at(section_num).at(parameter_num);
+	try {
+		return &m_structure_parameters.at(section_num).at(parameter_num);
+	}
+	catch (out_of_range) {
+		cerr << "Tried getting parameter index " << to_string(parameter_num) << " from section " << to_string(section_num) << endl;
+		throw std::invalid_argument("Invalid parameter index");
+	}
 }
 
 vector<ParameterHandler::TableParameter>* ParameterHandler::getTableParameters(int table_num)
@@ -188,6 +194,7 @@ map<int, int> ParameterHandler::structure_entry_lengths = {
 
 void ParameterHandler::TableParameter::load(LPSTREAM stream, StringList* string_list)
 {
+	TableParameter::address = streamTell(stream);
 	int name_offset;
 	readIntFromStream(stream, name_offset);
 	TableParameter::name = string_list->getStringFromOffset(name_offset);
@@ -198,7 +205,9 @@ void ParameterHandler::TableParameter::load(LPSTREAM stream, StringList* string_
 }
 void ParameterHandler::StructureParameter::load(LPSTREAM stream, StringList* string_list, int section_num)
 {
-	int end_pos = streamTell(stream) + ParameterHandler::structure_entry_lengths[section_num];
+
+	StructureParameter::address = streamTell(stream);
+	int end_pos = StructureParameter::address + ParameterHandler::structure_entry_lengths[section_num];
 
 	StructureParameter::section_num = section_num;
 
