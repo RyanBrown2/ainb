@@ -7,6 +7,7 @@
 #include "StringList.h"
 #include "SequenceNode.h"
 #include "SequenceHandler.h"
+#include "ParameterHandler.h"
 
 namespace ainb {
 
@@ -20,7 +21,14 @@ public:
 
 	SequenceNode* getSequenceNode(int index);
 
-	void writeToStream(LPSTREAM stream);
+	void writeToStream(LPSTREAM stream); // todo
+
+	// todo: decide on data return types
+	void getTableParameter(int section_num, int index);
+	void getStructureParameter(int section_num, int index);
+
+	int getTableParameterCount(int section_num);
+	int getStructureParameterCount(int section_num);
 
 private:
 	LPSTREAM m_stream;
@@ -31,15 +39,22 @@ private:
 		int execution_command_count = -1;
 
 		int string_list_start_pos = -1;
+		int parameter_table_start = -1;
+		int parameter_structure_start = -1;
+		int parameter_structure_end = -1;
 	};
 
 	HeaderData m_header_data;
 
 	StringList* m_string_list;
+	ParameterHandler* m_parameter_handler;
 	SequenceHandler* m_sequence_handler;
 
 	void parseHeader();
+	void parseParameters();
 	void parseCommandHeads();
+
+
 };
 
 }

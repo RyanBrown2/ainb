@@ -30,6 +30,11 @@ private:
 	int m_body_pos; // position of the command body
 	std::string m_name;
 
+	// body data
+	SequenceNode* caller = nullptr;
+	// todo: parameters
+	// todo: call table
+
 };
 
 }

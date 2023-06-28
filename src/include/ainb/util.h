@@ -22,10 +22,19 @@ namespace ainb {
 		return result;
 	}
 
+	// int32_t
 	static void readIntFromStream(LPSTREAM stream, int& result) {
 		char* buffer = new char[4];
 		stream->Read(buffer, sizeof(int), 0);
 		result = convertCharArrayToInt(buffer, 4);
+		delete[] buffer;
+	}
+
+	// int16_t
+	static void read2ByteIntFromStream(LPSTREAM stream, int& result) {
+		char* buffer = new char[2];
+		stream->Read(buffer, sizeof(int16_t), 0);
+		result = convertCharArrayToInt(buffer, 2);
 		delete[] buffer;
 	}
 

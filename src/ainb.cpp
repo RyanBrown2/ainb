@@ -12,6 +12,9 @@ AINB::AINB(LPSTREAM stream)
 	m_string_list = new StringList(&m_header_data.string_list_start_pos);
 	m_string_list->loadFromStream(m_stream);
 
+	m_parameter_handler = new ParameterHandler(m_string_list);
+	parseParameters();
+
 	streamSeek(m_stream, 0x74, START);
 
 	m_sequence_handler = new SequenceHandler(m_string_list);
@@ -35,6 +38,51 @@ void AINB::parseHeader()
 	streamSeek(m_stream, 0x24, START);
 	readIntFromStream(m_stream, m_header_data.string_list_start_pos);
 
+	// parameter table start
+	streamSeek(m_stream, 0x2c, START);
+	readIntFromStream(m_stream, m_header_data.parameter_table_start);
+
+	// parameter structure start
+	streamSeek(m_stream, 0x34, START);
+	readIntFromStream(m_stream, m_header_data.parameter_structure_start);
+
+	// parameter structure end
+	readIntFromStream(m_stream, m_header_data.parameter_structure_end);
+
+}
+
+void AINB::parseParameters()
+{
+	streamSeek(m_stream, m_header_data.parameter_table_start, START);
+	m_parameter_handler->loadTableParameters(m_stream, m_header_data.parameter_structure_start);
+
+	streamSeek(m_stream, m_header_data.parameter_structure_start, START);
+	m_parameter_handler->loadStructureParameters(m_stream, m_header_data.parameter_structure_end);
+
+	// temp for debugging
+	vector<int>* active_tables = m_parameter_handler->getActiveTables();
+	for (int i = 0; i < active_tables->size(); i++)
+	{
+		int table_index = active_tables->at(i);
+		vector<ParameterHandler::TableParameter>* table_parameters = m_parameter_handler->getTableParameters(table_index);
+		for (int j = 0; j < table_parameters->size(); j++)
+		{
+			ParameterHandler::TableParameter table_parameter = table_parameters->at(j);
+			printf("table_index: %d, parameter_index: %d, parameter_name: %s, parameter_value: %d\n", table_index, table_parameter.index, table_parameter.name.c_str(), table_parameter.value);
+		}
+	}
+	vector<int>* active_structures = m_parameter_handler->getActiveStructures();
+	for (int i = 0; i < active_structures->size(); i++)
+	{
+		int structure_index = active_structures->at(i);
+		vector<ParameterHandler::StructureParameter>* structure_parameters = m_parameter_handler->getStructureParameters(structure_index);
+		for (int j = 0; j < structure_parameters->size(); j++)
+		{
+			ParameterHandler::StructureParameter structure_parameter = structure_parameters->at(j);
+			printf("structure_index: %d, parameter_index: %d, parameter_name: %s, parameter_tag: %d\n", structure_index, structure_parameter.index, structure_parameter.name.c_str(), structure_parameter.tag);
+		}
+	}
+
 }
 
 int AINB::getEntryCommandCount()
@@ -55,6 +103,16 @@ void AINB::writeToStream(LPSTREAM stream)
 SequenceNode* AINB::getSequenceNode(int index)
 {
 	return m_sequence_handler->getSequenceNode(index);
+}
+
+void AINB::getTableParameter(int section_num, int index)
+{
+
+}
+
+void AINB::getStructureParameter(int section_num, int index)
+{
+
 }
 
 AINB* Create(LPSTREAM stream)
