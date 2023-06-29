@@ -20,7 +20,7 @@ public:
 		std::string name = "";
 		int value = 0;
 		
-		void load(LPSTREAM stream, StringList* string_list);
+		void load(LPSTREAM stream, StringList* string_list, int section_num);
 	};
 
 	struct StructureParameter {
@@ -57,6 +57,7 @@ private:
 	std::vector<int> m_active_tables;
 	std::vector<int> m_active_structures;
 
+	static std::map<int, int> table_entry_lengths;
 	static std::map<int, int> structure_entry_lengths;
 };
 

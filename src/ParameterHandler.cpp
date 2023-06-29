@@ -46,6 +46,7 @@ void ParameterHandler::loadTableParameters(LPSTREAM stream, int end_address)
 
 	for (int i = 0; i < table_section_addresses.size(); i++) {
 		int current_pos = table_section_addresses[i];
+		int section_num = table_nums[i];
 		streamSeek(stream, current_pos, START);
 
 		int end_pos;
@@ -67,7 +68,7 @@ void ParameterHandler::loadTableParameters(LPSTREAM stream, int end_address)
 		while (current_pos < end_pos) {
 			TableParameter table_parameter;
 
-			table_parameter.load(stream, m_string_list);
+			table_parameter.load(stream, m_string_list, section_num);
 			table_parameter.index = index;
 			index += 1;
 
@@ -177,6 +178,14 @@ vector<ParameterHandler::StructureParameter>* ParameterHandler::getStructurePara
 	return &m_structure_parameters[section_num];
 }
 
+map<int, int> ParameterHandler::table_entry_lengths = {
+	{0, 0x0c},
+	{1, 0x0c},
+	{2, 0x0c},
+	{3, 0x0c},
+	{4, 0x14}
+};
+
 map<int, int> ParameterHandler::structure_entry_lengths = {
 	{0, 0x10},
 	{1, 0x4},
@@ -192,9 +201,10 @@ map<int, int> ParameterHandler::structure_entry_lengths = {
 	{11, 0x4}
 };
 
-void ParameterHandler::TableParameter::load(LPSTREAM stream, StringList* string_list)
+void ParameterHandler::TableParameter::load(LPSTREAM stream, StringList* string_list, int section_num)
 {
 	TableParameter::address = streamTell(stream);
+	int end_pos = address + table_entry_lengths[section_num];
 	int name_offset;
 	readIntFromStream(stream, name_offset);
 	TableParameter::name = string_list->getStringFromOffset(name_offset);
@@ -202,6 +212,8 @@ void ParameterHandler::TableParameter::load(LPSTREAM stream, StringList* string_
 	streamSeek(stream, 4, CURRENT);
 
 	readIntFromStream(stream, TableParameter::value);
+
+	streamSeek(stream, end_pos, START);
 }
 void ParameterHandler::StructureParameter::load(LPSTREAM stream, StringList* string_list, int section_num)
 {
