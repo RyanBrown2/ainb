@@ -63,6 +63,7 @@ namespace ainb {
 
 		if (FAILED(hr)) {
 			// Handle error, possibly with _com_error(hr).ErrorMessage()
+			return -1;
 		}
 		else {
 			return uliPosition.QuadPart;

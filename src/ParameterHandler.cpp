@@ -130,6 +130,9 @@ void ParameterHandler::loadStructureParameters(LPSTREAM stream, int end_address)
 
 		m_active_structures.push_back(section_number);
 
+		CommandParameter<INT> test_parameter;
+		test_parameter.load(stream, m_string_list, true);
+
 		// create null parameter at index 0
 		StructureParameter null_parameter;
 		null_parameter.index = 0;
@@ -276,5 +279,43 @@ void ParameterHandler::StructureParameter::load(LPSTREAM stream, StringList* str
 	return;
 }
 
+template <ParameterHandler::ParameterTypes T>
+void ParameterHandler::CommandParameter<T>::load(LPSTREAM stream, StringList* string_list, bool is_input)
+{
+	address = streamTell(stream);
+	int section_num = is_input ? T * 2 : T * 2 + 1;
+	int end_pos = address + ParameterHandler::structure_entry_lengths[section_num];
 
+	int name_offset;
+	read2ByteIntFromStream(stream, name_offset);
+	name = string_list->getStringFromOffset(name_offset);
+	// 0x02
+
+	streamSeek(stream, 2, CURRENT);
+	// 0x04
+
+	if (streamTell(stream) >= end_pos)
+	{
+		return;
+	}
+
+	if(T == UDF)
+	{
+		int second_string_tag;
+		readIntFromStream(stream, second_string_tag);
+		type_name = string_list->getStringFromOffset(second_string_tag);
+		// 0x08
+
+		readIntFromStream(stream, command_ref);
+		// 0x0c
+
+	}
+	else {
+		read2ByteIntFromStream(stream, command_ref);
+		streamSeek(stream, 2, CURRENT);
+	}
+
+	streamSeek(stream, end_pos, START);
+
+}
 

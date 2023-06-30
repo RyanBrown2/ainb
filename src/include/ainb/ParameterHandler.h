@@ -36,6 +36,26 @@ public:
 		void load(LPSTREAM stream, StringList* string_list, int section_num);
 	};
 
+	enum ParameterTypes {
+		INT = 0,
+		BOOL = 1,
+		FLOAT = 2,
+		STRING = 3,
+		VEC3 = 4,
+		UDF = 5
+	};
+
+	template <ParameterTypes T>
+	struct CommandParameter {
+		int address = -1;
+		int index = -1;
+		std::string name = "";
+		int command_ref = -1;
+		std::string type_name = "";
+
+		void load(LPSTREAM stream, StringList* string_list, bool is_input);
+	};
+
 	void loadTableParameters(LPSTREAM stream, int end_address);
 	void loadStructureParameters(LPSTREAM stream, int end_address);
 
