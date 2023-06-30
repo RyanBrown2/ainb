@@ -31,10 +31,8 @@ public:
 
 	// todo: decide on data return types
 	ParameterStruct getTableParameter(int section_num, int index);
-	ParameterStruct getStructureParameter(int section_num, int index);
 
 	int getTableParameterCount(int section_num);
-	int getStructureParameterCount(int section_num);
 
 
 private:
@@ -47,8 +45,8 @@ private:
 
 		int string_list_start_pos = -1;
 		int parameter_table_start = -1;
-		int parameter_structure_start = -1;
-		int parameter_structure_end = -1;
+		int command_parameters_start = -1;
+		int command_parameters_end = -1;
 	};
 
 	HeaderData m_header_data;
@@ -74,6 +72,5 @@ extern "C" {
 	__declspec(dllexport) void Write(ainb::AINB* ainb, LPSTREAM stream);
 	__declspec(dllexport) ainb::SequenceNode::NodeData GetSequenceNodeData(ainb::AINB* ainb, int index);
 	__declspec(dllexport) ainb::AINB::ParameterStruct GetTableParameter(ainb::AINB*, int section_num, int param_num);
-	__declspec(dllexport) ainb::AINB::ParameterStruct GetStructureParameter(ainb::AINB*, int section_num, int param_num);
 }
 

@@ -44,20 +44,21 @@ void AINB::parseHeader()
 
 	// parameter structure start
 	streamSeek(m_stream, 0x34, START);
-	readIntFromStream(m_stream, m_header_data.parameter_structure_start);
+	readIntFromStream(m_stream, m_header_data.command_parameters_start);
 
 	// parameter structure end
-	readIntFromStream(m_stream, m_header_data.parameter_structure_end);
+	readIntFromStream(m_stream, m_header_data.command_parameters_end);
 
 }
 
 void AINB::parseParameters()
 {
 	streamSeek(m_stream, m_header_data.parameter_table_start, START);
-	m_parameter_handler->loadTableParameters(m_stream, m_header_data.parameter_structure_start);
+	m_parameter_handler->loadTableParameters(m_stream, m_header_data.command_parameters_start);
 
-	streamSeek(m_stream, m_header_data.parameter_structure_start, START);
-	m_parameter_handler->loadStructureParameters(m_stream, m_header_data.parameter_structure_end);
+	streamSeek(m_stream, m_header_data.command_parameters_start, START);
+	//m_parameter_handler->loadStructureParameters(m_stream, m_header_data.command_parameters_end);
+	m_parameter_handler->loadCommandParameters(m_stream, m_header_data.command_parameters_end);
 
 	return;
 	// temp for debugging
@@ -72,18 +73,19 @@ void AINB::parseParameters()
 			printf("table_index: %d, parameter_index: %d, parameter_name: %s, parameter_value: %d\n", table_index, table_parameter.index, table_parameter.name.c_str(), table_parameter.value);
 		}
 	}
-	vector<int>* active_structures = m_parameter_handler->getActiveStructures();
+	vector<int>* active_structures = m_parameter_handler->getActiveParameterLists();
 	for (int i = 0; i < active_structures->size(); i++)
 	{
-		int structure_index = active_structures->at(i);
-		vector<ParameterHandler::StructureParameter>* structure_parameters = m_parameter_handler->getStructureParameters(structure_index);
-		for (int j = 0; j < structure_parameters->size(); j++)
+		int section_num = active_structures->at(i);
+		vector<std::unique_ptr<ParameterHandler::CommandParameterBase>>* command_parameters = m_parameter_handler->getCommandParameters(section_num);
+		for (int j = 0; j < command_parameters->size(); j++)
 		{
-			ParameterHandler::StructureParameter structure_parameter = structure_parameters->at(j);
-			printf("structure_index: %d, parameter_index: %d, parameter_name: %s, parameter_tag: %d\n", structure_index, structure_parameter.index, structure_parameter.name.c_str(), structure_parameter.tag);
+			ParameterHandler::CommandParameterBase* command_parameter = command_parameters->at(j).get();
+			printf("section_num: %d, parameter_index: %d, parameter_name: %s, parameter_command: %d\n", section_num, command_parameter->index, command_parameter->name.c_str(), command_parameter->command_ref);
 		}
-	}
 
+	}
+	return;
 }
 
 int AINB::getEntryCommandCount()
@@ -117,16 +119,16 @@ AINB::ParameterStruct AINB::getTableParameter(int section_num, int index)
 	return return_struct;
 }
 
-AINB::ParameterStruct AINB::getStructureParameter(int section_num, int index)
-{
-	ParameterStruct return_struct;
-	ParameterHandler::StructureParameter* parameter = m_parameter_handler->getParameterFromStructure(section_num, index);
-	return_struct.address = parameter->address;
-	_bstr_t converted_name(parameter->name.c_str());
-	return_struct.name = SysAllocString(converted_name);
-	return_struct.value = parameter->tag;
-	return return_struct;
-}
+//AINB::ParameterStruct AINB::getStructureParameter(int section_num, int index)
+//{
+//	ParameterStruct return_struct;
+//	ParameterHandler::StructureParameter* parameter = m_parameter_handler->getParameterFromStructure(section_num, index);
+//	return_struct.address = parameter->address;
+//	_bstr_t converted_name(parameter->name.c_str());
+//	return_struct.name = SysAllocString(converted_name);
+//	return_struct.value = parameter->tag;
+//	return return_struct;
+//}
 
 AINB* Create(LPSTREAM stream)
 {
@@ -164,7 +166,3 @@ AINB::ParameterStruct GetTableParameter(AINB* ainb, int section_num, int param_n
 	return ainb->getTableParameter(section_num, param_num);
 }
 
-AINB::ParameterStruct GetStructureParameter(AINB* ainb, int section_num, int param_num)
-{
-	return ainb->getStructureParameter(section_num, param_num);
-}
