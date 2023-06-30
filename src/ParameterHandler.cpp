@@ -198,7 +198,7 @@ map<int, int> ParameterHandler::structure_entry_lengths = {
 	{8, 0x18},
 	{9, 0x4},
 	{10, 0x14},
-	{11, 0x4}
+	{11, 0x8}
 };
 
 void ParameterHandler::TableParameter::load(LPSTREAM stream, StringList* string_list, int section_num)
@@ -247,12 +247,18 @@ void ParameterHandler::StructureParameter::load(LPSTREAM stream, StringList* str
 	if (section_num == 10) {
 		int second_string_tag;
 		read2ByteIntFromStream(stream, second_string_tag);
-		StructureParameter::second_string = string_list->getStringFromOffset(second_string_tag);
+		StructureParameter::type_name = string_list->getStringFromOffset(second_string_tag);
+	}
+	else if (section_num == 11) {
+		int second_string_tag;
+		read2ByteIntFromStream(stream, second_string_tag);
+		StructureParameter::type_name = string_list->getStringFromOffset(second_string_tag);
 	}
 	else {
 		// get tag
 		//int tag = 5;
 		read2ByteIntFromStream(stream, StructureParameter::tag);
+		//readIntFromStream(stream, StructureParameter::tag);
 		//StructureParameter::tag = tag;
 	}
 	// 0x06

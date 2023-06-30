@@ -14,6 +14,8 @@ public:
 	ParameterHandler(StringList* string_list);
 	~ParameterHandler();
 
+	// todo: handle section 3 strings
+	// might create template
 	struct TableParameter {
 		int address = -1;
 		int index = -1;
@@ -28,7 +30,7 @@ public:
 		int index = -1;
 		std::string name = "";
 		int tag = -1;
-		std::string second_string = "";
+		std::string type_name = "";
 		int section_num = -1;
 
 		void load(LPSTREAM stream, StringList* string_list, int section_num);
