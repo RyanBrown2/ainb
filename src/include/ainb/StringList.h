@@ -18,8 +18,7 @@ public:
 	void loadFromStream(LPSTREAM stream);
 
 	std::string getStringFromOffset(int offset);
-	int* getOffsetFromString(std::string str);
-	void finalize();
+	int getOffsetOfString(std::string str);
 	void writeToStream(LPSTREAM stream);
 private:
 	int* m_start_pos = nullptr;
@@ -27,8 +26,10 @@ private:
 	// offset to string
 	std::map<int, std::string> m_loaded_string_data;
 
-	// string to offset pointer
-	std::map<std::string, int*> m_string_data;
+	// this is used to keep track of the next offset to use when adding a new string to m_string_data
+	int m_next_offset = 0;
+	// string to offset
+	std::map<std::string, int> m_string_data;
 };
 
 }

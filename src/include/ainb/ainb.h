@@ -34,7 +34,6 @@ public:
 
 	int getTableParameterCount(int section_num);
 
-
 private:
 	LPSTREAM m_stream;
 

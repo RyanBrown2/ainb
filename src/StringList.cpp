@@ -53,29 +53,25 @@ string StringList::getStringFromOffset(int offset)
 	return m_loaded_string_data[offset];
 }
 
-int* StringList::getOffsetFromString(string str)
-{
-	if (!m_string_data.count(str)) {
-		int* pos = new int;
-		*pos = -1;
-		m_string_data[str] = pos;
-	}
-	return m_string_data[str];
-}
 
-void StringList::finalize()
+/**
+ * Returns the offset of the string in the string list.
+ * If the string is not in the string list, it is added to the string list and the offset is returned.
+*/
+int StringList::getOffsetOfString(string str)
 {
-	int last_pos = 0;
-	for (auto it = m_string_data.begin(); it != m_string_data.end(); it++) {
-		string str = it->first;
-		*it->second = last_pos;
-		last_pos += str.length() + 1;
+	if (m_string_data.count(str)) {
+		return m_string_data.at(str);
+	}
+	else {
+		m_string_data.insert(pair<string, int>(str, m_next_offset));
+		m_next_offset = str.length() + 1;
+		return m_string_data.at(str);
 	}
 }
 
 void StringList::writeToStream(LPSTREAM stream)
 {
-	finalize();
 	streamSeek(stream, *m_start_pos, START);
 	for (auto pair : m_string_data) {
 		string str = pair.first;
