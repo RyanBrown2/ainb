@@ -21,7 +21,7 @@ public:
 
 	struct InternalParameter {
 		BSTR name;
-		int value;
+		BSTR value;
 	};
 
 	int getEntryCommandCount();
@@ -75,5 +75,6 @@ extern "C" {
 	__declspec(dllexport) int* GetInternalParameterCounts(ainb::AINB* ainb);
 	__declspec(dllexport) ainb::AINB::InternalParameter GetInternalParameter(ainb::AINB* ainb, int section_num, int index);
 	//__declspec(dllexport) ainb::SequenceNode::NodeData GetSequenceNodeData(ainb::AINB* ainb, int index);
+	//__declspec(dllexport) ainb::ParameterHandler::InternalParameter GetInternalParameter(ainb::AINB*, int section_num, int param_num);
 }
 

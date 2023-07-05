@@ -28,7 +28,7 @@ public:
 		int address = -1;
 		int index = -1;
 		std::string name = "";
-		int value = 0;
+		std::string value = "";
 
 		InternalParameterBase() {}
 
@@ -37,11 +37,10 @@ public:
 
 	template <ParameterType Type>
 	struct InternalParameter : public InternalParameterBase {
+		ParameterType type = Type;
 		
 		void load(LPSTREAM stream, StringList* string_list) override;
 	};
-
-
 
 	struct CommandParameterBase
 	{

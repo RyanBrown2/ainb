@@ -135,7 +135,8 @@ AINB::InternalParameter AINB::exportInternalParameter(ParameterHandler::Internal
 	CComBSTR converted_name(parameter->name.c_str());
 	return_struct.name = SysAllocString(converted_name);
 
-	return_struct.value = parameter->value;
+	CComBSTR converted_value(parameter->value.c_str());
+	return_struct.value = SysAllocString(converted_value);
 	return return_struct;
 }
 
