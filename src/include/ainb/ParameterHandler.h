@@ -15,17 +15,6 @@ public:
 	ParameterHandler(StringList* string_list);
 	~ParameterHandler();
 
-	// todo: handle section 3 strings
-	// might create template
-	struct TableParameter {
-		int address = -1;
-		int index = -1;
-		std::string name = "";
-		int value = 0;
-		
-		void load(LPSTREAM stream, StringList* string_list, int section_num);
-	};
-
 	enum ParameterType {
 		INT = 0,
 		BOOL = 1,
@@ -35,16 +24,38 @@ public:
 		UDF = 5
 	};
 
+	struct InternalParameterBase {
+		int address = -1;
+		int index = -1;
+		std::string name = "";
+		int value = 0;
+
+		InternalParameterBase() {}
+
+		virtual void load(LPSTREAM stream, StringList* string_list) {};
+	};
+
+	template <ParameterType Type>
+	struct InternalParameter : public InternalParameterBase {
+		
+		void load(LPSTREAM stream, StringList* string_list) override;
+	};
+
+
+
 	struct CommandParameterBase
 	{
 		int address = -1;
 		int index = -1;
 		std::string name = "";
-		int command_ref = -1;
 		bool is_input = false;
 
+		// todo: once command loading gets finished, need to make this a command pointer instead
+		// also will need to implement a linking pass to link the command pointers to the command
+		int command_ref = -1; 
+
+
 		CommandParameterBase() {}
-		//CommandParameterBase(bool is_input) : is_input(is_input) {}
 
 		virtual ~CommandParameterBase() = default;
 		virtual void load(LPSTREAM stream, StringList* string_list, bool is_input) {};
@@ -53,7 +64,7 @@ public:
 	template <ParameterType Type>
 	struct CommandParameter : public CommandParameterBase
 	{
-		//CommandParameter(bool input) : CommandParameterBase(input) {};
+		ParameterType type = Type;
 
 		CommandParameter() {}
 
@@ -66,36 +77,35 @@ public:
 		std::string type_name = "";
 
 		CommandParameter() {}
-		//CommandParameter(bool input) : CommandParameterBase(input) {}
 
 		void load(LPSTREAM stream, StringList* string_list, bool is_input) override;
 	};
 
-	void loadTableParameters(LPSTREAM stream, int end_address);
+	void loadInternalParameters(LPSTREAM stream, int end_address);
 
 	void loadCommandParameters(LPSTREAM stream, int end_address);
 
-	std::vector<int>* getActiveTables() { return &m_active_tables; }
-	std::vector<int>* getActiveParameterLists() { return &m_active_paramter_lists; }
+	std::vector<int>* getActiveInternalParameterTypes() { return &m_active_internal_parameter_types; }
+	std::vector<int>* getActiveCommandParameterTypes() { return &m_active_command_parameter_types; }
 
-	TableParameter* getParameterFromTable(int table_num, int parameter_num);
+	InternalParameterBase* getInternalParameterBase(int section_num, int parameter_num);
 
-	std::vector<TableParameter>* getTableParameters(int table_num);
+	// get a vector of all the parameters in a section
+	std::vector<std::unique_ptr<InternalParameterBase>>* getInternalParameters(int section_num);
 
 	std::vector<std::unique_ptr<CommandParameterBase>>* getCommandParameters(int section_num);
 
 private:
 	StringList* m_string_list;
 
-	// table_num to vector of parameters
-	std::map<int, std::vector<TableParameter>> m_table_parameters;
+	std::map<int, std::vector<std::unique_ptr<InternalParameterBase>>> m_internal_parameters;
 
 	std::map<int, std::vector<std::unique_ptr<CommandParameterBase>>> m_command_parameters;
 
-	std::vector<int> m_active_tables;
+	std::vector<int> m_active_internal_parameter_types;
 
 	// vector containing the "section" number of each parameter list that is active
-	std::vector<int> m_active_paramter_lists;
+	std::vector<int> m_active_command_parameter_types;
 
 	template <ParameterType Type>
 	std::unique_ptr<CommandParameterBase> createCommandParameter() {
@@ -118,6 +128,7 @@ private:
 		// Additional operations specific to Type1
 	}
 
+	void createAndLoadInternalParameter(LPSTREAM stream, int section_number);
 	void createAndLoadCommandParameter(LPSTREAM stream, int section_number);
 
 	static std::map<int, int> table_entry_lengths;

@@ -8,6 +8,9 @@
 #include "SequenceNode.h"
 #include "SequenceHandler.h"
 #include "ParameterHandler.h"
+#include "comutil.h"
+#include "atlbase.h"
+#include <unknwn.h>
 
 namespace ainb {
 
@@ -16,23 +19,26 @@ public:
 	AINB(LPSTREAM stream);
 	~AINB();
 
-	int getEntryCommandCount();
-	int getExecutionCommandCount();
-
-	SequenceNode* getSequenceNode(int index);
-
-	void writeToStream(LPSTREAM stream); // todo
-
-	struct ParameterStruct {
-		int address;
+	struct InternalParameter {
 		BSTR name;
 		int value;
 	};
 
-	// todo: decide on data return types
-	ParameterStruct getTableParameter(int section_num, int index);
+	int getEntryCommandCount();
+	int getExecutionCommandCount();
 
-	int getTableParameterCount(int section_num);
+
+	void writeToStream(LPSTREAM stream); // todo
+
+
+	// get an array of the number of internal parameters for each type
+	int* getInternalParameterCounts();
+
+	//template <ParameterHandler::ParameterType T>
+	//ParameterHandler::InternalParameter<T>* getInternalParameterBase(int index);
+	ParameterHandler::InternalParameterBase* getInternalParameterBase(int section_num, int index);
+
+	static InternalParameter exportInternalParameter(ParameterHandler::InternalParameterBase* parameter);
 
 private:
 	LPSTREAM m_stream;
@@ -43,7 +49,7 @@ private:
 		int execution_command_count = -1;
 
 		int string_list_start_pos = -1;
-		int parameter_table_start = -1;
+		int internal_parameters_start = -1;
 		int command_parameters_start = -1;
 		int command_parameters_end = -1;
 	};
@@ -56,9 +62,6 @@ private:
 
 	void parseHeader();
 	void parseParameters();
-	void parseCommandHeads();
-
-
 };
 
 }
@@ -69,7 +72,8 @@ extern "C" {
 	__declspec(dllexport) int GetEntryCommandCount(ainb::AINB* ainb);
 	__declspec(dllexport) int GetExecutionCommandCount(ainb::AINB* ainb);
 	__declspec(dllexport) void Write(ainb::AINB* ainb, LPSTREAM stream);
-	__declspec(dllexport) ainb::SequenceNode::NodeData GetSequenceNodeData(ainb::AINB* ainb, int index);
-	__declspec(dllexport) ainb::AINB::ParameterStruct GetTableParameter(ainb::AINB*, int section_num, int param_num);
+	__declspec(dllexport) int* GetInternalParameterCounts(ainb::AINB* ainb);
+	__declspec(dllexport) ainb::AINB::InternalParameter GetInternalParameter(ainb::AINB* ainb, int section_num, int index);
+	//__declspec(dllexport) ainb::SequenceNode::NodeData GetSequenceNodeData(ainb::AINB* ainb, int index);
 }
 

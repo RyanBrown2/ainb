@@ -38,9 +38,9 @@ void AINB::parseHeader()
 	streamSeek(m_stream, 0x24, START);
 	readIntFromStream(m_stream, m_header_data.string_list_start_pos);
 
-	// parameter table start
+	// internal parameter start
 	streamSeek(m_stream, 0x2c, START);
-	readIntFromStream(m_stream, m_header_data.parameter_table_start);
+	readIntFromStream(m_stream, m_header_data.internal_parameters_start);
 
 	// parameter structure start
 	streamSeek(m_stream, 0x34, START);
@@ -53,38 +53,13 @@ void AINB::parseHeader()
 
 void AINB::parseParameters()
 {
-	streamSeek(m_stream, m_header_data.parameter_table_start, START);
-	m_parameter_handler->loadTableParameters(m_stream, m_header_data.command_parameters_start);
+	streamSeek(m_stream, m_header_data.internal_parameters_start, START);
+	m_parameter_handler->loadInternalParameters(m_stream, m_header_data.command_parameters_start);
 
 	streamSeek(m_stream, m_header_data.command_parameters_start, START);
 	//m_parameter_handler->loadStructureParameters(m_stream, m_header_data.command_parameters_end);
 	m_parameter_handler->loadCommandParameters(m_stream, m_header_data.command_parameters_end);
 
-	return;
-	// temp for debugging
-	vector<int>* active_tables = m_parameter_handler->getActiveTables();
-	for (int i = 0; i < active_tables->size(); i++)
-	{
-		int table_index = active_tables->at(i);
-		vector<ParameterHandler::TableParameter>* table_parameters = m_parameter_handler->getTableParameters(table_index);
-		for (int j = 0; j < table_parameters->size(); j++)
-		{
-			ParameterHandler::TableParameter table_parameter = table_parameters->at(j);
-			printf("table_index: %d, parameter_index: %d, parameter_name: %s, parameter_value: %d\n", table_index, table_parameter.index, table_parameter.name.c_str(), table_parameter.value);
-		}
-	}
-	vector<int>* active_structures = m_parameter_handler->getActiveParameterLists();
-	for (int i = 0; i < active_structures->size(); i++)
-	{
-		int section_num = active_structures->at(i);
-		vector<std::unique_ptr<ParameterHandler::CommandParameterBase>>* command_parameters = m_parameter_handler->getCommandParameters(section_num);
-		for (int j = 0; j < command_parameters->size(); j++)
-		{
-			ParameterHandler::CommandParameterBase* command_parameter = command_parameters->at(j).get();
-			printf("section_num: %d, parameter_index: %d, parameter_name: %s, parameter_command: %d\n", section_num, command_parameter->index, command_parameter->name.c_str(), command_parameter->command_ref);
-		}
-
-	}
 	return;
 }
 
@@ -103,21 +78,44 @@ void AINB::writeToStream(LPSTREAM stream)
 	stream->Write(m_header_data.type, 3, NULL);
 }
 
-SequenceNode* AINB::getSequenceNode(int index)
+int* AINB::getInternalParameterCounts()
 {
-	return m_sequence_handler->getSequenceNode(index);
+	int* counts = new int[6];
+	vector<int>* sections = m_parameter_handler->getActiveInternalParameterTypes();
+	for (int i = 0; i < 6; i++)
+	{
+		if (find(sections->begin(), sections->end(), i) != sections->end()) {
+			counts[i] = m_parameter_handler->getInternalParameters(i)->size();
+		}
+		else {
+			counts[i] = 0;
+		}
+	}
+	return counts;
 }
 
-AINB::ParameterStruct AINB::getTableParameter(int section_num, int index)
+ParameterHandler::InternalParameterBase* ainb::AINB::getInternalParameterBase(int section_num, int index)
 {
-	ParameterStruct return_struct;
-	ParameterHandler::TableParameter* parameter = m_parameter_handler->getParameterFromTable(section_num, index);
-	return_struct.address = parameter->address;
-	_bstr_t converted_name(parameter->name.c_str());
-	return_struct.name = SysAllocString(converted_name);
-	return_struct.value = parameter->value;
-	return return_struct;
+	return m_parameter_handler->getInternalParameterBase(section_num, index);
 }
+
+
+//SequenceNode* AINB::getSequenceNode(int index)
+//{
+//	return m_sequence_handler->getSequenceNode(index);
+//}
+
+//ParameterHandler::InternalParameter AINB::getInternalParameterBase(int section_num, int index)
+//{
+	//ParameterStruct return_struct;
+	//ParameterHandler::InternalParameter* parameter = m_parameter_handler->getInternalParameterBase(section_num, index);
+	//return_struct.address = parameter->address;
+	//_bstr_t converted_name(parameter->name.c_str());
+	//return_struct.name = SysAllocString(converted_name);
+	//return_struct.value = parameter->value;
+	//return return_struct;
+	
+//}
 
 //AINB::ParameterStruct AINB::getStructureParameter(int section_num, int index)
 //{
@@ -129,6 +127,17 @@ AINB::ParameterStruct AINB::getTableParameter(int section_num, int index)
 //	return_struct.value = parameter->tag;
 //	return return_struct;
 //}
+
+AINB::InternalParameter AINB::exportInternalParameter(ParameterHandler::InternalParameterBase* parameter)
+{
+	InternalParameter return_struct;
+
+	CComBSTR converted_name(parameter->name.c_str());
+	return_struct.name = SysAllocString(converted_name);
+
+	return_struct.value = parameter->value;
+	return return_struct;
+}
 
 AINB* Create(LPSTREAM stream)
 {
@@ -155,14 +164,19 @@ void Write(AINB* ainb, LPSTREAM stream)
 	ainb->writeToStream(stream);
 }
 
-SequenceNode::NodeData GetSequenceNodeData(AINB* ainb, int index)
+int* GetInternalParameterCounts(AINB* ainb)
 {
-	SequenceNode* node = ainb->getSequenceNode(index);
-	return node->getData();
+	return ainb->getInternalParameterCounts();
 }
 
-AINB::ParameterStruct GetTableParameter(AINB* ainb, int section_num, int param_num)
+AINB::InternalParameter GetInternalParameter(AINB* ainb, int section_num, int index)
 {
-	return ainb->getTableParameter(section_num, param_num);
+	ParameterHandler::InternalParameterBase* parameter = ainb->getInternalParameterBase(section_num, index);
+	return AINB::exportInternalParameter(parameter);
 }
+
+//AINB::InternalParameter GetInternalParameter(AINB* ainb, int section_num, int param_num)
+//{
+//	return ainb->getInternalParameterBase(section_num, param_num);
+//}
 
