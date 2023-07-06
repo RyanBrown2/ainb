@@ -318,10 +318,6 @@ void ParameterHandler::InternalParameter<T>::load(LPSTREAM stream, StringList* s
 		int val;
 		readIntFromStream(stream, val);
 		InternalParameter::value = to_string(val);
-		//char buff[5];
-		//stream->Read(buff, 4, 0);
-		//buff[4] = '\0';
-		//InternalParameter::value = string(buff);
 	}
 
 	streamSeek(stream, end_pos, START);
