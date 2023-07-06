@@ -24,6 +24,10 @@ public:
 		BSTR value;
 	};
 
+	struct CommandParameter {
+		BSTR name;
+	};
+
 	int getEntryCommandCount();
 	int getExecutionCommandCount();
 
@@ -33,12 +37,15 @@ public:
 
 	// get an array of the number of internal parameters for each type
 	int* getInternalParameterCounts();
+	int* getCommandParameterCounts();
 
 	//template <ParameterHandler::ParameterType T>
 	//ParameterHandler::InternalParameter<T>* getInternalParameterBase(int index);
 	ParameterHandler::InternalParameterBase* getInternalParameterBase(int section_num, int index);
+	ParameterHandler::CommandParameterBase* getCommandParameterBase(int section_num, int index);
 
 	static InternalParameter exportInternalParameter(ParameterHandler::InternalParameterBase* parameter);
+	static CommandParameter exportCommandParameter(ParameterHandler::CommandParameterBase* parameter);
 
 private:
 	LPSTREAM m_stream;
@@ -73,8 +80,8 @@ extern "C" {
 	__declspec(dllexport) int GetExecutionCommandCount(ainb::AINB* ainb);
 	__declspec(dllexport) void Write(ainb::AINB* ainb, LPSTREAM stream);
 	__declspec(dllexport) int* GetInternalParameterCounts(ainb::AINB* ainb);
+	__declspec(dllexport) int* GetCommandParameterCounts(ainb::AINB* ainb);
 	__declspec(dllexport) ainb::AINB::InternalParameter GetInternalParameter(ainb::AINB* ainb, int section_num, int index);
-	//__declspec(dllexport) ainb::SequenceNode::NodeData GetSequenceNodeData(ainb::AINB* ainb, int index);
-	//__declspec(dllexport) ainb::ParameterHandler::InternalParameter GetInternalParameter(ainb::AINB*, int section_num, int param_num);
+	__declspec(dllexport) ainb::AINB::CommandParameter GetCommandParameter(ainb::AINB* ainb, int section_num, int index);
 }
 

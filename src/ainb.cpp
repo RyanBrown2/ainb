@@ -94,38 +94,36 @@ int* AINB::getInternalParameterCounts()
 	return counts;
 }
 
-ParameterHandler::InternalParameterBase* ainb::AINB::getInternalParameterBase(int section_num, int index)
+int* AINB::getCommandParameterCounts()
+{
+	int* counts = new int[12];
+	vector<int>* sections = m_parameter_handler->getActiveCommandParameterTypes();
+	for (int i = 0; i < 12; i++)
+	{
+		if (find(sections->begin(), sections->end(), i) != sections->end()) {
+			counts[i] = m_parameter_handler->getCommandParameters(i)->size();
+		}
+		else {
+			counts[i] = 0;
+		}
+	}
+	return counts;
+}
+
+ParameterHandler::InternalParameterBase* AINB::getInternalParameterBase(int section_num, int index)
 {
 	return m_parameter_handler->getInternalParameterBase(section_num, index);
+}
+
+ParameterHandler::CommandParameterBase* AINB::getCommandParameterBase(int section_num, int index)
+{
+	return m_parameter_handler->getCommandParameterBase(section_num, index);
 }
 
 
 //SequenceNode* AINB::getSequenceNode(int index)
 //{
 //	return m_sequence_handler->getSequenceNode(index);
-//}
-
-//ParameterHandler::InternalParameter AINB::getInternalParameterBase(int section_num, int index)
-//{
-	//ParameterStruct return_struct;
-	//ParameterHandler::InternalParameter* parameter = m_parameter_handler->getInternalParameterBase(section_num, index);
-	//return_struct.address = parameter->address;
-	//_bstr_t converted_name(parameter->name.c_str());
-	//return_struct.name = SysAllocString(converted_name);
-	//return_struct.value = parameter->value;
-	//return return_struct;
-	
-//}
-
-//AINB::ParameterStruct AINB::getStructureParameter(int section_num, int index)
-//{
-//	ParameterStruct return_struct;
-//	ParameterHandler::StructureParameter* parameter = m_parameter_handler->getParameterFromStructure(section_num, index);
-//	return_struct.address = parameter->address;
-//	_bstr_t converted_name(parameter->name.c_str());
-//	return_struct.name = SysAllocString(converted_name);
-//	return_struct.value = parameter->tag;
-//	return return_struct;
 //}
 
 AINB::InternalParameter AINB::exportInternalParameter(ParameterHandler::InternalParameterBase* parameter)
@@ -137,6 +135,16 @@ AINB::InternalParameter AINB::exportInternalParameter(ParameterHandler::Internal
 
 	CComBSTR converted_value(parameter->value.c_str());
 	return_struct.value = SysAllocString(converted_value);
+	return return_struct;
+}
+
+AINB::CommandParameter AINB::exportCommandParameter(ParameterHandler::CommandParameterBase* parameter)
+{
+	CommandParameter return_struct;
+
+	CComBSTR converted_name(parameter->name.c_str());
+	return_struct.name = SysAllocString(converted_name);
+
 	return return_struct;
 }
 
@@ -170,14 +178,21 @@ int* GetInternalParameterCounts(AINB* ainb)
 	return ainb->getInternalParameterCounts();
 }
 
+int* GetCommandParameterCounts(AINB* ainb)
+{
+	return ainb->getCommandParameterCounts();
+}
+
 AINB::InternalParameter GetInternalParameter(AINB* ainb, int section_num, int index)
 {
 	ParameterHandler::InternalParameterBase* parameter = ainb->getInternalParameterBase(section_num, index);
 	return AINB::exportInternalParameter(parameter);
 }
 
-//AINB::InternalParameter GetInternalParameter(AINB* ainb, int section_num, int param_num)
-//{
-//	return ainb->getInternalParameterBase(section_num, param_num);
-//}
+AINB::CommandParameter GetCommandParameter(AINB* ainb, int section_num, int index)
+{
+	ParameterHandler::CommandParameterBase* parameter = ainb->getCommandParameterBase(section_num, index);
+	return AINB::exportCommandParameter(parameter);
+}
+
 

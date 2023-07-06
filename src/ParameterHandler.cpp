@@ -187,10 +187,21 @@ ParameterHandler::InternalParameterBase* ParameterHandler::getInternalParameterB
 		//return &(InternalParameterBase)m_internal_parameters.at(section_num).at(parameter_num);
 	}
 	catch (out_of_range) {
-		cerr << "Tried getting parameter index " << to_string(parameter_num) << " from table " << to_string(section_num) << endl;
+		cerr << "Tried getting internal parameter index " << to_string(parameter_num) << " from section" << to_string(section_num) << endl;
 		throw std::invalid_argument("Invalid parameter index");
 	}
-	return nullptr;
+}
+
+ParameterHandler::CommandParameterBase* ParameterHandler::getCommandParameterBase(int section_num, int parameter_num)
+{
+	try {
+		CommandParameterBase* param = m_command_parameters.at(section_num).at(parameter_num).get();
+		return param;
+	}
+	catch (out_of_range) {
+		cerr << "Tried getting command parameter index " << to_string(parameter_num) << " from section" << to_string(section_num) << endl;
+		throw std::invalid_argument("Invalid parameter index");
+	}
 }
 
 // get a vector of all the parameters in a section

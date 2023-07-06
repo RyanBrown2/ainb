@@ -88,6 +88,7 @@ public:
 	std::vector<int>* getActiveCommandParameterTypes() { return &m_active_command_parameter_types; }
 
 	InternalParameterBase* getInternalParameterBase(int section_num, int parameter_num);
+	CommandParameterBase* getCommandParameterBase(int section_num, int parameter_num);
 
 	// get a vector of all the parameters in a section
 	std::vector<std::unique_ptr<InternalParameterBase>>* getInternalParameters(int section_num);
