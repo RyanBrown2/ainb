@@ -21,7 +21,7 @@ public:
 		FLOAT = 2,
 		STRING = 3,
 		VEC3 = 4,
-		UDF = 5
+		UDT = 5
 	};
 
 	struct InternalParameterBase {
@@ -71,7 +71,7 @@ public:
 	};
 
 	template <>
-	struct CommandParameter<ParameterType::UDF> : public CommandParameterBase
+	struct CommandParameter<ParameterType::UDT> : public CommandParameterBase
 	{
 		std::string type_name = "";
 
@@ -113,8 +113,8 @@ private:
 	}
 
 	template <>
-	std::unique_ptr<CommandParameterBase> createCommandParameter<ParameterType::UDF>() {
-		return std::make_unique<CommandParameter<ParameterType::UDF>>();
+	std::unique_ptr<CommandParameterBase> createCommandParameter<ParameterType::UDT>() {
+		return std::make_unique<CommandParameter<ParameterType::UDT>>();
 	}
 
 	template <ParameterType Type>
@@ -123,8 +123,8 @@ private:
 	}
 
 	template <>
-	void pushCommandParameter<ParameterType::UDF>(std::vector<std::unique_ptr<CommandParameterBase>>& vec) {
-		vec.push_back(std::make_unique<CommandParameter<ParameterType::UDF>>());
+	void pushCommandParameter<ParameterType::UDT>(std::vector<std::unique_ptr<CommandParameterBase>>& vec) {
+		vec.push_back(std::make_unique<CommandParameter<ParameterType::UDT>>());
 		// Additional operations specific to Type1
 	}
 

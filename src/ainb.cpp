@@ -4,6 +4,51 @@ using namespace std;
 
 using namespace ainb;
 
+AINB* AINB::loadFromStream(fstream& file)
+{
+	// get size 
+	file.seekg(0, std::ios::end);
+	std::streampos fileSize = file.tellg();
+	file.seekg(0, std::ios::beg);
+
+	// allocate memory
+	HGLOBAL hGlobal = GlobalAlloc(GHND, fileSize);
+	if (hGlobal == nullptr) {
+		// Handle error: memory allocation failed
+		file.close();
+		return nullptr;
+	}
+
+	// get pointer to allocated memory
+	void* pBuffer = GlobalLock(hGlobal);
+	if (pBuffer == nullptr) {
+		// Handle error: memory lock failed
+		GlobalFree(hGlobal);
+		file.close();
+		return nullptr;
+	}
+
+	// read file into allocated memory
+	file.read(static_cast<char*>(pBuffer), fileSize);
+
+	// create lpstream
+	LPSTREAM pStream;
+	if (CreateStreamOnHGlobal(hGlobal, FALSE, &pStream) != S_OK) {
+		// Handle error: failed to create LPSTREAM
+		GlobalUnlock(hGlobal);
+		GlobalFree(hGlobal);
+		file.close();
+		return nullptr;
+	}
+
+	return new AINB(pStream);
+
+	pStream->Release();
+	GlobalUnlock(hGlobal);
+	GlobalFree(hGlobal);
+	file.close();
+}
+
 AINB::AINB(LPSTREAM stream)
 {
 	m_stream = stream;

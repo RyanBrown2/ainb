@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <sstream>
 #include <ocidl.h>
@@ -44,8 +45,11 @@ public:
 	ParameterHandler::InternalParameterBase* getInternalParameterBase(int section_num, int index);
 	ParameterHandler::CommandParameterBase* getCommandParameterBase(int section_num, int index);
 
+
 	static InternalParameter exportInternalParameter(ParameterHandler::InternalParameterBase* parameter);
 	static CommandParameter exportCommandParameter(ParameterHandler::CommandParameterBase* parameter);
+
+	static AINB* loadFromStream(std::fstream& file);
 
 private:
 	LPSTREAM m_stream;

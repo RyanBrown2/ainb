@@ -4,8 +4,5 @@ build/
 researchFiles/
 CMakeFiles/
 *.ainb
-*.byml
-*.bgyml
-*.gyml
 
 CMakeSettings.json

@@ -9,11 +9,32 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_STATIC_LIBRARY_PREFIX "")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
 add_library(ainb SHARED
 	./src/ainb.cpp
-	./src/include/ainb/ainb.h
-  "src/include/ainb/util.h" "src/include/ainb/StringList.h" "src/StringList.cpp" "src/include/ainb/SequenceNode.h" "src/SequenceNode.cpp" "src/include/ainb/SequenceHandler.h" "src/SequenceHandler.cpp" "src/include/ainb/ParameterHandler.h" "src/ParameterHandler.cpp")
+	./src/StringList.cpp
+	./src/SequenceNode.cpp
+	./src/SequenceHandler.cpp
+	./src/ParameterHandler.cpp
+)
 
 target_include_directories(ainb PUBLIC ./src/include)
-target_include_directories(ainb PRIVATE ./src)
 
+add_library(ainb::ainb ALIAS ${PROJECT_NAME})
+
+add_subdirectory(cmd)
+
+# Copy <filename> to build directory
+set(copy_source_dir "${CMAKE_BINARY_DIR}")
+set(copy_dest_dir "${CMAKE_BINARY_DIR}/bin")
+set(copy_file_name "ainb.dll")
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${copy_dest_dir}
+)
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD 
+    COMMAND ${CMAKE_COMMAND} -E copy "${copy_source_dir}/${copy_file_name}" "${copy_dest_dir}/${copy_file_name}"
+    COMMENT "Copying ${copy_file_name} to build directory"
+)

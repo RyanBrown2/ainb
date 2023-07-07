@@ -78,8 +78,8 @@ void ParameterHandler::loadInternalParameters(LPSTREAM stream, int end_address)
 		case ParameterType::VEC3:
 			m_internal_parameters[section_number].push_back(make_unique<InternalParameter<ParameterType::VEC3>>());
 			break;
-		case ParameterType::UDF:
-			m_internal_parameters[section_number].push_back(make_unique<InternalParameter<ParameterType::UDF>>());
+		case ParameterType::UDT:
+			m_internal_parameters[section_number].push_back(make_unique<InternalParameter<ParameterType::UDT>>());
 			break;
 		}
 
@@ -163,8 +163,8 @@ void ParameterHandler::loadCommandParameters(LPSTREAM stream, int end_address)
 		case ParameterType::VEC3:
 			m_command_parameters[section_number].push_back(make_unique<CommandParameter<ParameterType::VEC3>>());
 			break;
-		case ParameterType::UDF:
-			m_command_parameters[section_number].push_back(make_unique<CommandParameter<ParameterType::UDF>>());
+		case ParameterType::UDT:
+			m_command_parameters[section_number].push_back(make_unique<CommandParameter<ParameterType::UDT>>());
 			break;
 		}
 
@@ -174,9 +174,7 @@ void ParameterHandler::loadCommandParameters(LPSTREAM stream, int end_address)
 		while (streamTell(stream) < end_pos) {
 			createAndLoadCommandParameter(stream, section_number);
 		}
-
 	}
-
 }
 
 ParameterHandler::InternalParameterBase* ParameterHandler::getInternalParameterBase(int section_num, int parameter_num)
@@ -238,16 +236,12 @@ void ParameterHandler::createAndLoadInternalParameter(LPSTREAM stream, int secti
 	case ParameterType::VEC3:
 		m_internal_parameters[section_number].push_back(make_unique<InternalParameter<ParameterType::VEC3>>());
 		break;
-	case ParameterType::UDF:
-		m_internal_parameters[section_number].push_back(make_unique<InternalParameter<ParameterType::UDF>>());
+	case ParameterType::UDT:
+		m_internal_parameters[section_number].push_back(make_unique<InternalParameter<ParameterType::UDT>>());
 		break;
 	}
-
 	m_internal_parameters[section_number][index]->index = index;
 	m_internal_parameters[section_number][index]->load(stream, m_string_list);
-
-
-
 }
 
 void ParameterHandler::createAndLoadCommandParameter(LPSTREAM stream, int section_number)
@@ -274,14 +268,12 @@ void ParameterHandler::createAndLoadCommandParameter(LPSTREAM stream, int sectio
 	case ParameterType::VEC3:
 		m_command_parameters[section_number].push_back(make_unique<CommandParameter<ParameterType::VEC3>>());
 		break;
-	case ParameterType::UDF:
-		m_command_parameters[section_number].push_back(make_unique<CommandParameter<ParameterType::UDF>>());
+	case ParameterType::UDT:
+		m_command_parameters[section_number].push_back(make_unique<CommandParameter<ParameterType::UDT>>());
 		break;
 	}
-
 	m_command_parameters[section_number][index]->index = index;
 	m_command_parameters[section_number][index]->load(stream, m_string_list, is_input);
-	return;
 }
 
 map<int, int> ParameterHandler::table_entry_lengths = {
@@ -362,10 +354,10 @@ void ParameterHandler::CommandParameter<T>::load(LPSTREAM stream, StringList* st
 	return;
 }
 
-void ParameterHandler::CommandParameter<ParameterHandler::ParameterType::UDF>::load(LPSTREAM stream, StringList* string_list, bool is_input)
+void ParameterHandler::CommandParameter<ParameterHandler::ParameterType::UDT>::load(LPSTREAM stream, StringList* string_list, bool is_input)
 {
 	address = streamTell(stream);
-	int section_num = is_input ? UDF * 2 : UDF * 2 + 1;
+	int section_num = is_input ? UDT * 2 : UDT * 2 + 1;
 	int end_pos = address + ParameterHandler::parameter_entry_lengths[section_num];
 
 	int name_offset;
