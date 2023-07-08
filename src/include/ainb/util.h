@@ -7,7 +7,8 @@ namespace ainb {
 
 	static const bool is_big_endian = false;
 
-	static int convertCharArrayToInt(char* array, int len) {
+	static int convertCharArrayToInt(char* array, int len)
+	{
 		int result = 0;
 		if (is_big_endian) {
 			for (int i = 0; i < len; ++i) {
@@ -22,6 +23,22 @@ namespace ainb {
 		return result;
 	}
 
+	static char* convertIntToCharArray(int num, int len)
+	{
+		char* array = new char[len];
+		if (is_big_endian) {
+			for (int i = 0; i < len; ++i) {
+				array[i] = (num >> (8 * (len - 1 - i))) & 0xFF;
+			}
+		}
+		else {
+			for (int i = 0; i < len; ++i) {
+				array[i] = (num >> (8 * i)) & 0xFF;
+			}
+		}
+		return array;
+	}
+
 	// int32_t
 	static void readIntFromStream(LPSTREAM stream, int& result) {
 		char* buffer = new char[4];
@@ -31,30 +48,35 @@ namespace ainb {
 	}
 
 	// int16_t
-	static void read2ByteIntFromStream(LPSTREAM stream, int& result) {
+	static void read2ByteIntFromStream(LPSTREAM stream, int& result)
+	{
 		char* buffer = new char[2];
 		stream->Read(buffer, sizeof(int16_t), 0);
 		result = convertCharArrayToInt(buffer, 2);
 		delete[] buffer;
 	}
 
-	static LARGE_INTEGER intToLargeInt(int i) {
+	static LARGE_INTEGER intToLargeInt(int i)
+	{
 		LARGE_INTEGER li;
 		li.QuadPart = i;
 		return li;
 	}
 
-	enum SeekOrigin {
+	enum SeekOrigin
+	{
 		START = STREAM_SEEK_SET,
 		CURRENT = STREAM_SEEK_CUR,
 		END = STREAM_SEEK_END
 	};
 
-	static void streamSeek(LPSTREAM stream, int pos, SeekOrigin origin) {
+	static void streamSeek(LPSTREAM stream, int pos, SeekOrigin origin)
+	{
 		stream->Seek(intToLargeInt(pos), origin, 0);
 	}
 
-	static int streamTell(LPSTREAM stream) {
+	static int streamTell(LPSTREAM stream)
+	{
 		LARGE_INTEGER liMove;
 		liMove.QuadPart = 0;
 

@@ -61,20 +61,29 @@ string StringList::getStringFromOffset(int offset)
 int StringList::getOffsetOfString(string str)
 {
 	if (m_string_data.count(str)) {
+
 		return m_string_data.at(str);
 	}
 	else {
+		m_strings_ordered.push_back(str);
 		m_string_data.insert(pair<string, int>(str, m_next_offset));
 		m_next_offset = str.length() + 1;
 		return m_string_data.at(str);
 	}
 }
 
-void StringList::writeToStream(LPSTREAM stream)
+void StringList::writeToStream(fstream& stream)
 {
-	streamSeek(stream, *m_start_pos, START);
-	for (auto pair : m_string_data) {
-		string str = pair.first;
-		stream->Write(str.c_str(), str.length() + 1, NULL);
+	//streamSeek(stream, *m_start_pos, START);
+	stream.seekg(*m_start_pos, ios::beg);
+	for (int i = 0; i < m_strings_ordered.size(); i++)
+	{
+		string str = m_strings_ordered[i];
+		stream.write(str.c_str(), str.length() + 1);
 	}
+	//for (auto pair : m_string_data) {
+	//	string str = pair.first;
+	//	//stream->Write(str.c_str(), str.length() + 1, NULL);
+	//	stream.write(str.c_str(), str.length() + 1);
+	//}
 }

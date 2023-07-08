@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <map>
 #include <string>
 #include <ocidl.h>
@@ -19,7 +20,7 @@ public:
 
 	std::string getStringFromOffset(int offset);
 	int getOffsetOfString(std::string str);
-	void writeToStream(LPSTREAM stream);
+	void writeToStream(std::fstream& stream);
 private:
 	int* m_start_pos = nullptr;
 
@@ -30,6 +31,7 @@ private:
 	int m_next_offset = 0;
 	// string to offset
 	std::map<std::string, int> m_string_data;
+	std::vector<std::string> m_strings_ordered;
 };
 
 }

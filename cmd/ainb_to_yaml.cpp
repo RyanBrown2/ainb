@@ -39,6 +39,54 @@ const static map<ainb::ParameterHandler::ParameterType, string> typeStrings {
 	{ ainb::ParameterHandler::ParameterType::UDT, "udt"},
 };
 
+void handleInternalParameters(YAML::Emitter& out, ainb::AINB* ainb)
+{
+	out << YAML::Key << "internal_parameters";
+	out << YAML::Value << YAML::BeginMap;
+	int* internal_counts = ainb->getInternalParameterCounts();
+	for (int i = 0; i < 6; i++)
+	{
+		int count = internal_counts[i];
+		if (count == 0) {
+			continue;
+		}
+		out << YAML::Key << typeStrings.at((ainb::ParameterHandler::ParameterType)i);
+		out << YAML::Value << YAML::BeginSeq;
+		for (int j = 1; j < count; j++)
+		{
+			out << ainb->getInternalParameterBase(i, j);
+		}
+		out << YAML::EndSeq;
+	}
+	out << YAML::EndMap;
+
+}
+
+void handleCommandParameters(YAML::Emitter& out, ainb::AINB* ainb)
+{
+	out << YAML::Key << "command_parameters";
+	out << YAML::Value << YAML::BeginMap;
+	int* command_counts = ainb->getCommandParameterCounts();
+	for (int i = 0; i < 12; i++)
+	{
+		int count = command_counts[i];
+		if (count == 0) {
+			continue;
+		}
+		string section_name = typeStrings.at((ainb::ParameterHandler::ParameterType)(i/2)) + (i % 2 == 0 ? "_input" : "_output");
+		//cout << section_name << endl;
+		out << YAML::Key << section_name;
+		out << YAML::Value << YAML::BeginSeq;
+		for (int j = 1; j < count; j++)
+		{
+			out << ainb->getCommandParameterBase(i, j);
+		}
+		out << YAML::EndSeq;
+	}
+	out << YAML::EndMap;
+
+}
+
 int main(int argc, char* argv[])
 {
 	if (argc < 2) {
@@ -69,49 +117,10 @@ int main(int argc, char* argv[])
 	out << YAML::Key << "execution_command_count";
 	out << YAML::Value << ainb->getExecutionCommandCount();
 
-	out << YAML::Key << "internal_parameters";
-	out << YAML::Value << YAML::BeginMap;
-	int* internal_counts = ainb->getInternalParameterCounts();
-	for (int i = 0; i < 6; i++)
-	{
-		int count = internal_counts[i];
-		if (count == 0) {
-			continue;
-		}
-		out << YAML::Key << typeStrings.at((ainb::ParameterHandler::ParameterType)i);
-		out << YAML::Value << YAML::BeginSeq;
-		for (int j = 1; j < count; j++)
-		{
-			out << ainb->getInternalParameterBase(i, j);
-		}
-		out << YAML::EndSeq;
-	}
-	out << YAML::EndMap;
+	handleInternalParameters(out, ainb);
 
-	out << YAML::Key << "command_parameters";
-	out << YAML::Value << YAML::BeginMap;
-	int* command_counts = ainb->getCommandParameterCounts();
-	for (int i = 0; i < 12; i++)
-	{
-		int count = command_counts[i];
-		if (count == 0) {
-			continue;
-		}
-		//ainb::ParameterHandler::ParameterType type_num = (ainb::ParameterHandler::ParameterType)(i / 2);
+	handleCommandParameters(out, ainb);
 
-		//string section_type = 
-		string section_name = typeStrings.at((ainb::ParameterHandler::ParameterType)(i/2)) + (i % 2 == 0 ? "_input" : "_output");
-		//cout << section_name << endl;
-		out << YAML::Key << section_name;
-		out << YAML::Value << YAML::BeginSeq;
-		for (int j = 1; j < count; j++)
-		{
-			out << ainb->getCommandParameterBase(i, j);
-		}
-		out << YAML::EndSeq;
-	}
-
-	out << YAML::EndMap;
 
 	out << YAML::EndMap;
 
@@ -119,9 +128,20 @@ int main(int argc, char* argv[])
 
 	ofstream yaml_out("out.yml");
 
+	cout << "Writing to file" << endl;
+
 	yaml_out << out.c_str();
 
 	yaml_out.close();
+
+
+	fstream ainb_out("out.ainb", fstream::out | ios::binary);
+
+	cout << "Writing ainb file" << endl;
+
+	ainb->writeToStream(ainb_out);
+
+	ainb_out.close();
 
 	return 0;
 }

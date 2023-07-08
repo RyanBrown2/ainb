@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <variant>
@@ -33,6 +34,7 @@ public:
 		InternalParameterBase() {}
 
 		virtual void load(LPSTREAM stream, StringList* string_list) {};
+		virtual void write(std::fstream& stream, StringList* string_list) {};
 	};
 
 	template <ParameterType Type>
@@ -40,6 +42,7 @@ public:
 		ParameterType type = Type;
 		
 		void load(LPSTREAM stream, StringList* string_list) override;
+		void write(std::fstream& stream, StringList* string_list) override;
 	};
 
 	struct CommandParameterBase
@@ -58,6 +61,7 @@ public:
 
 		virtual ~CommandParameterBase() = default;
 		virtual void load(LPSTREAM stream, StringList* string_list, bool is_input) {};
+		virtual void write(std::fstream& stream, StringList* string_list, bool is_input) {};
 	};
 
 	template <ParameterType Type>
@@ -68,6 +72,7 @@ public:
 		CommandParameter() {}
 
 		void load(LPSTREAM stream, StringList* string_list, bool is_input) override;
+		void write(std::fstream& stream, StringList* string_list, bool is_input) override;
 	};
 
 	template <>
@@ -78,11 +83,17 @@ public:
 		CommandParameter() {}
 
 		void load(LPSTREAM stream, StringList* string_list, bool is_input) override;
+		void write(std::fstream& stream, StringList* string_list, bool is_input) override;
 	};
 
 	void loadInternalParameters(LPSTREAM stream, int end_address);
-
 	void loadCommandParameters(LPSTREAM stream, int end_address);
+
+	template <ParameterType Type>
+	InternalParameter<Type> getInternalParameter(int section_num, int parameter_num);
+
+	template <ParameterType Type>
+	CommandParameter<Type> getCommandParameter(int section_num, int parameter_num);
 
 	std::vector<int>* getActiveInternalParameterTypes() { return &m_active_internal_parameter_types; }
 	std::vector<int>* getActiveCommandParameterTypes() { return &m_active_command_parameter_types; }
@@ -95,10 +106,14 @@ public:
 
 	std::vector<std::unique_ptr<CommandParameterBase>>* getCommandParameters(int section_num);
 
+	void writeInternalParametersToStream(std::fstream& stream);
+	void writeCommandParametersToStream(std::fstream& stream);
+
 private:
 	StringList* m_string_list;
 
 	std::map<int, std::vector<std::unique_ptr<InternalParameterBase>>> m_internal_parameters;
+
 
 	std::map<int, std::vector<std::unique_ptr<CommandParameterBase>>> m_command_parameters;
 
@@ -125,7 +140,7 @@ private:
 	template <>
 	void pushCommandParameter<ParameterType::UDT>(std::vector<std::unique_ptr<CommandParameterBase>>& vec) {
 		vec.push_back(std::make_unique<CommandParameter<ParameterType::UDT>>());
-		// Additional operations specific to Type1
+		// Additional operations specific to type
 	}
 
 	void createAndLoadInternalParameter(LPSTREAM stream, int section_number);

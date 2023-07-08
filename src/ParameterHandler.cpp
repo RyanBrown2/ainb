@@ -26,7 +26,6 @@ void ParameterHandler::loadInternalParameters(LPSTREAM stream, int end_address)
 
 		int entry_address;
 		readIntFromStream(stream, entry_address);
-		streamSeek(stream, entry_address, START);
 
 		if (entry_address == end_address) {
 			break;
@@ -177,6 +176,36 @@ void ParameterHandler::loadCommandParameters(LPSTREAM stream, int end_address)
 	}
 }
 
+template <ParameterHandler::ParameterType Type>
+ParameterHandler::InternalParameter<Type> ParameterHandler::getInternalParameter(int section_num, int parameter_num)
+{
+	try 
+	{
+		InternalParameter<Type> param = m_internal_parameters.at(section_num).at(parameter_num);
+		return param;
+	}
+	catch (out_of_range) 
+	{
+		cerr << "Tried getting internal parameter index " << to_string(parameter_num) << " from section" << to_string(section_num) << endl;
+		throw std::invalid_argument("Invalid parameter index");
+	}
+}
+
+template <ParameterHandler::ParameterType Type>
+ParameterHandler::CommandParameter<Type> ParameterHandler::getCommandParameter(int section_num, int parameter_num)
+{
+	try
+	{
+		CommandParameter<Type> param = m_command_parameters.at(section_num).at(parameter_num);
+		return param;
+	}
+	catch (out_of_range)
+	{
+		cerr << "Tried getting command parameter index " << to_string(parameter_num) << " from section" << to_string(section_num) << endl;
+		throw std::invalid_argument("Invalid parameter index");
+	}
+}
+
 ParameterHandler::InternalParameterBase* ParameterHandler::getInternalParameterBase(int section_num, int parameter_num)
 {
 	try {
@@ -276,6 +305,90 @@ void ParameterHandler::createAndLoadCommandParameter(LPSTREAM stream, int sectio
 	m_command_parameters[section_number][index]->load(stream, m_string_list, is_input);
 }
 
+void ParameterHandler::writeInternalParametersToStream(fstream& stream)
+{
+	// writing the internal parameters
+	vector<int> section_offsets;
+
+	int start_pos = stream.tellg();
+
+	stream.seekg(24, ios::cur); // skip over the section header for now (we'll come back to it later)
+
+	for (int i = 0; i < m_active_internal_parameter_types.size(); i++)
+	{
+		section_offsets.push_back(stream.tellg());
+		int section_num = m_active_internal_parameter_types.at(i);
+		ParameterHandler::ParameterType param_type = static_cast<ParameterHandler::ParameterType>(section_num);
+
+		vector<unique_ptr<ParameterHandler::InternalParameterBase>>* section = &m_internal_parameters[section_num];
+		for (int j = 1; j < section->size(); j++) // start at one to avoid writing null parameter
+		{
+			InternalParameterBase* param = getInternalParameterBase(section_num, j);
+			param->write(stream, m_string_list);
+		}
+	}
+	int end_pos = stream.tellg();
+
+	// write the section header
+	stream.seekg(start_pos, ios::beg);
+
+	for (int i = 0; i < 6; i++)
+	{
+		if (section_offsets.size() == 0) {
+			stream.write(convertIntToCharArray(end_pos, 4), 4);
+			continue;
+		}
+		stream.write(convertIntToCharArray(section_offsets.at(0), 4), 4);
+		if (count(m_active_internal_parameter_types.begin(), m_active_internal_parameter_types.end(), i)) {
+			//section_address[i] = section_offsets.begin();
+			section_offsets.erase(section_offsets.begin());
+		}
+	}
+}
+
+void ParameterHandler::writeCommandParametersToStream(fstream& stream)
+{
+	// writing the internal parameters
+	vector<int> section_offsets;
+
+	int start_pos = stream.tellg();
+
+	stream.seekg(4*12, ios::cur); // skip over the section header for now (we'll come back to it later)
+
+	for (int i = 0; i < m_active_command_parameter_types.size(); i++)
+	{
+		section_offsets.push_back(stream.tellg());
+		int section_num = m_active_command_parameter_types.at(i);
+		ParameterHandler::ParameterType param_type = static_cast<ParameterHandler::ParameterType>(section_num/2);
+
+		vector<unique_ptr<ParameterHandler::CommandParameterBase>>* section = &m_command_parameters[section_num];
+		for (int j = 1; j < section->size(); j++) // start at one to avoid writing null parameter
+		{
+			CommandParameterBase* param = getCommandParameterBase(section_num, j);
+			param->write(stream, m_string_list, section_num%2 == 0);
+		}
+	}
+	int end_pos = stream.tellg();
+
+	// write the section header
+	stream.seekg(start_pos, ios::beg);
+
+	for (int i = 0; i < 12; i++)
+	{
+		if (section_offsets.size() == 0) {
+			stream.write(convertIntToCharArray(end_pos, 4), 4);
+			continue;
+		}
+		stream.write(convertIntToCharArray(section_offsets.at(0), 4), 4);
+		if (count(m_active_command_parameter_types.begin(), m_active_command_parameter_types.end(), i)) {
+			section_offsets.erase(section_offsets.begin());
+		}
+	}
+
+
+
+}
+
 map<int, int> ParameterHandler::table_entry_lengths = {
 	{0, 0x0c},
 	{1, 0x0c},
@@ -324,6 +437,27 @@ void ParameterHandler::InternalParameter<T>::load(LPSTREAM stream, StringList* s
 	}
 
 	streamSeek(stream, end_pos, START);
+}
+
+template <ParameterHandler::ParameterType Type>
+void ParameterHandler::InternalParameter<Type>::write(fstream& stream, StringList* string_list)
+{
+	int name_offset = string_list->getOffsetOfString(name);
+
+	stream.write(convertIntToCharArray(name_offset, 4), 4);
+
+	stream.seekg(4, ios::cur);
+
+	if (type == ParameterType::STRING)
+	{
+		int string_offset = string_list->getOffsetOfString(value);
+		stream.write(convertIntToCharArray(string_offset, 4), 4);
+	}
+	else {
+		int val = stoi(value);
+		stream.write(convertIntToCharArray(val, 4), 4);
+	}
+
 }
 
 template <ParameterHandler::ParameterType T>
@@ -387,4 +521,59 @@ void ParameterHandler::CommandParameter<ParameterHandler::ParameterType::UDT>::l
 	// ensure that the stream is at the end of the current parameter before continuing
 	streamSeek(stream, end_pos, START);
 	return;
+}
+
+template <ParameterHandler::ParameterType T>
+void ParameterHandler::CommandParameter<T>::write(fstream& stream, StringList* string_list, bool is_input)
+{
+	int section_num = is_input ? T * 2 : T * 2 + 1;
+	int end_pos = (int)stream.tellg() + ParameterHandler::parameter_entry_lengths[section_num];
+
+	int name_offset = string_list->getOffsetOfString(name);
+	stream.write(convertIntToCharArray(name_offset, 2), 2);
+
+	stream.seekg(2, ios::cur);
+	// 0x04
+
+	if (stream.tellg() >= end_pos)
+	{
+		return;
+	}
+
+	stream.write(convertIntToCharArray(command_ref, 2), 2);
+	stream.seekg(2, ios::cur);
+
+	if (stream.tellg() >= end_pos)
+	{
+		return;
+	}
+
+	stream.seekg(end_pos, ios::beg);
+}
+
+void ParameterHandler::CommandParameter<ParameterHandler::ParameterType::UDT>::write(fstream& stream, StringList* string_list, bool is_input)
+{
+	int section_num = is_input ? UDT * 2 : UDT * 2 + 1;
+	int end_pos = (int)stream.tellg() + ParameterHandler::parameter_entry_lengths[section_num];
+
+	int name_offset = string_list->getOffsetOfString(name);
+	stream.write(convertIntToCharArray(name_offset, 2), 2);
+
+	stream.seekg(2, ios::cur);
+	// 0x04
+
+	int type_name_offset = string_list->getOffsetOfString(type_name);
+	stream.write(convertIntToCharArray(type_name_offset, 2), 2);
+
+	stream.seekg(2, ios::cur);
+	// 0x08
+
+	if (stream.tellg() >= end_pos)
+	{
+		return;
+	}
+
+	stream.write(convertIntToCharArray(command_ref, 4), 4);
+
+	stream.seekg(end_pos, ios::beg);
 }

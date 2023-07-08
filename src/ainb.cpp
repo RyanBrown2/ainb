@@ -118,9 +118,26 @@ int AINB::getExecutionCommandCount()
 	return m_header_data.execution_command_count;
 }
 
-void AINB::writeToStream(LPSTREAM stream)
+void AINB::writeToStream(fstream& stream)
 {
-	stream->Write(m_header_data.type, 3, NULL);
+
+	m_string_list->getOffsetOfString("test");
+	// write header data
+	stream.write(m_header_data.type, 3);
+	//stream->Write(m_header_data.type, 3, NULL);
+
+
+	// internal parameter data
+	stream.seekg(m_header_data.internal_parameters_start, ios::beg);
+	m_parameter_handler->writeInternalParametersToStream(stream);
+
+	// command parameter data
+	stream.seekg(m_header_data.command_parameters_start, ios::beg);
+	m_parameter_handler->writeCommandParametersToStream(stream);
+
+	// write string table
+	stream.seekg(m_header_data.string_list_start_pos, ios::beg);
+	m_string_list->writeToStream(stream);
 }
 
 int* AINB::getInternalParameterCounts()
@@ -213,10 +230,10 @@ int GetExecutionCommandCount(AINB* ainb)
 	return ainb->getExecutionCommandCount();
 }
 
-void Write(AINB* ainb, LPSTREAM stream)
-{
-	ainb->writeToStream(stream);
-}
+//void Write(AINB* ainb, LPSTREAM stream)
+//{
+//	ainb->writeToStream(stream);
+//}
 
 int* GetInternalParameterCounts(AINB* ainb)
 {

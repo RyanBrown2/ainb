@@ -33,8 +33,7 @@ public:
 	int getExecutionCommandCount();
 
 
-	void writeToStream(LPSTREAM stream); // todo
-
+	void writeToStream(std::fstream& stream); // todo
 
 	// get an array of the number of internal parameters for each type
 	int* getInternalParameterCounts();
@@ -82,7 +81,7 @@ extern "C" {
 	__declspec(dllexport) void Destroy(ainb::AINB* ainb);
 	__declspec(dllexport) int GetEntryCommandCount(ainb::AINB* ainb);
 	__declspec(dllexport) int GetExecutionCommandCount(ainb::AINB* ainb);
-	__declspec(dllexport) void Write(ainb::AINB* ainb, LPSTREAM stream);
+	//__declspec(dllexport) void Write(ainb::AINB* ainb, LPSTREAM stream);
 	__declspec(dllexport) int* GetInternalParameterCounts(ainb::AINB* ainb);
 	__declspec(dllexport) int* GetCommandParameterCounts(ainb::AINB* ainb);
 	__declspec(dllexport) ainb::AINB::InternalParameter GetInternalParameter(ainb::AINB* ainb, int section_num, int index);
