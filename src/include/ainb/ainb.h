@@ -44,6 +44,7 @@ public:
 	ParameterHandler::InternalParameterBase* getInternalParameterBase(int section_num, int index);
 	ParameterHandler::CommandParameterBase* getCommandParameterBase(int section_num, int index);
 
+	std::vector<SequenceNode*> getSequenceNodes() { return m_sequence_handler->getSequenceNodes(); }
 
 	static InternalParameter exportInternalParameter(ParameterHandler::InternalParameterBase* parameter);
 	static CommandParameter exportCommandParameter(ParameterHandler::CommandParameterBase* parameter);

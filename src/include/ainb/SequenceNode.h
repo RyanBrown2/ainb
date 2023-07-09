@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include <comdef.h>
+#include <objidl.h>
 
 namespace ainb {
 
@@ -9,31 +9,25 @@ class SequenceNode
 {
 public:
 	SequenceNode();
-	SequenceNode(int index, std::string name, char* guid);
 	~SequenceNode();
 
-	struct NodeData {
-		int index;
-		BSTR guid;
-		BSTR name;
-	};
-	
-	int getIndex();
-	void setIndex(int index);
-
 	std::string getName();
+	void setName(std::string name);
 
-	NodeData getData();
+	char* getGUID();
+	void setGUID(char* guid);
+
+	int getBodyPos();
+	void setBodyPos(int pos);
+
+	void writeHeadToStream(std::fstream& stream, int index);
+
 private:
-	int m_index;
 	char* m_guid;
-	int m_body_pos; // position of the command body
+	int m_body_pos; // position of the command body, should only be used for loading
 	std::string m_name;
 
-	// body data
-	SequenceNode* caller = nullptr;
-	// todo: parameters
-	// todo: call table
+	// todo: body
 
 };
 

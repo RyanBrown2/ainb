@@ -30,6 +30,24 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::ParameterHandler::CommandP
 	return out;
 }
 
+YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode* node) {
+
+	out << YAML::BeginMap;
+
+	out << YAML::Key << "name";
+	out << YAML::Value << node->getName();
+
+	out << YAML::Key << "guid";
+	out << YAML::Value << YAML::Hex << node->getGUID();
+
+	//out << YAML::Key << "";
+	//out << YAML::Value << 
+
+	out << YAML::EndMap;
+
+	return out;
+}
+
 const static map<ainb::ParameterHandler::ParameterType, string> typeStrings {
 	{ ainb::ParameterHandler::ParameterType::INT, "int"},
 	{ ainb::ParameterHandler::ParameterType::BOOL, "bool"},
@@ -87,6 +105,21 @@ void handleCommandParameters(YAML::Emitter& out, ainb::AINB* ainb)
 
 }
 
+void handleSequenceNodes(YAML::Emitter& out, ainb::AINB* ainb)
+{
+	out << YAML::Key << "sequence_nodes";
+	out << YAML::Value << YAML::BeginSeq;
+	for (int i = 0; i < ainb->getSequenceNodes().size(); i++)
+	{
+		out << ainb->getSequenceNodes().at(i);
+	}
+	//for (int i = 0; i < ainb->getSequenceNodeCount(); i++)
+	//{
+	//	out << ainb->getSequenceNode(i);
+	//}
+	out << YAML::EndSeq;
+}
+
 int main(int argc, char* argv[])
 {
 	if (argc < 2) {
@@ -121,6 +154,7 @@ int main(int argc, char* argv[])
 
 	handleCommandParameters(out, ainb);
 
+	handleSequenceNodes(out, ainb);
 
 	out << YAML::EndMap;
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <ocidl.h>
 #include <unordered_map>
@@ -22,14 +23,16 @@ public:
 	SequenceNode* getSequenceNode(int index);
 	
 	void loadFromStream(LPSTREAM stream, int entry_count, int execution_count);
-	void writeToStream(LPSTREAM stream);
+	void writeToStream(std::fstream& stream);
+
+	std::vector<SequenceNode*> getSequenceNodes();
 
 private:
 	StringList* m_string_list;
 
 	std::unordered_map<int, SequenceNode*> m_sequence_nodes;
 
-	SequenceNode* parseExecutionHead(LPSTREAM stream);
+	void loadExecutionCommandHeads(LPSTREAM stream, int count);
 
 };
 }

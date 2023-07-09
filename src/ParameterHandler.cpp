@@ -176,36 +176,6 @@ void ParameterHandler::loadCommandParameters(LPSTREAM stream, int end_address)
 	}
 }
 
-template <ParameterHandler::ParameterType Type>
-ParameterHandler::InternalParameter<Type> ParameterHandler::getInternalParameter(int section_num, int parameter_num)
-{
-	try 
-	{
-		InternalParameter<Type> param = m_internal_parameters.at(section_num).at(parameter_num);
-		return param;
-	}
-	catch (out_of_range) 
-	{
-		cerr << "Tried getting internal parameter index " << to_string(parameter_num) << " from section" << to_string(section_num) << endl;
-		throw std::invalid_argument("Invalid parameter index");
-	}
-}
-
-template <ParameterHandler::ParameterType Type>
-ParameterHandler::CommandParameter<Type> ParameterHandler::getCommandParameter(int section_num, int parameter_num)
-{
-	try
-	{
-		CommandParameter<Type> param = m_command_parameters.at(section_num).at(parameter_num);
-		return param;
-	}
-	catch (out_of_range)
-	{
-		cerr << "Tried getting command parameter index " << to_string(parameter_num) << " from section" << to_string(section_num) << endl;
-		throw std::invalid_argument("Invalid parameter index");
-	}
-}
-
 ParameterHandler::InternalParameterBase* ParameterHandler::getInternalParameterBase(int section_num, int parameter_num)
 {
 	try {

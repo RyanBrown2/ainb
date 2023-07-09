@@ -89,12 +89,6 @@ public:
 	void loadInternalParameters(LPSTREAM stream, int end_address);
 	void loadCommandParameters(LPSTREAM stream, int end_address);
 
-	template <ParameterType Type>
-	InternalParameter<Type> getInternalParameter(int section_num, int parameter_num);
-
-	template <ParameterType Type>
-	CommandParameter<Type> getCommandParameter(int section_num, int parameter_num);
-
 	std::vector<int>* getActiveInternalParameterTypes() { return &m_active_internal_parameter_types; }
 	std::vector<int>* getActiveCommandParameterTypes() { return &m_active_command_parameter_types; }
 

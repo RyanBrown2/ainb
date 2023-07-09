@@ -61,7 +61,6 @@ AINB::AINB(LPSTREAM stream)
 	parseParameters();
 
 	streamSeek(m_stream, 0x74, START);
-
 	m_sequence_handler = new SequenceHandler(m_string_list);
 	m_sequence_handler->loadFromStream(m_stream, m_header_data.entry_command_count, m_header_data.execution_command_count);
 }
@@ -120,13 +119,6 @@ int AINB::getExecutionCommandCount()
 
 void AINB::writeToStream(fstream& stream)
 {
-
-	m_string_list->getOffsetOfString("test");
-	// write header data
-	stream.write(m_header_data.type, 3);
-	//stream->Write(m_header_data.type, 3, NULL);
-
-
 	// internal parameter data
 	stream.seekg(m_header_data.internal_parameters_start, ios::beg);
 	m_parameter_handler->writeInternalParametersToStream(stream);
@@ -138,6 +130,20 @@ void AINB::writeToStream(fstream& stream)
 	// write string table
 	stream.seekg(m_header_data.string_list_start_pos, ios::beg);
 	m_string_list->writeToStream(stream);
+
+	// todo: update header data
+	// write header data
+	stream.seekg(0, ios::beg);
+	stream.write(m_header_data.type, 4);
+
+	stream.seekg(0x0c, ios::beg);
+	// write command counts
+	stream.write(convertIntToCharArray(m_header_data.entry_command_count, 4), 4);
+	stream.write(convertIntToCharArray(m_header_data.execution_command_count, 4), 4);
+
+	// string list start
+	stream.seekg(0x24, ios::beg);
+	stream.write(convertIntToCharArray(m_header_data.string_list_start_pos, 4), 4);
 }
 
 int* AINB::getInternalParameterCounts()

@@ -25,35 +25,6 @@ SequenceNode* SequenceHandler::getSequenceNode(int index)
 	return m_sequence_nodes[index];
 }
 
-SequenceNode* SequenceHandler::parseExecutionHead(LPSTREAM stream)
-{
-	//SequenceNode* node = new SequenceNode();
-	streamSeek(stream, 2, CURRENT);
-	int index;
-	readIntFromStream(stream, index);
-	// 0x06
-
-	streamSeek(stream, 2, CURRENT);
-	int string_offset;
-	readIntFromStream(stream, string_offset);
-	// 0x0c
-
-	std::string name = m_string_list->getStringFromOffset(string_offset);
-
-	streamSeek(stream, 0x20, CURRENT);
-	// 0x2c
-	char* guid = new char[17];
-	stream->Read(guid, 16, NULL);
-
-	SequenceNode* node = new SequenceNode(index, name, guid);
-
-	// only for debug
-	//cout << "node " << index << " : " << string_offset << " | " << node->getName() << endl;
-
-	return node;
-
-}
-
 void SequenceHandler::loadFromStream(LPSTREAM stream, int entry_count, int execution_count)
 {
 	// load entry commands
@@ -64,18 +35,76 @@ void SequenceHandler::loadFromStream(LPSTREAM stream, int entry_count, int execu
 	}
 
 	// load execution commands
-	for (int i = 0; i < execution_count; i++)
-	{
-		// todo
-		SequenceNode* node = parseExecutionHead(stream);
-		m_sequence_nodes[node->getIndex()] = node;
-
-	}
+	loadExecutionCommandHeads(stream, execution_count);
 	
 }
 
 // todo
-void SequenceHandler::writeToStream(LPSTREAM stream)
+void SequenceHandler::writeToStream(fstream& stream)
 {
 	
+}
+
+vector<SequenceNode*> SequenceHandler::getSequenceNodes()
+{
+	vector<SequenceNode*> nodes;
+	for (auto it = m_sequence_nodes.begin(); it != m_sequence_nodes.end(); it++)
+	{
+		nodes.push_back(it->second);
+	}
+	return nodes;
+}
+
+void SequenceHandler::loadExecutionCommandHeads(LPSTREAM stream, int count)
+{
+	for (int i = 0; i < count; i++)
+	{
+		int end_pos = streamTell(stream) + 0x3c;
+		SequenceNode* node = new SequenceNode();
+
+		// todo: unknown 1
+		streamSeek(stream, 2, CURRENT);
+		// 0x02
+
+		// index
+		int index;
+		readIntFromStream(stream, index);
+		// 0x06
+
+		// todo: unknown 2
+		streamSeek(stream, 2, CURRENT);
+		// 0x08
+
+		// string offset
+		int string_offset;
+		readIntFromStream(stream, string_offset);
+		node->setName(m_string_list->getStringFromOffset(string_offset));
+		// 0x0c
+
+		// todo: uid
+		streamSeek(stream, 0x4, CURRENT);
+		// 0x10
+
+
+		streamSeek(stream, 0x4, CURRENT);
+		// 0x14
+
+		// command body address
+		int command_body_address;
+		readIntFromStream(stream, command_body_address);
+		node->setBodyPos(command_body_address);
+		// 0x18
+
+		streamSeek(stream, 0x14, CURRENT);
+
+		// guid
+		char guid[17];
+		stream->Read(guid, 16, NULL);
+		guid[16] = '\0';
+		node->setGUID(guid);
+
+		streamSeek(stream, end_pos, START);
+
+		m_sequence_nodes[index] = node;
+	}
 }
