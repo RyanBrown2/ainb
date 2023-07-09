@@ -4,54 +4,8 @@ using namespace std;
 
 using namespace ainb;
 
-AINB* AINB::loadFromStream(fstream& file)
+AINB::AINB(fstream& stream) : m_stream(stream)
 {
-	// get size 
-	file.seekg(0, std::ios::end);
-	std::streampos fileSize = file.tellg();
-	file.seekg(0, std::ios::beg);
-
-	// allocate memory
-	HGLOBAL hGlobal = GlobalAlloc(GHND, fileSize);
-	if (hGlobal == nullptr) {
-		// Handle error: memory allocation failed
-		file.close();
-		return nullptr;
-	}
-
-	// get pointer to allocated memory
-	void* pBuffer = GlobalLock(hGlobal);
-	if (pBuffer == nullptr) {
-		// Handle error: memory lock failed
-		GlobalFree(hGlobal);
-		file.close();
-		return nullptr;
-	}
-
-	// read file into allocated memory
-	file.read(static_cast<char*>(pBuffer), fileSize);
-
-	// create lpstream
-	LPSTREAM pStream;
-	if (CreateStreamOnHGlobal(hGlobal, FALSE, &pStream) != S_OK) {
-		// Handle error: failed to create LPSTREAM
-		GlobalUnlock(hGlobal);
-		GlobalFree(hGlobal);
-		file.close();
-		return nullptr;
-	}
-
-	return new AINB(pStream);
-
-	pStream->Release();
-	GlobalUnlock(hGlobal);
-	GlobalFree(hGlobal);
-	file.close();
-}
-
-AINB::AINB(LPSTREAM stream)
-{
-	m_stream = stream;
 	parseHeader();
 
 	m_string_list = new StringList(&m_header_data.string_list_start_pos);
@@ -60,48 +14,53 @@ AINB::AINB(LPSTREAM stream)
 	m_parameter_handler = new ParameterHandler(m_string_list);
 	parseParameters();
 
-	streamSeek(m_stream, 0x74, START);
+	//streamSeek(m_stream, 0x74, START);
+	stream.seekg(0x74, ios::beg);
 	m_sequence_handler = new SequenceHandler(m_string_list);
 	m_sequence_handler->loadFromStream(m_stream, m_header_data.entry_command_count, m_header_data.execution_command_count);
+
+	m_name = m_string_list->getStringFromOffset(0);
 }
 
 AINB::~AINB() {
-	m_stream->Release();
+	m_stream.close();
 }
 
 void AINB::parseHeader()
 {
-	streamSeek(m_stream, 0, START);
-	m_stream->Read(m_header_data.type, 3, NULL);
-	m_header_data.type[3] = '\0';
+	m_stream.seekg(0, ios::beg);
+	m_stream.read(m_header_data.type, 4);
+	m_header_data.type[4] = '\0';
 
-	streamSeek(m_stream, 0x0c, START);
-	readIntFromStream(m_stream, m_header_data.entry_command_count);
-	readIntFromStream(m_stream, m_header_data.execution_command_count);
+	m_stream.seekg(0x0c, ios::beg);
+	readIntFromStream(m_stream, 4, m_header_data.entry_command_count);
+	readIntFromStream(m_stream, 4, m_header_data.execution_command_count);
 
-	streamSeek(m_stream, 0x24, START);
-	readIntFromStream(m_stream, m_header_data.string_list_start_pos);
+	m_stream.seekg(0x24, ios::beg);
+	readIntFromStream(m_stream, 4, m_header_data.string_list_start_pos);
 
 	// internal parameter start
-	streamSeek(m_stream, 0x2c, START);
-	readIntFromStream(m_stream, m_header_data.internal_parameters_start);
+	m_stream.seekg(0x2c, ios::beg);
+	readIntFromStream(m_stream, 4, m_header_data.internal_parameters_start);
 
-	// parameter structure start
-	streamSeek(m_stream, 0x34, START);
-	readIntFromStream(m_stream, m_header_data.command_parameters_start);
+	// command parameters start
+	m_stream.seekg(0x34, ios::beg);
+	readIntFromStream(m_stream, 4, m_header_data.command_parameters_start);
 
-	// parameter structure end
-	readIntFromStream(m_stream, m_header_data.command_parameters_end);
+	// command parameters end
+	readIntFromStream(m_stream, 4, m_header_data.command_parameters_end);
 
+	return;
 }
 
 void AINB::parseParameters()
 {
-	streamSeek(m_stream, m_header_data.internal_parameters_start, START);
+	//streamSeek(m_stream, m_header_data.internal_parameters_start, START);
+	m_stream.seekg(m_header_data.internal_parameters_start, ios::beg);
 	m_parameter_handler->loadInternalParameters(m_stream, m_header_data.command_parameters_start);
 
-	streamSeek(m_stream, m_header_data.command_parameters_start, START);
-	//m_parameter_handler->loadStructureParameters(m_stream, m_header_data.command_parameters_end);
+	//streamSeek(m_stream, m_header_data.command_parameters_start, START);
+	m_stream.seekg(m_header_data.command_parameters_start, ios::beg);
 	m_parameter_handler->loadCommandParameters(m_stream, m_header_data.command_parameters_end);
 
 	return;
@@ -119,6 +78,9 @@ int AINB::getExecutionCommandCount()
 
 void AINB::writeToStream(fstream& stream)
 {
+	// make sure name gets written to string list
+	m_string_list->getOffsetOfString(m_name);
+
 	// internal parameter data
 	stream.seekg(m_header_data.internal_parameters_start, ios::beg);
 	m_parameter_handler->writeInternalParametersToStream(stream);
@@ -178,89 +140,13 @@ int* AINB::getCommandParameterCounts()
 	return counts;
 }
 
-ParameterHandler::InternalParameterBase* AINB::getInternalParameterBase(int section_num, int index)
+ParameterHandler::InternalParameterBase* AINB::getInternalParameter(int section_num, int index)
 {
-	return m_parameter_handler->getInternalParameterBase(section_num, index);
+	return m_parameter_handler->getInternalParameter(section_num, index);
 }
 
-ParameterHandler::CommandParameterBase* AINB::getCommandParameterBase(int section_num, int index)
+ParameterHandler::CommandParameterBase* AINB::getCommandParameter(int section_num, int index)
 {
-	return m_parameter_handler->getCommandParameterBase(section_num, index);
+	return m_parameter_handler->getCommandParameter(section_num, index);
 }
-
-
-//SequenceNode* AINB::getSequenceNode(int index)
-//{
-//	return m_sequence_handler->getSequenceNode(index);
-//}
-
-AINB::InternalParameter AINB::exportInternalParameter(ParameterHandler::InternalParameterBase* parameter)
-{
-	InternalParameter return_struct;
-
-	CComBSTR converted_name(parameter->name.c_str());
-	return_struct.name = SysAllocString(converted_name);
-
-	CComBSTR converted_value(parameter->value.c_str());
-	return_struct.value = SysAllocString(converted_value);
-	return return_struct;
-}
-
-AINB::CommandParameter AINB::exportCommandParameter(ParameterHandler::CommandParameterBase* parameter)
-{
-	CommandParameter return_struct;
-
-	CComBSTR converted_name(parameter->name.c_str());
-	return_struct.name = SysAllocString(converted_name);
-
-	return return_struct;
-}
-
-AINB* Create(LPSTREAM stream)
-{
-	return new AINB(stream);
-}
-
-void Destroy(AINB* ainb)
-{
-	delete ainb;
-}
-
-int GetEntryCommandCount(AINB* ainb)
-{
-	return ainb->getEntryCommandCount();
-}
-
-int GetExecutionCommandCount(AINB* ainb)
-{
-	return ainb->getExecutionCommandCount();
-}
-
-//void Write(AINB* ainb, LPSTREAM stream)
-//{
-//	ainb->writeToStream(stream);
-//}
-
-int* GetInternalParameterCounts(AINB* ainb)
-{
-	return ainb->getInternalParameterCounts();
-}
-
-int* GetCommandParameterCounts(AINB* ainb)
-{
-	return ainb->getCommandParameterCounts();
-}
-
-AINB::InternalParameter GetInternalParameter(AINB* ainb, int section_num, int index)
-{
-	ParameterHandler::InternalParameterBase* parameter = ainb->getInternalParameterBase(section_num, index);
-	return AINB::exportInternalParameter(parameter);
-}
-
-AINB::CommandParameter GetCommandParameter(AINB* ainb, int section_num, int index)
-{
-	ParameterHandler::CommandParameterBase* parameter = ainb->getCommandParameterBase(section_num, index);
-	return AINB::exportCommandParameter(parameter);
-}
-
 

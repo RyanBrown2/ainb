@@ -4,7 +4,6 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <ocidl.h>
 #include "util.h"
 
 namespace ainb 
@@ -16,7 +15,7 @@ public:
 	StringList(int* start_pos);
 	~StringList();
 
-	void loadFromStream(LPSTREAM stream);
+	void loadFromStream(std::fstream& stream);
 
 	std::string getStringFromOffset(int offset);
 	int getOffsetOfString(std::string str);

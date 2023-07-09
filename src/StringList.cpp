@@ -13,16 +13,16 @@ StringList::~StringList()
 
 }
 
-void StringList::loadFromStream(LPSTREAM stream)
+void StringList::loadFromStream(fstream& stream)
 {
-	streamSeek(stream, 0, END);
-	int end_pos = streamTell(stream);
-	streamSeek(stream, *m_start_pos, START);
+	stream.seekg(0, ios::end);
+	int end_pos = stream.tellg();
+	stream.seekg(*m_start_pos, ios::beg);
 
 	string raw_string;
 	char buff[1];
-	while(streamTell(stream) < end_pos) {
-		stream->Read(buff, 1, 0);
+	while(stream.tellg() < end_pos) {
+		stream.read(buff, 1);
 		raw_string.push_back(buff[0]);
 	}
 
@@ -31,20 +31,9 @@ void StringList::loadFromStream(LPSTREAM stream)
 	int last_null = false;
 	while ((null_pos = raw_string.find('\0', null_pos)) != string::npos) {
 		string current_string = raw_string.substr(current_pos, null_pos - current_pos);
-
-		//if (last_null) {
-		//	m_loaded_string_data[current_pos - 1] = current_string;
-		//	last_null = false;
-		//}
-
-		//if (current_string.length() == 0) {
-		//	last_null = true;
-		//}
-
 		m_loaded_string_data[current_pos] = current_string;
 		null_pos++;
 		current_pos = null_pos;
-		//cout << current_string << endl;
 	}
 }
 

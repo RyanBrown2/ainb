@@ -1,37 +1,23 @@
 #pragma once
 #include <iostream>
 #include <fstream>
-#include <string>
-#include <sstream>
-#include <ocidl.h>
 #include "util.h"
 #include "StringList.h"
 #include "SequenceNode.h"
 #include "SequenceHandler.h"
 #include "ParameterHandler.h"
-#include "comutil.h"
-#include "atlbase.h"
-#include <unknwn.h>
 
 namespace ainb {
 
 class AINB {
 public:
-	AINB(LPSTREAM stream);
+	AINB(std::fstream& stream);
 	~AINB();
 
-	struct InternalParameter {
-		BSTR name;
-		BSTR value;
-	};
-
-	struct CommandParameter {
-		BSTR name;
-	};
+	std::string getName() { return m_name; }
 
 	int getEntryCommandCount();
 	int getExecutionCommandCount();
-
 
 	void writeToStream(std::fstream& stream); // todo
 
@@ -39,23 +25,20 @@ public:
 	int* getInternalParameterCounts();
 	int* getCommandParameterCounts();
 
-	//template <ParameterHandler::ParameterType T>
-	//ParameterHandler::InternalParameter<T>* getInternalParameterBase(int index);
-	ParameterHandler::InternalParameterBase* getInternalParameterBase(int section_num, int index);
-	ParameterHandler::CommandParameterBase* getCommandParameterBase(int section_num, int index);
+	ParameterHandler::InternalParameterBase* getInternalParameter(int section_num, int index);
+	ParameterHandler::CommandParameterBase* getCommandParameter(int section_num, int index);
 
 	std::vector<SequenceNode*> getSequenceNodes() { return m_sequence_handler->getSequenceNodes(); }
 
-	static InternalParameter exportInternalParameter(ParameterHandler::InternalParameterBase* parameter);
-	static CommandParameter exportCommandParameter(ParameterHandler::CommandParameterBase* parameter);
-
-	static AINB* loadFromStream(std::fstream& file);
-
 private:
-	LPSTREAM m_stream;
+	std::fstream& m_stream;
+
+	// this is the internal name of the file
+	// it is the first string in the string list
+	std::string m_name;
 
 	struct HeaderData {
-		char* type = new char[4];
+		char* type = new char[5];
 		int entry_command_count = -1;
 		int execution_command_count = -1;
 
@@ -75,17 +58,5 @@ private:
 	void parseParameters();
 };
 
-}
-
-extern "C" {
-	__declspec(dllexport) ainb::AINB* Create(LPSTREAM stream);
-	__declspec(dllexport) void Destroy(ainb::AINB* ainb);
-	__declspec(dllexport) int GetEntryCommandCount(ainb::AINB* ainb);
-	__declspec(dllexport) int GetExecutionCommandCount(ainb::AINB* ainb);
-	//__declspec(dllexport) void Write(ainb::AINB* ainb, LPSTREAM stream);
-	__declspec(dllexport) int* GetInternalParameterCounts(ainb::AINB* ainb);
-	__declspec(dllexport) int* GetCommandParameterCounts(ainb::AINB* ainb);
-	__declspec(dllexport) ainb::AINB::InternalParameter GetInternalParameter(ainb::AINB* ainb, int section_num, int index);
-	__declspec(dllexport) ainb::AINB::CommandParameter GetCommandParameter(ainb::AINB* ainb, int section_num, int index);
 }
 

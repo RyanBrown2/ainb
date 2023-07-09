@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include "comutil.h"
 #include "ainb/ainb.h"
 #include "yaml-cpp/yaml.h"
 
@@ -72,7 +73,7 @@ void handleInternalParameters(YAML::Emitter& out, ainb::AINB* ainb)
 		out << YAML::Value << YAML::BeginSeq;
 		for (int j = 1; j < count; j++)
 		{
-			out << ainb->getInternalParameterBase(i, j);
+			out << ainb->getInternalParameter(i, j);
 		}
 		out << YAML::EndSeq;
 	}
@@ -97,7 +98,7 @@ void handleCommandParameters(YAML::Emitter& out, ainb::AINB* ainb)
 		out << YAML::Value << YAML::BeginSeq;
 		for (int j = 1; j < count; j++)
 		{
-			out << ainb->getCommandParameterBase(i, j);
+			out << ainb->getCommandParameter(i, j);
 		}
 		out << YAML::EndSeq;
 	}
@@ -113,10 +114,6 @@ void handleSequenceNodes(YAML::Emitter& out, ainb::AINB* ainb)
 	{
 		out << ainb->getSequenceNodes().at(i);
 	}
-	//for (int i = 0; i < ainb->getSequenceNodeCount(); i++)
-	//{
-	//	out << ainb->getSequenceNode(i);
-	//}
 	out << YAML::EndSeq;
 }
 
@@ -139,7 +136,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	ainb::AINB* ainb = ainb::AINB::loadFromStream(file);
+	ainb::AINB* ainb = new ainb::AINB(file);
 
 	YAML::Emitter out;
 	out << YAML::BeginMap;
@@ -160,7 +157,9 @@ int main(int argc, char* argv[])
 
 	assert(out.good());
 
-	ofstream yaml_out("out.yml");
+
+	string yaml_out_dir = ainb->getName() + ".yml";
+	ofstream yaml_out(yaml_out_dir);
 
 	cout << "Writing to file" << endl;
 
@@ -169,7 +168,8 @@ int main(int argc, char* argv[])
 	yaml_out.close();
 
 
-	fstream ainb_out("out.ainb", fstream::out | ios::binary);
+	string ainb_out_dir = ainb->getName() + ".modified" + ".ainb";
+	fstream ainb_out(ainb_out_dir, fstream::out | ios::binary);
 
 	cout << "Writing ainb file" << endl;
 

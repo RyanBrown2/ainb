@@ -5,7 +5,6 @@
 #include <vector>
 #include <variant>
 #include <map>
-#include <ocidl.h>
 #include "StringList.h"
 #include "util.h"
 
@@ -33,7 +32,7 @@ public:
 
 		InternalParameterBase() {}
 
-		virtual void load(LPSTREAM stream, StringList* string_list) {};
+		virtual void load(std::fstream& stream, StringList* string_list) {};
 		virtual void write(std::fstream& stream, StringList* string_list) {};
 	};
 
@@ -41,7 +40,7 @@ public:
 	struct InternalParameter : public InternalParameterBase {
 		ParameterType type = Type;
 		
-		void load(LPSTREAM stream, StringList* string_list) override;
+		void load(std::fstream& stream, StringList* string_list) override;
 		void write(std::fstream& stream, StringList* string_list) override;
 	};
 
@@ -60,7 +59,7 @@ public:
 		CommandParameterBase() {}
 
 		virtual ~CommandParameterBase() = default;
-		virtual void load(LPSTREAM stream, StringList* string_list, bool is_input) {};
+		virtual void load(std::fstream& stream, StringList* string_list, bool is_input) {};
 		virtual void write(std::fstream& stream, StringList* string_list, bool is_input) {};
 	};
 
@@ -71,7 +70,7 @@ public:
 
 		CommandParameter() {}
 
-		void load(LPSTREAM stream, StringList* string_list, bool is_input) override;
+		void load(std::fstream& stream, StringList* string_list, bool is_input) override;
 		void write(std::fstream& stream, StringList* string_list, bool is_input) override;
 	};
 
@@ -82,18 +81,18 @@ public:
 
 		CommandParameter() {}
 
-		void load(LPSTREAM stream, StringList* string_list, bool is_input) override;
+		void load(std::fstream& stream, StringList* string_list, bool is_input) override;
 		void write(std::fstream& stream, StringList* string_list, bool is_input) override;
 	};
 
-	void loadInternalParameters(LPSTREAM stream, int end_address);
-	void loadCommandParameters(LPSTREAM stream, int end_address);
+	void loadInternalParameters(std::fstream& stream, int end_address);
+	void loadCommandParameters(std::fstream& stream, int end_address);
 
 	std::vector<int>* getActiveInternalParameterTypes() { return &m_active_internal_parameter_types; }
 	std::vector<int>* getActiveCommandParameterTypes() { return &m_active_command_parameter_types; }
 
-	InternalParameterBase* getInternalParameterBase(int section_num, int parameter_num);
-	CommandParameterBase* getCommandParameterBase(int section_num, int parameter_num);
+	InternalParameterBase* getInternalParameter(int section_num, int parameter_num);
+	CommandParameterBase* getCommandParameter(int section_num, int parameter_num);
 
 	// get a vector of all the parameters in a section
 	std::vector<std::unique_ptr<InternalParameterBase>>* getInternalParameters(int section_num);
@@ -137,8 +136,8 @@ private:
 		// Additional operations specific to type
 	}
 
-	void createAndLoadInternalParameter(LPSTREAM stream, int section_number);
-	void createAndLoadCommandParameter(LPSTREAM stream, int section_number);
+	void createAndLoadInternalParameter(std::fstream& stream, int section_number);
+	void createAndLoadCommandParameter(std::fstream& stream, int section_number);
 
 	static std::map<int, int> table_entry_lengths;
 	static std::map<int, int> parameter_entry_lengths;

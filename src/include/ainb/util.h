@@ -1,7 +1,5 @@
 #pragma once
 #include <iostream>
-#include <ocidl.h>
-#include <cstdint>
 
 namespace ainb {
 
@@ -39,57 +37,64 @@ namespace ainb {
 		return array;
 	}
 
-	// int32_t
-	static void readIntFromStream(LPSTREAM stream, int& result) {
-		char* buffer = new char[4];
-		stream->Read(buffer, sizeof(int), 0);
-		result = convertCharArrayToInt(buffer, 4);
+	static void readIntFromStream(std::fstream& stream, int size, int& result) {
+		char* buffer = new char[size];
+		stream.read(buffer, size);
+		result = convertCharArrayToInt(buffer, size);
 		delete[] buffer;
 	}
+
+	// int32_t
+	//static void readIntFromStreamPtr(LPSTREAM stream, int& result) {
+	//	char* buffer = new char[4];
+	//	stream->Read(buffer, sizeof(int), 0);
+	//	result = convertCharArrayToInt(buffer, 4);
+	//	delete[] buffer;
+	//}
 
 	// int16_t
-	static void read2ByteIntFromStream(LPSTREAM stream, int& result)
-	{
-		char* buffer = new char[2];
-		stream->Read(buffer, sizeof(int16_t), 0);
-		result = convertCharArrayToInt(buffer, 2);
-		delete[] buffer;
-	}
+	//static void read2ByteIntFromStreamPtr(LPSTREAM stream, int& result)
+	//{
+	//	char* buffer = new char[2];
+	//	stream->Read(buffer, sizeof(int16_t), 0);
+	//	result = convertCharArrayToInt(buffer, 2);
+	//	delete[] buffer;
+	//}
 
-	static LARGE_INTEGER intToLargeInt(int i)
-	{
-		LARGE_INTEGER li;
-		li.QuadPart = i;
-		return li;
-	}
+	//static LARGE_INTEGER intToLargeInt(int i)
+	//{
+	//	LARGE_INTEGER li;
+	//	li.QuadPart = i;
+	//	return li;
+	//}
 
-	enum SeekOrigin
-	{
-		START = STREAM_SEEK_SET,
-		CURRENT = STREAM_SEEK_CUR,
-		END = STREAM_SEEK_END
-	};
+	//enum SeekOrigin
+	//{
+	//	START = STREAM_SEEK_SET,
+	//	CURRENT = STREAM_SEEK_CUR,
+	//	END = STREAM_SEEK_END
+	//};
 
-	static void streamSeek(LPSTREAM stream, int pos, SeekOrigin origin)
-	{
-		stream->Seek(intToLargeInt(pos), origin, 0);
-	}
+	//static void streamSeek(LPSTREAM stream, int pos, SeekOrigin origin)
+	//{
+	//	stream->Seek(intToLargeInt(pos), origin, 0);
+	//}
 
-	static int streamTell(LPSTREAM stream)
-	{
-		LARGE_INTEGER liMove;
-		liMove.QuadPart = 0;
+	//static int streamTell(LPSTREAM stream)
+	//{
+	//	LARGE_INTEGER liMove;
+	//	liMove.QuadPart = 0;
 
-		ULARGE_INTEGER uliPosition;
-		HRESULT hr = stream->Seek(liMove, STREAM_SEEK_CUR, &uliPosition);
+	//	ULARGE_INTEGER uliPosition;
+	//	HRESULT hr = stream->Seek(liMove, STREAM_SEEK_CUR, &uliPosition);
 
-		if (FAILED(hr)) {
-			// Handle error, possibly with _com_error(hr).ErrorMessage()
-			return -1;
-		}
-		else {
-			return uliPosition.QuadPart;
-		}
-	}
+	//	if (FAILED(hr)) {
+	//		// Handle error, possibly with _com_error(hr).ErrorMessage()
+	//		return -1;
+	//	}
+	//	else {
+	//		return uliPosition.QuadPart;
+	//	}
+	//}
 
 }

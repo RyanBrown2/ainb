@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <ocidl.h>
 #include <unordered_map>
 #include "StringList.h"
 #include "SequenceNode.h"
@@ -22,7 +21,7 @@ public:
 
 	SequenceNode* getSequenceNode(int index);
 	
-	void loadFromStream(LPSTREAM stream, int entry_count, int execution_count);
+	void loadFromStream(std::fstream& stream, int entry_count, int execution_count);
 	void writeToStream(std::fstream& stream);
 
 	std::vector<SequenceNode*> getSequenceNodes();
@@ -32,7 +31,7 @@ private:
 
 	std::unordered_map<int, SequenceNode*> m_sequence_nodes;
 
-	void loadExecutionCommandHeads(LPSTREAM stream, int count);
+	void loadExecutionCommandHeads(std::fstream& stream, int count);
 
 };
 }

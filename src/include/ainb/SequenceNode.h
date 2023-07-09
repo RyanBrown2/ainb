@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include <objidl.h>
 
 namespace ainb {
 
