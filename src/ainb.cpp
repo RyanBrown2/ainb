@@ -16,7 +16,7 @@ AINB::AINB(fstream& stream) : m_stream(stream)
 
 	//streamSeek(m_stream, 0x74, START);
 	stream.seekg(0x74, ios::beg);
-	m_sequence_handler = new SequenceHandler(m_string_list);
+	m_sequence_handler = new SequenceHandler(m_parameter_handler, m_string_list);
 	m_sequence_handler->loadFromStream(m_stream, m_header_data.entry_command_count, m_header_data.execution_command_count);
 
 	m_name = m_string_list->getStringFromOffset(0);

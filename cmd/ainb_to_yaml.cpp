@@ -7,6 +7,15 @@
 
 using namespace std;
 
+const static map<ainb::ParameterType, string> typeStrings {
+	{ ainb::ParameterType::INT, "int"},
+	{ ainb::ParameterType::BOOL, "bool"},
+	{ ainb::ParameterType::FLOAT, "float"},
+	{ ainb::ParameterType::STRING, "string"},
+	{ ainb::ParameterType::VEC3, "vector3"},
+	{ ainb::ParameterType::UDT, "udt"},
+};
+
 YAML::Emitter& operator << (YAML::Emitter& out, ainb::InternalParameterBase* parameter) {
 	out << YAML::BeginMap;
 
@@ -39,6 +48,25 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode* node) {
 	out << YAML::Key << "name";
 	out << YAML::Value << node->getName();
 
+	out << YAML::Key << "internal_parameters";
+	out << YAML::Value << YAML::BeginMap;
+	for (auto& pair : node->getInternalParameters()) {
+		string type = typeStrings.at((ainb::ParameterType)pair.first);
+		out << YAML::Key << type;
+		out << YAML::Value << pair.second;
+	}
+	out << YAML::EndMap;
+
+	out << YAML::Key << "command_parameters";
+	out << YAML::Value << YAML::BeginMap;
+	for (auto& pair : node->getCommandParameters()) {
+		bool is_input = pair.first % 2 == 0;
+		string type = typeStrings.at((ainb::ParameterType)(pair.first/2)) + (is_input ? "_input" : "_output");
+		out << YAML::Key << type;
+		out << YAML::Value << pair.second;
+	}
+	out << YAML::EndMap;
+
 	//out << YAML::Key << "";
 	//out << YAML::Value << 
 
@@ -47,14 +75,7 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode* node) {
 	return out;
 }
 
-const static map<ainb::ParameterType, string> typeStrings {
-	{ ainb::ParameterType::INT, "int"},
-	{ ainb::ParameterType::BOOL, "bool"},
-	{ ainb::ParameterType::FLOAT, "float"},
-	{ ainb::ParameterType::STRING, "string"},
-	{ ainb::ParameterType::VEC3, "vector3"},
-	{ ainb::ParameterType::UDT, "udt"},
-};
+
 
 void handleInternalParameters(YAML::Emitter& out, ainb::AINB* ainb)
 {
@@ -145,9 +166,8 @@ int main(int argc, char* argv[])
 	out << YAML::Key << "execution_command_count";
 	out << YAML::Value << ainb->getExecutionCommandCount();
 
-	handleInternalParameters(out, ainb);
-
-	handleCommandParameters(out, ainb);
+	//handleInternalParameters(out, ainb);
+	//handleCommandParameters(out, ainb);
 
 	handleSequenceNodes(out, ainb);
 

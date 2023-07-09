@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include "StringList.h"
+#include "ParameterHandler.h"
 #include "SequenceNode.h"
 #include "util.h"
 
@@ -12,10 +13,15 @@ namespace ainb
 class SequenceHandler
 {
 public:
-	SequenceHandler(StringList* string_list);
+	SequenceHandler(ParameterHandler* parameter_handler, StringList* string_list);
 	~SequenceHandler();
 
 	// todo, struct for entry command
+	struct EntryCommand {
+		std::string name = "";
+		char* guid = new char[17];
+		SequenceNode* entry_node = nullptr;
+	};
 
 	void addSequenceNode(SequenceNode* sequence_node);
 
@@ -27,11 +33,16 @@ public:
 	std::vector<SequenceNode*> getSequenceNodes();
 
 private:
+	ParameterHandler* m_parameter_handler;
 	StringList* m_string_list;
 
 	std::unordered_map<int, SequenceNode*> m_sequence_nodes;
+	std::vector<EntryCommand> m_entry_commands;
 
 	void loadExecutionCommandHeads(std::fstream& stream, int count);
+	void loadEntryCommandHeads(std::fstream& stream, int count);
+
+	void loadCommandBodies(std::fstream& stream);
 
 };
 }

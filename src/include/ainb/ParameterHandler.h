@@ -110,7 +110,6 @@ private:
 
 	std::map<int, std::vector<std::unique_ptr<InternalParameterBase>>> m_internal_parameters;
 
-
 	std::map<int, std::vector<std::unique_ptr<CommandParameterBase>>> m_command_parameters;
 
 	std::vector<int> m_active_internal_parameter_types;
