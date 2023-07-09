@@ -142,9 +142,8 @@ void SequenceHandler::loadCommandBodies(fstream& stream)
 		SequenceNode* node = m_sequence_nodes.at(i);
 
 		stream.seekg(node->getBodyPos(), ios::beg);
-		
-		
 		int body_start_pos = (int)stream.tellg();
+
 		for (int j = 0; j < m_parameter_handler->getActiveInternalParameterTypes()->size(); j++)
 		{
 			int section_num = m_parameter_handler->getActiveInternalParameterTypes()->at(j);
@@ -177,6 +176,41 @@ void SequenceHandler::loadCommandBodies(fstream& stream)
 			}
 
 			node->setCommandParameter(m_parameter_handler->getCommandParameter(section_num, param_index), section_num);
+		}
+
+		stream.seekg(body_start_pos + 0xa3, ios::beg);
+
+		int table_size;
+		readIntFromStream(stream, 1, table_size);
+
+		if (table_size == 0)
+		{
+			continue;
+		}
+
+		vector<int> entry_addresses;
+
+		for (int j = 0; j < table_size; j++)
+		{
+			int entry_address;
+			readIntFromStream(stream, 4, entry_address);
+			entry_addresses.push_back(entry_address);
+		}
+
+		for (int j = 0; j < entry_addresses.size(); j++)
+		{
+			stream.seekg(entry_addresses.at(j), ios::beg);
+
+			int callee_index;
+			readIntFromStream(stream, 4, callee_index);
+			SequenceNode* callee = m_sequence_nodes.at(callee_index);
+
+			int param_string_offset;
+			readIntFromStream(stream, 4, param_string_offset);
+			string param_string = m_string_list->getStringFromOffset(param_string_offset);
+
+			node->addCall(callee, param_string);
+
 		}
 	}
 }

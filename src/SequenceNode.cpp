@@ -59,3 +59,16 @@ void SequenceNode::setCommandParameter(CommandParameterBase* parameter, int posi
 {
 	m_command_parameters[position] = parameter;
 }
+
+void SequenceNode::addCall(SequenceNode* node, string param)
+{
+	if (m_call_table.count(node)) {
+		m_call_table[node].call_strings.push_back(param);
+		return;
+	}
+
+	CallTableEntry entry;
+	entry.callee = node;
+	entry.call_strings.push_back(param);
+	m_call_table[node] = entry;
+}

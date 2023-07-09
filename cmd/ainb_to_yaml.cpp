@@ -41,6 +41,25 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::CommandParameterBase* para
 	return out;
 }
 
+
+YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode::CallTableEntry* entry) {
+	string callee_name = entry->callee->getName();
+
+	out << YAML::BeginMap;
+
+	out << YAML::Key << callee_name;
+	out << YAML::Value << YAML::BeginSeq;
+	for (int i = 0; i < entry->call_strings.size(); i++)
+	{
+		out << entry->call_strings.at(i);
+	}
+	out << YAML::EndSeq;
+
+	out << YAML::EndMap;
+
+	return out;
+}
+
 YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode* node) {
 
 	out << YAML::BeginMap;
@@ -67,15 +86,18 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode* node) {
 	}
 	out << YAML::EndMap;
 
-	//out << YAML::Key << "";
-	//out << YAML::Value << 
+	out << YAML::Key << "callees";
+	out << YAML::Value << YAML::BeginSeq;
+	for (auto& callee : node->getCallTable()) {
+		ainb::SequenceNode::CallTableEntry call_table_entry = callee.second;
+		out << &call_table_entry;
+	}
+	out << YAML::EndSeq;
+
 
 	out << YAML::EndMap;
-
 	return out;
 }
-
-
 
 void handleInternalParameters(YAML::Emitter& out, ainb::AINB* ainb)
 {

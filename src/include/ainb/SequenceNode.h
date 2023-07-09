@@ -8,6 +8,12 @@ namespace ainb {
 class SequenceNode
 {
 public:
+
+	struct CallTableEntry {
+		SequenceNode* callee = nullptr;
+		std::vector<std::string> call_strings;
+	};
+
 	SequenceNode();
 	~SequenceNode();
 
@@ -29,6 +35,9 @@ public:
 	std::map<int, InternalParameterBase*> getInternalParameters() { return m_internal_parameters; }
 	std::map<int, CommandParameterBase*> getCommandParameters() { return m_command_parameters; }
 
+	void addCall(SequenceNode* callee, std::string param);
+	std::map<SequenceNode*, CallTableEntry> getCallTable() { return m_call_table; }
+
 private:
 	char* m_guid;
 	int m_body_pos; // position of the command body, should only be used for loading
@@ -36,6 +45,9 @@ private:
 
 	std::map<int, InternalParameterBase*> m_internal_parameters;
 	std::map<int, CommandParameterBase*> m_command_parameters;
+
+	//std::vector<CallTableEntry> m_call_table;
+	std::map<SequenceNode*, CallTableEntry> m_call_table;
 
 	// todo: body
 
