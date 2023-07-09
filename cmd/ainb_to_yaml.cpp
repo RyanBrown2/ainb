@@ -1,12 +1,13 @@
 #include <iostream>
 #include <fstream>
-#include "comutil.h"
+//#include "comutil.h"
 #include "ainb/ainb.h"
 #include "yaml-cpp/yaml.h"
+#include <cassert>
 
 using namespace std;
 
-YAML::Emitter& operator << (YAML::Emitter& out, ainb::ParameterHandler::InternalParameterBase* parameter) {
+YAML::Emitter& operator << (YAML::Emitter& out, ainb::InternalParameterBase* parameter) {
 	out << YAML::BeginMap;
 
 	out << YAML::Key << "name";
@@ -20,7 +21,7 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::ParameterHandler::Internal
 	return out;
 }
 
-YAML::Emitter& operator << (YAML::Emitter& out, ainb::ParameterHandler::CommandParameterBase* parameter) {
+YAML::Emitter& operator << (YAML::Emitter& out, ainb::CommandParameterBase* parameter) {
 	out << YAML::BeginMap;
 
 	out << YAML::Key << "name";
@@ -38,9 +39,6 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode* node) {
 	out << YAML::Key << "name";
 	out << YAML::Value << node->getName();
 
-	out << YAML::Key << "guid";
-	out << YAML::Value << YAML::Hex << node->getGUID();
-
 	//out << YAML::Key << "";
 	//out << YAML::Value << 
 
@@ -49,13 +47,13 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode* node) {
 	return out;
 }
 
-const static map<ainb::ParameterHandler::ParameterType, string> typeStrings {
-	{ ainb::ParameterHandler::ParameterType::INT, "int"},
-	{ ainb::ParameterHandler::ParameterType::BOOL, "bool"},
-	{ ainb::ParameterHandler::ParameterType::FLOAT, "float"},
-	{ ainb::ParameterHandler::ParameterType::STRING, "string"},
-	{ ainb::ParameterHandler::ParameterType::VEC3, "vector3"},
-	{ ainb::ParameterHandler::ParameterType::UDT, "udt"},
+const static map<ainb::ParameterType, string> typeStrings {
+	{ ainb::ParameterType::INT, "int"},
+	{ ainb::ParameterType::BOOL, "bool"},
+	{ ainb::ParameterType::FLOAT, "float"},
+	{ ainb::ParameterType::STRING, "string"},
+	{ ainb::ParameterType::VEC3, "vector3"},
+	{ ainb::ParameterType::UDT, "udt"},
 };
 
 void handleInternalParameters(YAML::Emitter& out, ainb::AINB* ainb)
@@ -69,7 +67,7 @@ void handleInternalParameters(YAML::Emitter& out, ainb::AINB* ainb)
 		if (count == 0) {
 			continue;
 		}
-		out << YAML::Key << typeStrings.at((ainb::ParameterHandler::ParameterType)i);
+		out << YAML::Key << typeStrings.at((ainb::ParameterType)i);
 		out << YAML::Value << YAML::BeginSeq;
 		for (int j = 1; j < count; j++)
 		{
@@ -92,7 +90,7 @@ void handleCommandParameters(YAML::Emitter& out, ainb::AINB* ainb)
 		if (count == 0) {
 			continue;
 		}
-		string section_name = typeStrings.at((ainb::ParameterHandler::ParameterType)(i/2)) + (i % 2 == 0 ? "_input" : "_output");
+		string section_name = typeStrings.at((ainb::ParameterType)(i/2)) + (i % 2 == 0 ? "_input" : "_output");
 		//cout << section_name << endl;
 		out << YAML::Key << section_name;
 		out << YAML::Value << YAML::BeginSeq;

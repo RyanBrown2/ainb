@@ -25,8 +25,8 @@ public:
 	int* getInternalParameterCounts();
 	int* getCommandParameterCounts();
 
-	ParameterHandler::InternalParameterBase* getInternalParameter(int section_num, int index);
-	ParameterHandler::CommandParameterBase* getCommandParameter(int section_num, int index);
+	InternalParameterBase* getInternalParameter(int section_num, int index);
+	CommandParameterBase* getCommandParameter(int section_num, int index);
 
 	std::vector<SequenceNode*> getSequenceNodes() { return m_sequence_handler->getSequenceNodes(); }
 

@@ -10,11 +10,6 @@
 
 namespace ainb {
 
-class ParameterHandler {
-public:
-	ParameterHandler(StringList* string_list);
-	~ParameterHandler();
-
 	enum ParameterType {
 		INT = 0,
 		BOOL = 1,
@@ -79,11 +74,17 @@ public:
 	{
 		std::string type_name = "";
 
-		CommandParameter() {}
+		CommandParameter(): CommandParameterBase() {}
 
 		void load(std::fstream& stream, StringList* string_list, bool is_input) override;
 		void write(std::fstream& stream, StringList* string_list, bool is_input) override;
 	};
+
+
+class ParameterHandler {
+public:
+	ParameterHandler(StringList* string_list);
+	~ParameterHandler();
 
 	void loadInternalParameters(std::fstream& stream, int end_address);
 	void loadCommandParameters(std::fstream& stream, int end_address);
@@ -120,27 +121,14 @@ private:
 		return std::make_unique<CommandParameter<Type>>();
 	}
 
-	template <>
-	std::unique_ptr<CommandParameterBase> createCommandParameter<ParameterType::UDT>() {
-		return std::make_unique<CommandParameter<ParameterType::UDT>>();
-	}
-
 	template <ParameterType Type>
 	void pushCommandParameter(std::vector<std::unique_ptr<CommandParameterBase>>& vec) {
 		vec.push_back(std::make_unique<CommandParameter<Type>>());
 	}
 
-	template <>
-	void pushCommandParameter<ParameterType::UDT>(std::vector<std::unique_ptr<CommandParameterBase>>& vec) {
-		vec.push_back(std::make_unique<CommandParameter<ParameterType::UDT>>());
-		// Additional operations specific to type
-	}
-
 	void createAndLoadInternalParameter(std::fstream& stream, int section_number);
 	void createAndLoadCommandParameter(std::fstream& stream, int section_number);
 
-	static std::map<int, int> table_entry_lengths;
-	static std::map<int, int> parameter_entry_lengths;
 };
 
 }

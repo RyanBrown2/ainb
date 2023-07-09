@@ -59,7 +59,6 @@ void AINB::parseParameters()
 	m_stream.seekg(m_header_data.internal_parameters_start, ios::beg);
 	m_parameter_handler->loadInternalParameters(m_stream, m_header_data.command_parameters_start);
 
-	//streamSeek(m_stream, m_header_data.command_parameters_start, START);
 	m_stream.seekg(m_header_data.command_parameters_start, ios::beg);
 	m_parameter_handler->loadCommandParameters(m_stream, m_header_data.command_parameters_end);
 
@@ -140,12 +139,12 @@ int* AINB::getCommandParameterCounts()
 	return counts;
 }
 
-ParameterHandler::InternalParameterBase* AINB::getInternalParameter(int section_num, int index)
+InternalParameterBase* AINB::getInternalParameter(int section_num, int index)
 {
 	return m_parameter_handler->getInternalParameter(section_num, index);
 }
 
-ParameterHandler::CommandParameterBase* AINB::getCommandParameter(int section_num, int index)
+CommandParameterBase* AINB::getCommandParameter(int section_num, int index)
 {
 	return m_parameter_handler->getCommandParameter(section_num, index);
 }
