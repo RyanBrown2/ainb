@@ -1,6 +1,9 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <algorithm>
+#include <vector>
+#include <string>
 #include "util.h"
 #include "StringList.h"
 #include "SequenceNode.h"
