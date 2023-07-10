@@ -384,6 +384,11 @@ void ParameterHandler::writeCommandParametersToStream(fstream& stream)
 
 }
 
+void ParameterHandler::finalize()
+{
+	updateParameterIndices();
+}
+
 void ParameterHandler::updateParameterIndices()
 {
 	for (auto& param_section : m_internal_parameters)

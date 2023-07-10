@@ -75,13 +75,16 @@ int AINB::getExecutionCommandCount()
 	return m_header_data.execution_command_count;
 }
 
+/**
+ * Write the AINB to the stream.
+ * Make sure to call finalize() before writing.
+ * 
+ * @param stream The stream to write to.
+ */
 void AINB::writeToStream(fstream& stream)
 {
 	// make sure name gets written to string list
 	m_string_list->getOffsetOfString(m_name);
-
-	// update parameter indices
-	m_parameter_handler->updateParameterIndices();
 
 	// address after the last command
 	int command_end_pos = 0x74 + (0x18 * m_sequence_handler->getEntryCommands().size()) + (0x3c * m_sequence_handler->getSequenceNodes().size());
@@ -157,5 +160,11 @@ InternalParameterBase* AINB::getInternalParameter(int section_num, int index)
 CommandParameterBase* AINB::getCommandParameter(int section_num, int index)
 {
 	return m_parameter_handler->getCommandParameter(section_num, index);
+}
+
+void AINB::finalize()
+{
+	m_sequence_handler->finalize();
+	m_parameter_handler->finalize();
 }
 

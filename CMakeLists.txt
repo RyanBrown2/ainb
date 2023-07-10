@@ -24,18 +24,22 @@ target_include_directories(ainb PUBLIC ./src/include)
 add_library(ainb::ainb ALIAS ${PROJECT_NAME})
 
 add_subdirectory(cmd)
+
 IF (WIN32)
     # Copy <filename> to build directory
     set(copy_source_dir "${CMAKE_BINARY_DIR}")
     set(copy_dest_dir "${CMAKE_BINARY_DIR}/bin")
     set(copy_file_name "ainb.dll")
-    add_custom_command(
-	TARGET ${PROJECT_NAME} POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E make_directory ${copy_dest_dir}
-    )
-    add_custom_command(
-	TARGET ${PROJECT_NAME} POST_BUILD 
-	COMMAND ${CMAKE_COMMAND} -E copy "${copy_source_dir}/${copy_file_name}" "${copy_dest_dir}/${copy_file_name}"
-	COMMENT "Copying ${copy_file_name} to build directory"
-    )
+
+	if (EXISTS "${copy_source_dir}/${copy_file_name}")
+		add_custom_command(
+		TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory ${copy_dest_dir}
+		)
+		add_custom_command(
+		TARGET ${PROJECT_NAME} POST_BUILD 
+		COMMAND ${CMAKE_COMMAND} -E copy "${copy_source_dir}/${copy_file_name}" "${copy_dest_dir}/${copy_file_name}"
+		COMMENT "Copying ${copy_file_name} to build directory"
+		)
+	endif()
 ENDIF()

@@ -34,6 +34,8 @@ public:
 	std::vector<EntryCommand> getEntryCommands() { return m_entry_commands; }
 	std::vector<SequenceNode*> getSequenceNodes() { return m_sequence_nodes; }
 
+	void finalize();
+
 private:
 	ParameterHandler* m_parameter_handler;
 	StringList* m_string_list;
@@ -44,8 +46,8 @@ private:
 
 	void loadExecutionCommandHeads(std::fstream& stream, int count);
 	void loadEntryCommandHeads(std::fstream& stream, int count);
-
 	void loadCommandBodies(std::fstream& stream);
 
+	void updateCommandIndices();
 };
 }

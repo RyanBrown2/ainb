@@ -33,6 +33,8 @@ public:
 
 	std::vector<SequenceNode*> getSequenceNodes() { return m_sequence_handler->getSequenceNodes(); }
 
+	void finalize();
+
 private:
 	std::fstream& m_stream;
 

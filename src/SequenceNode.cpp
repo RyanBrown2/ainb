@@ -22,9 +22,6 @@ void SequenceNode::writeHeadToStream(fstream& stream, int index)
 
 void SequenceNode::writeBodyToStream(fstream& stream, StringList* string_list)
 {
-	//for (auto& entry : m_internal_parameters) {
-	//	entry.f
-	//}
 	int body_start_pos = stream.tellg();
 
 	for (auto& param_pair : m_internal_parameters)
@@ -37,18 +34,6 @@ void SequenceNode::writeBodyToStream(fstream& stream, StringList* string_list)
 
 	}
 
-	//for (int i = 0; i < 6; i++)
-	//{
-	//	if (m_internal_parameters[i] != nullptr) {
-	//		int param_index = m_internal_parameters.at(i)->index;
-	//		stream.write(convertIntToCharArray(param_index ,4), 4);
-	//		stream.write(convertIntToCharArray(m_internal_parameter_values.at(m_internal_parameters.at(i)), 4), 4);
-	//	}
-	//	else {
-	//		stream.seekg(8, ios::cur);
-	//	}
-	//}
-
 	int command_param_start_pos = body_start_pos + (6 * 0x8);
 
 	for (auto& param_pair : m_command_parameters)
@@ -60,18 +45,6 @@ void SequenceNode::writeBodyToStream(fstream& stream, StringList* string_list)
 		stream.write(convertIntToCharArray(m_command_parameter_values.at(param_pair.second), 4), 4);
 
 	}
-
-	//for (int i = 0; i < 12; i++)
-	//{
-	//	if (m_command_parameters[i] != nullptr) {
-	//		int param_index = m_command_parameters.at(i)->index;
-	//		stream.write(convertIntToCharArray(param_index, 4), 4);
-	//		stream.write(convertIntToCharArray(m_command_parameter_values.at(m_command_parameters.at(i)), 4), 4);
-	//	}
-	//	else {
-	//		stream.seekg(8, ios::cur);
-	//	}
-	//}
 
 	int call_table_header_start_pos = command_param_start_pos + (12 * 0x8);
 	stream.seekg(call_table_header_start_pos, ios::beg);
@@ -97,8 +70,8 @@ void SequenceNode::writeBodyToStream(fstream& stream, StringList* string_list)
 		call_table_addresses.push_back(stream.tellg());
 
 		int callee_index = m_call_table.at(i).callee->getIndex();
-		string call_string = m_call_table.at(i).call_string;
-		int string_offset = string_list->getOffsetOfString(call_string);
+		string entry_string = m_call_table.at(i).entry_string;
+		int string_offset = string_list->getOffsetOfString(entry_string);
 
 		stream.write(convertIntToCharArray(callee_index, 4), 4);
 		stream.write(convertIntToCharArray(string_offset, 4), 4);
@@ -114,7 +87,23 @@ void SequenceNode::writeBodyToStream(fstream& stream, StringList* string_list)
 
 	stream.seekg(call_table_addresses.back() + 0x8, ios::beg);
 
-	//stream.flush();
+}
+
+
+
+vector<SequenceNode*> SequenceNode::getCallers()
+{
+	return m_callers;
+}
+
+void SequenceNode::addCaller(SequenceNode* caller)
+{
+	m_callers.push_back(caller);
+}
+
+void SequenceNode::removeCaller(SequenceNode* caller)
+{
+	m_callers.erase(remove(m_callers.begin(), m_callers.end(), caller), m_callers.end());
 }
 
 int SequenceNode::getIndex()
@@ -173,8 +162,15 @@ void SequenceNode::addCall(SequenceNode* node, string param)
 {
 	CallTableEntry entry;
 	entry.callee = node;
-	entry.call_string = param;
+	entry.entry_string = param;
 	m_call_table.push_back(entry);
 }
 
+bool ainb::SequenceNode::_equals(SequenceNode const& other) const
+{
+	if (this->m_guid != other.m_guid) {
+		return false;
+	}
 
+	return true;
+}

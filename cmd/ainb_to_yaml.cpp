@@ -48,7 +48,7 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode::CallTableEnt
 	out << YAML::BeginMap;
 
 	out << YAML::Key << callee_name;
-	out << YAML::Value << entry->call_string;
+	out << YAML::Value << entry->entry_string;
 
 	out << YAML::EndMap;
 
@@ -168,11 +168,14 @@ int main(int argc, char* argv[])
 	file.open(fileDir, fstream::in | fstream::out | ios::binary);
 
 	if (file.fail()) {
-		std::cout << "Failed to open file" << std::endl;
+		std::cerr << "Invalid File" << std::endl;
 		return 1;
 	}
 
 	ainb::AINB* ainb = new ainb::AINB(file);
+
+	// finalize the ainb
+	ainb->finalize();
 
 	YAML::Emitter out;
 	out << YAML::BeginMap;
@@ -183,8 +186,8 @@ int main(int argc, char* argv[])
 	out << YAML::Key << "execution_command_count";
 	out << YAML::Value << ainb->getExecutionCommandCount();
 
-	//handleInternalParameters(out, ainb);
-	//handleCommandParameters(out, ainb);
+	handleInternalParameters(out, ainb);
+	handleCommandParameters(out, ainb);
 
 	handleSequenceNodes(out, ainb);
 

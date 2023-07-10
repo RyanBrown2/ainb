@@ -11,12 +11,16 @@ class SequenceNode
 public:
 
 	struct CallTableEntry {
+		std::string entry_string;
 		SequenceNode* callee = nullptr;
-		std::string call_string;
 	};
 
 	SequenceNode();
 	~SequenceNode();
+
+	std::vector<SequenceNode*> getCallers();
+	void addCaller(SequenceNode* caller);
+	void removeCaller(SequenceNode* caller);
 
 	// note: index should only be used for loading and saving to file
 	int getIndex();
@@ -45,7 +49,20 @@ public:
 
 	void writeBodyToStream(std::fstream& stream, StringList* string_list);
 
+	bool operator==(SequenceNode const& other) const {
+		return this->_equals(other);
+	}
+
+	bool operator!=(SequenceNode const& other) const {
+		return !this->_equals(other);
+	}
+
+protected:
+	virtual bool _equals(SequenceNode const & other) const;
+
 private:
+	std::vector<SequenceNode*> m_callers;
+
 	int m_index;
 	char* m_guid;
 	int m_body_pos; // position of the command body, should only be used for loading

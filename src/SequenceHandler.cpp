@@ -45,17 +45,24 @@ void SequenceHandler::loadFromStream(fstream& stream, int entry_count, int execu
 
 }
 
-
-// todo
-void SequenceHandler::writeCommandBodiesToStream(fstream& stream)
+void SequenceHandler::finalize()
 {
-	// make sure all the indicies are up to date before writing
+	updateCommandIndices();
+}
+
+void SequenceHandler::updateCommandIndices()
+{
 	for (int i = 0; i < m_sequence_nodes.size(); i++)
 	{
 		SequenceNode* node = m_sequence_nodes.at(i);
 		node->setIndex(i);
 	}
+}
 
+
+// todo
+void SequenceHandler::writeCommandBodiesToStream(fstream& stream)
+{
 	for (int i = 0; i < m_sequence_nodes.size(); i++)
 	{
 		SequenceNode* node = m_sequence_nodes.at(i);
@@ -221,6 +228,7 @@ void SequenceHandler::loadCommandBodies(fstream& stream)
 			string param_string = m_string_list->getStringFromOffset(param_string_offset);
 
 			node->addCall(callee, param_string);
+			callee->addCaller(node);
 
 		}
 	}
