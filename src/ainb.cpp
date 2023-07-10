@@ -80,6 +80,16 @@ void AINB::writeToStream(fstream& stream)
 	// make sure name gets written to string list
 	m_string_list->getOffsetOfString(m_name);
 
+	// update parameter indices
+	m_parameter_handler->updateParameterIndices();
+
+	// address after the last command
+	int command_end_pos = 0x74 + (0x18 * m_sequence_handler->getEntryCommands().size()) + (0x3c * m_sequence_handler->getSequenceNodes().size());
+
+	// write command bodies
+	stream.seekg(command_end_pos + 0x30, ios::beg);
+	m_sequence_handler->writeCommandBodiesToStream(stream);
+
 	// internal parameter data
 	stream.seekg(m_header_data.internal_parameters_start, ios::beg);
 	m_parameter_handler->writeInternalParametersToStream(stream);

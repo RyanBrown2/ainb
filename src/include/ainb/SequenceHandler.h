@@ -28,15 +28,18 @@ public:
 	SequenceNode* getSequenceNode(int index);
 	
 	void loadFromStream(std::fstream& stream, int entry_count, int execution_count);
-	void writeToStream(std::fstream& stream);
 
-	std::vector<SequenceNode*> getSequenceNodes();
+	void writeCommandBodiesToStream(std::fstream& stream);
+
+	std::vector<EntryCommand> getEntryCommands() { return m_entry_commands; }
+	std::vector<SequenceNode*> getSequenceNodes() { return m_sequence_nodes; }
 
 private:
 	ParameterHandler* m_parameter_handler;
 	StringList* m_string_list;
 
-	std::unordered_map<int, SequenceNode*> m_sequence_nodes;
+	std::vector<SequenceNode*> m_sequence_nodes;
+	//std::unordered_map<int, SequenceNode*> m_sequence_nodes;
 	std::vector<EntryCommand> m_entry_commands;
 
 	void loadExecutionCommandHeads(std::fstream& stream, int count);

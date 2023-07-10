@@ -24,7 +24,7 @@ void SequenceHandler::addSequenceNode(SequenceNode* node)
 
 SequenceNode* SequenceHandler::getSequenceNode(int index)
 {
-	return m_sequence_nodes[index];
+	return m_sequence_nodes.at(index);
 }
 
 void SequenceHandler::loadFromStream(fstream& stream, int entry_count, int execution_count)
@@ -45,20 +45,24 @@ void SequenceHandler::loadFromStream(fstream& stream, int entry_count, int execu
 
 }
 
-// todo
-void SequenceHandler::writeToStream(fstream& stream)
-{
-	
-}
 
-vector<SequenceNode*> SequenceHandler::getSequenceNodes()
+// todo
+void SequenceHandler::writeCommandBodiesToStream(fstream& stream)
 {
-	vector<SequenceNode*> nodes;
-	for (auto it = m_sequence_nodes.begin(); it != m_sequence_nodes.end(); it++)
+	// make sure all the indicies are up to date before writing
+	for (int i = 0; i < m_sequence_nodes.size(); i++)
 	{
-		nodes.push_back(it->second);
+		SequenceNode* node = m_sequence_nodes.at(i);
+		node->setIndex(i);
 	}
-	return nodes;
+
+	for (int i = 0; i < m_sequence_nodes.size(); i++)
+	{
+		SequenceNode* node = m_sequence_nodes.at(i);
+		node->setBodyPos(stream.tellg());
+
+		node->writeBodyToStream(stream, m_string_list);
+	}
 }
 
 void SequenceHandler::loadExecutionCommandHeads(fstream& stream, int count)
@@ -110,7 +114,8 @@ void SequenceHandler::loadExecutionCommandHeads(fstream& stream, int count)
 
 		stream.seekg(end_pos, ios::beg);
 
-		m_sequence_nodes[index] = node;
+		//m_sequence_nodes[index] = node;
+		m_sequence_nodes.push_back(node);
 	}
 }
 
@@ -157,7 +162,9 @@ void SequenceHandler::loadCommandBodies(fstream& stream)
 				continue;
 			}
 
-			node->setInternalParameter(m_parameter_handler->getInternalParameter(section_num, param_index), section_num);
+			int value;
+			readIntFromStream(stream, 4, value);
+			node->setInternalParameter(m_parameter_handler->getInternalParameter(section_num, param_index), value, section_num);
 
 		}
 
@@ -175,8 +182,13 @@ void SequenceHandler::loadCommandBodies(fstream& stream)
 				continue;
 			}
 
-			node->setCommandParameter(m_parameter_handler->getCommandParameter(section_num, param_index), section_num);
+			int value;
+			readIntFromStream(stream, 4, value);
+
+			node->setCommandParameter(m_parameter_handler->getCommandParameter(section_num, param_index), value, section_num);
 		}
+
+		// call table
 
 		stream.seekg(body_start_pos + 0xa3, ios::beg);
 
@@ -189,7 +201,6 @@ void SequenceHandler::loadCommandBodies(fstream& stream)
 		}
 
 		vector<int> entry_addresses;
-
 		for (int j = 0; j < table_size; j++)
 		{
 			int entry_address;

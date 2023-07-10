@@ -48,12 +48,7 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode::CallTableEnt
 	out << YAML::BeginMap;
 
 	out << YAML::Key << callee_name;
-	out << YAML::Value << YAML::BeginSeq;
-	for (int i = 0; i < entry->call_strings.size(); i++)
-	{
-		out << entry->call_strings.at(i);
-	}
-	out << YAML::EndSeq;
+	out << YAML::Value << entry->call_string;
 
 	out << YAML::EndMap;
 
@@ -88,9 +83,9 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode* node) {
 
 	out << YAML::Key << "callees";
 	out << YAML::Value << YAML::BeginSeq;
-	for (auto& callee : node->getCallTable()) {
-		ainb::SequenceNode::CallTableEntry call_table_entry = callee.second;
-		out << &call_table_entry;
+	for (int i = 0; i < node->getCallTable().size(); i++)
+	{
+		out << &node->getCallTable().at(i);
 	}
 	out << YAML::EndSeq;
 

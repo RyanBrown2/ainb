@@ -105,6 +105,8 @@ public:
 	void writeInternalParametersToStream(std::fstream& stream);
 	void writeCommandParametersToStream(std::fstream& stream);
 
+	void updateParameterIndices();
+
 private:
 	StringList* m_string_list;
 

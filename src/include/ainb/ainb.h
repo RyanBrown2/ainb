@@ -59,6 +59,7 @@ private:
 
 	void parseHeader();
 	void parseParameters();
+
 };
 
 }

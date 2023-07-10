@@ -384,6 +384,28 @@ void ParameterHandler::writeCommandParametersToStream(fstream& stream)
 
 }
 
+void ParameterHandler::updateParameterIndices()
+{
+	for (auto& param_section : m_internal_parameters)
+	{
+		vector<unique_ptr<InternalParameterBase>>* section = &param_section.second;
+		for (int i = 1; i < section->size(); i++)
+		{
+			InternalParameterBase* param = m_internal_parameters.at(param_section.first).at(i).get();
+			param->index = i;
+		}
+	}
+
+	for (auto& param_section : m_command_parameters)
+	{
+		vector<unique_ptr<CommandParameterBase>>* section = &param_section.second;
+		for (int i = 1; i < section->size(); i++)
+		{
+			CommandParameterBase* param = m_command_parameters.at(param_section.first).at(i).get();
+			param->index = i;
+		}
+	}
+}
 
 
 template <ParameterType T>
