@@ -43,15 +43,11 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::CommandParameterBase* para
 
 
 YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode::CallTableEntry* entry) {
-	string callee_name = entry->callee->getName();
-
 	out << YAML::BeginMap;
-
-	out << YAML::Key << callee_name;
-	out << YAML::Value << entry->entry_string;
-
+	out << YAML::Key << entry->entry_string;
+	ainb::SequenceNode* node = entry->callee;
+	out << YAML::Value << node->getName();
 	out << YAML::EndMap;
-
 	return out;
 }
 
@@ -93,6 +89,7 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode* node) {
 	out << YAML::EndMap;
 	return out;
 }
+
 
 void handleInternalParameters(YAML::Emitter& out, ainb::AINB* ainb)
 {
@@ -142,15 +139,30 @@ void handleCommandParameters(YAML::Emitter& out, ainb::AINB* ainb)
 
 }
 
+
+
 void handleSequenceNodes(YAML::Emitter& out, ainb::AINB* ainb)
 {
-	out << YAML::Key << "sequence_nodes";
+	out << YAML::Key << "sequences";
 	out << YAML::Value << YAML::BeginSeq;
-	for (int i = 0; i < ainb->getSequenceNodes().size(); i++)
+	for (int i = 0; i < ainb->getEntryCommands().size(); i++)
 	{
-		out << ainb->getSequenceNodes().at(i);
+		ainb::SequenceHandler::EntryCommand* command = ainb->getEntryCommands().at(i);
+		out << YAML::BeginMap;
+		out << YAML::Key << "name";
+		out << YAML::Value << command->name;
+		out << YAML::Key << "sequence_nodes";
+		out << YAML::Value << command->entry_node;
+		out << YAML::EndMap;
 	}
 	out << YAML::EndSeq;
+	//out << YAML::Key << "sequence_nodes";
+	//out << YAML::Value << YAML::BeginSeq;
+	//for (int i = 0; i < ainb->getSequenceNodes().size(); i++)
+	//{
+	//	out << ainb->getSequenceNodes().at(i);
+	//}
+	//out << YAML::EndSeq;
 }
 
 int main(int argc, char* argv[])

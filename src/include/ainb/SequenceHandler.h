@@ -31,7 +31,7 @@ public:
 
 	void writeCommandBodiesToStream(std::fstream& stream);
 
-	std::vector<EntryCommand> getEntryCommands() { return m_entry_commands; }
+	std::vector<EntryCommand*> getEntryCommands() { return m_entry_commands; }
 	std::vector<SequenceNode*> getSequenceNodes() { return m_sequence_nodes; }
 
 	void finalize();
@@ -42,7 +42,7 @@ private:
 
 	std::vector<SequenceNode*> m_sequence_nodes;
 	//std::unordered_map<int, SequenceNode*> m_sequence_nodes;
-	std::vector<EntryCommand> m_entry_commands;
+	std::vector<EntryCommand*> m_entry_commands;
 
 	void loadExecutionCommandHeads(std::fstream& stream, int count);
 	void loadEntryCommandHeads(std::fstream& stream, int count);

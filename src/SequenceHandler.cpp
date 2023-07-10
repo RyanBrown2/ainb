@@ -130,18 +130,18 @@ void SequenceHandler::loadEntryCommandHeads(fstream& stream, int count)
 {
 	for (int i = 0; i < count; i++)
 	{
-		EntryCommand entry_command;
+		EntryCommand* entry_command = new EntryCommand();
 
 		int name_offset;
 		readIntFromStream(stream, 4, name_offset);
-		entry_command.name = m_string_list->getStringFromOffset(name_offset);
+		entry_command->name = m_string_list->getStringFromOffset(name_offset);
 
-		stream.read(entry_command.guid, 16);
-		entry_command.guid[16] = '\0';
+		stream.read(entry_command->guid, 16);
+		entry_command->guid[16] = '\0';
 
 		int entry_node_index;
 		readIntFromStream(stream, 4, entry_node_index);
-		entry_command.entry_node = m_sequence_nodes.at(entry_node_index);
+		entry_command->entry_node = m_sequence_nodes.at(entry_node_index);
 
 		m_entry_commands.push_back(entry_command);
 	}
