@@ -136,7 +136,6 @@ void handleSequenceNodeRecurse(YAML::Emitter& out, ainb::AINB* ainb, ainb::Seque
 	out << YAML::EndSeq;
 
 	out << YAML::EndMap;
-
 }
 
 void handleSequenceNodes(YAML::Emitter& out, ainb::AINB* ainb)
@@ -157,7 +156,6 @@ void handleSequenceNodes(YAML::Emitter& out, ainb::AINB* ainb)
 	}
 	out << YAML::EndSeq;
 }
-
 
 
 int main(int argc, char* argv[])

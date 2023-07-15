@@ -195,20 +195,33 @@ void SequenceHandler::loadCommandBodies(fstream& stream)
 			node->setCommandParameter(m_parameter_handler->getCommandParameter(section_num, param_index), value, section_num);
 		}
 
-		// call table
+		// goto beginning of call table
+		stream.seekg(body_start_pos + (0x08 * 18), ios::beg);
 
-		stream.seekg(body_start_pos + 0xa3, ios::beg);
+		int table_entry_count = 0;
 
-		int table_size;
-		readIntFromStream(stream, 1, table_size);
+		for (int i = 0; i < 10; i++)
+		{
+			int section_entry_count;
+			readIntFromStream(stream, 1, section_entry_count);
 
-		if (table_size == 0)
+			// skip the second number
+			stream.seekg(1, ios::cur);
+			
+			table_entry_count += section_entry_count;
+		}
+
+		//stream.seekg(body_start_pos + 0xa3, ios::beg);
+
+
+
+		if (table_entry_count == 0)
 		{
 			continue;
 		}
 
 		vector<int> entry_addresses;
-		for (int j = 0; j < table_size; j++)
+		for (int j = 0; j < table_entry_count; j++)
 		{
 			int entry_address;
 			readIntFromStream(stream, 4, entry_address);
