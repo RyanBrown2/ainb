@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-//#include "comutil.h"
+#include <unordered_set>
 #include "ainb/ainb.h"
 #include "yaml-cpp/yaml.h"
 #include <cassert>
@@ -41,18 +41,54 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::CommandParameterBase* para
 	return out;
 }
 
-
-YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode::CallTableEntry* entry) {
-	out << YAML::BeginMap;
-	out << YAML::Key << entry->entry_string;
-	ainb::SequenceNode* node = entry->callee;
-	out << YAML::Value << node->getName();
+void handleInternalParameters(YAML::Emitter& out, ainb::AINB* ainb)
+{
+	out << YAML::Key << "internal_parameters";
+	out << YAML::Value << YAML::BeginMap;
+	int* internal_counts = ainb->getInternalParameterCounts();
+	for (int i = 0; i < 6; i++)
+	{
+		int count = internal_counts[i];
+		if (count == 0) {
+			continue;
+		}
+		out << YAML::Key << typeStrings.at((ainb::ParameterType)i);
+		out << YAML::Value << YAML::BeginSeq;
+		for (int j = 1; j < count; j++)
+		{
+			out << ainb->getInternalParameter(i, j);
+		}
+		out << YAML::EndSeq;
+	}
 	out << YAML::EndMap;
-	return out;
 }
 
-YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode* node) {
+void handleCommandParameters(YAML::Emitter& out, ainb::AINB* ainb)
+{
+	out << YAML::Key << "command_parameters";
+	out << YAML::Value << YAML::BeginMap;
+	int* command_counts = ainb->getCommandParameterCounts();
+	for (int i = 0; i < 12; i++)
+	{
+		int count = command_counts[i];
+		if (count == 0) {
+			continue;
+		}
+		string section_name = typeStrings.at((ainb::ParameterType)(i/2)) + (i % 2 == 0 ? "_input" : "_output");
+		out << YAML::Key << section_name;
+		out << YAML::Value << YAML::BeginSeq;
+		for (int j = 1; j < count; j++)
+		{
+			out << ainb->getCommandParameter(i, j);
+		}
+		out << YAML::EndSeq;
+	}
+	out << YAML::EndMap;
 
+}
+
+void handleSequenceNodeRecurse(YAML::Emitter& out, ainb::AINB* ainb, ainb::SequenceNode* node, unordered_set<ainb::SequenceNode*>* visited)
+{
 	out << YAML::BeginMap;
 
 	out << YAML::Key << "name";
@@ -79,72 +115,35 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::SequenceNode* node) {
 
 	out << YAML::Key << "callees";
 	out << YAML::Value << YAML::BeginSeq;
+	visited->insert(node);
 	for (int i = 0; i < node->getCallTable().size(); i++)
 	{
-		out << &node->getCallTable().at(i);
+		ainb::SequenceNode::CallTableEntry entry = node->getCallTable().at(i);
+		out << YAML::BeginMap;
+		out << YAML::Key << entry.entry_string;
+		out << YAML::Value;
+		auto iter = visited->find(entry.callee);
+		if (iter != visited->end()) {
+			out << entry.callee->getName();
+			out << YAML::Comment("Return call");
+			out << YAML::EndMap;
+			continue;
+		}
+		handleSequenceNodeRecurse(out, ainb, entry.callee, visited);
+		out << YAML::EndMap;
 	}
+	visited->erase(node);
 	out << YAML::EndSeq;
 
-
-	out << YAML::EndMap;
-	return out;
-}
-
-
-void handleInternalParameters(YAML::Emitter& out, ainb::AINB* ainb)
-{
-	out << YAML::Key << "internal_parameters";
-	out << YAML::Value << YAML::BeginMap;
-	int* internal_counts = ainb->getInternalParameterCounts();
-	for (int i = 0; i < 6; i++)
-	{
-		int count = internal_counts[i];
-		if (count == 0) {
-			continue;
-		}
-		out << YAML::Key << typeStrings.at((ainb::ParameterType)i);
-		out << YAML::Value << YAML::BeginSeq;
-		for (int j = 1; j < count; j++)
-		{
-			out << ainb->getInternalParameter(i, j);
-		}
-		out << YAML::EndSeq;
-	}
 	out << YAML::EndMap;
 
 }
-
-void handleCommandParameters(YAML::Emitter& out, ainb::AINB* ainb)
-{
-	out << YAML::Key << "command_parameters";
-	out << YAML::Value << YAML::BeginMap;
-	int* command_counts = ainb->getCommandParameterCounts();
-	for (int i = 0; i < 12; i++)
-	{
-		int count = command_counts[i];
-		if (count == 0) {
-			continue;
-		}
-		string section_name = typeStrings.at((ainb::ParameterType)(i/2)) + (i % 2 == 0 ? "_input" : "_output");
-		//cout << section_name << endl;
-		out << YAML::Key << section_name;
-		out << YAML::Value << YAML::BeginSeq;
-		for (int j = 1; j < count; j++)
-		{
-			out << ainb->getCommandParameter(i, j);
-		}
-		out << YAML::EndSeq;
-	}
-	out << YAML::EndMap;
-
-}
-
-
 
 void handleSequenceNodes(YAML::Emitter& out, ainb::AINB* ainb)
 {
 	out << YAML::Key << "sequences";
 	out << YAML::Value << YAML::BeginSeq;
+	unordered_set<ainb::SequenceNode*> visited;
 	for (int i = 0; i < ainb->getEntryCommands().size(); i++)
 	{
 		ainb::SequenceHandler::EntryCommand* command = ainb->getEntryCommands().at(i);
@@ -152,18 +151,14 @@ void handleSequenceNodes(YAML::Emitter& out, ainb::AINB* ainb)
 		out << YAML::Key << "name";
 		out << YAML::Value << command->name;
 		out << YAML::Key << "sequence_nodes";
-		out << YAML::Value << command->entry_node;
+		out << YAML::Value;
+		handleSequenceNodeRecurse(out, ainb, command->entry_node, &visited);
 		out << YAML::EndMap;
 	}
 	out << YAML::EndSeq;
-	//out << YAML::Key << "sequence_nodes";
-	//out << YAML::Value << YAML::BeginSeq;
-	//for (int i = 0; i < ainb->getSequenceNodes().size(); i++)
-	//{
-	//	out << ainb->getSequenceNodes().at(i);
-	//}
-	//out << YAML::EndSeq;
 }
+
+
 
 int main(int argc, char* argv[])
 {
@@ -206,7 +201,6 @@ int main(int argc, char* argv[])
 	out << YAML::EndMap;
 
 	assert(out.good());
-
 
 	string yaml_out_dir = ainb->getName() + ".yml";
 	ofstream yaml_out(yaml_out_dir);
