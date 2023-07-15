@@ -21,3 +21,4 @@ target_link_libraries("ainb_to_yaml"
 	yaml-cpp::yaml-cpp
 )
 
+install(TARGETS ainb_to_yaml)

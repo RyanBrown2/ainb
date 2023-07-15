@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.10)
+cmake_minimum_required (VERSION 3.26)
 
 project(ainb VERSION 0.0.1)
 
@@ -19,9 +19,18 @@ add_library(ainb SHARED
 	./src/ParameterHandler.cpp
 )
 
-target_include_directories(ainb PUBLIC ./src/include)
+add_library(ainb_static STATIC
+	./src/ainb.cpp
+	./src/StringList.cpp
+	./src/SequenceNode.cpp
+	./src/SequenceHandler.cpp
+	./src/ParameterHandler.cpp
+)
 
-add_library(ainb::ainb ALIAS ${PROJECT_NAME})
+target_include_directories(ainb PUBLIC ./src/include)
+target_include_directories(ainb_static PUBLIC ./src/include)
+
+add_library(ainb::ainb ALIAS ainb_static)
 
 add_subdirectory(cmd)
 
