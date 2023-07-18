@@ -17,7 +17,7 @@ add_library(ainb SHARED
 	./src/SequenceNode.cpp
 	./src/SequenceHandler.cpp
 	./src/ParameterHandler.cpp
-)
+ )
 
 add_library(ainb_static STATIC
 	./src/ainb.cpp
@@ -25,11 +25,14 @@ add_library(ainb_static STATIC
 	./src/SequenceNode.cpp
 	./src/SequenceHandler.cpp
 	./src/ParameterHandler.cpp
-)
+ )
 
 target_include_directories(ainb PUBLIC ./src/include)
 target_include_directories(ainb_static PUBLIC ./src/include)
 
 add_library(ainb::ainb ALIAS ainb_static)
+
+# Wrapper for easier c# support
+add_subdirectory(cainb)
 
 add_subdirectory(cmd)
