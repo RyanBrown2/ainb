@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.26)
+cmake_minimum_required (VERSION 3.16)
 
 project(ainb VERSION 0.1.0)
 
@@ -10,6 +10,9 @@ set(CMAKE_STATIC_LIBRARY_PREFIX "")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+option(COMPILE_WRAPPER "Compile the wrapper for easier c# support" OFF)
+option(COMPILE_CMD "Compile the command line tool(s)" OFF)
 
 add_library(ainb SHARED
 	./src/ainb.cpp
@@ -33,6 +36,11 @@ target_include_directories(ainb_static PUBLIC ./src/include)
 add_library(ainb::ainb ALIAS ainb_static)
 
 # Wrapper for easier c# support
-add_subdirectory(cainb)
+if(COMPILE_WRAPPER)
+	add_subdirectory(cainb)
+endif()
 
-add_subdirectory(cmd)
+# Command line tool(s)
+if(COMPILE_CMD)
+	add_subdirectory(cmd)
+endif()

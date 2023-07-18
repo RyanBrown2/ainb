@@ -1,4 +1,4 @@
-# This cainb is a wrapper for the ainb library to make c# support easier
+# This is a wrapper for the ainb library to make c# support easier
 
 project(cainb)
 
