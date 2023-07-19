@@ -14,7 +14,6 @@ AINB::AINB(fstream& stream) : m_stream(stream)
 	m_parameter_handler = new ParameterHandler(m_string_list);
 	parseParameters();
 
-	//streamSeek(m_stream, 0x74, START);
 	stream.seekg(0x74, ios::beg);
 	m_sequence_handler = new SequenceHandler(m_parameter_handler, m_string_list);
 	m_sequence_handler->loadFromStream(m_stream, m_header_data.entry_command_count, m_header_data.execution_command_count);
@@ -127,7 +126,8 @@ int* AINB::getInternalParameterCounts()
 	for (int i = 0; i < 6; i++)
 	{
 		if (find(sections->begin(), sections->end(), i) != sections->end()) {
-			counts[i] = m_parameter_handler->getInternalParameters(i)->size();
+			// subtract 1 because the first entry is always the null parameter
+			counts[i] = m_parameter_handler->getInternalParameters(i)->size() - 1;
 		}
 		else {
 			counts[i] = 0;
@@ -143,7 +143,8 @@ int* AINB::getCommandParameterCounts()
 	for (int i = 0; i < 12; i++)
 	{
 		if (find(sections->begin(), sections->end(), i) != sections->end()) {
-			counts[i] = m_parameter_handler->getCommandParameters(i)->size();
+			// subtract 1 because the first entry is always the null parameter
+			counts[i] = m_parameter_handler->getCommandParameters(i)->size() - 1;
 		}
 		else {
 			counts[i] = 0;

@@ -6,7 +6,7 @@ First clone the repository and then run:
 ```
 mkdir build
 cd build
-cmake ..
+cmake -D COMPILE_CMD=ON ..
 make
 ```
 The build output will be in `/build/bin/`.

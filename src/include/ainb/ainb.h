@@ -24,7 +24,7 @@ public:
 
 	void writeToStream(std::fstream& stream); // todo
 
-	// get an array of the number of internal parameters for each type
+	// get an array of the number of parameters for each type
 	int* getInternalParameterCounts();
 	int* getCommandParameterCounts();
 

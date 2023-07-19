@@ -40,7 +40,6 @@ public:
 	void setInternalParameter(InternalParameterBase* parameter, int value, int position);
 	void setCommandParameter(CommandParameterBase* parameter, int value, int position);
 
-	//vector<InternalParameterBase*> getInternalParameters();
 	std::map<int, InternalParameterBase*> getInternalParameters() { return m_internal_parameters; }
 	std::map<int, CommandParameterBase*> getCommandParameters() { return m_command_parameters; }
 

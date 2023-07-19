@@ -42,7 +42,6 @@ void SequenceHandler::loadFromStream(fstream& stream, int entry_count, int execu
 	
 	// load command bodies
 	loadCommandBodies(stream);
-
 }
 
 void SequenceHandler::finalize()
