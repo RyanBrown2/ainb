@@ -37,3 +37,8 @@ int* GetCommandParameterCounts(AINB* ainb)
 {
 	return ainb->getCommandParameterCounts();
 }
+
+InternalParameterData GetInternalParameter(AINB* ainb, int type_index, int param_index)
+{
+	return getInternalParameterData(ainb->getInternalParameter(type_index, param_index));
+}

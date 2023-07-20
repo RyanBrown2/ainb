@@ -4,7 +4,7 @@ project(cainb VERSION 0.1.0)
 
 add_library(cainb SHARED
 	./src/cainb.cpp
-)
+ "src/include/data_types.h")
 
 target_link_libraries(cainb
 	ainb::ainb
