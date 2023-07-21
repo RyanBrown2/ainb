@@ -24,6 +24,7 @@ CAINB int* GetInternalParameterCounts(ainb::AINB* ainb);
 CAINB int* GetCommandParameterCounts(ainb::AINB* ainb);
 
 CAINB InternalParameterData GetInternalParameter(ainb::AINB* ainb, int type_index, int param_index);
+CAINB CommandParameterData GetCommandParameter(ainb::AINB* ainb, int type_index, int param_index);
 
 }
 

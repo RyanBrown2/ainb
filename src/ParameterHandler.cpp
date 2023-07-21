@@ -379,9 +379,6 @@ void ParameterHandler::writeCommandParametersToStream(fstream& stream)
 			section_offsets.erase(section_offsets.begin());
 		}
 	}
-
-
-
 }
 
 void ParameterHandler::finalize()
@@ -423,6 +420,7 @@ void InternalParameter<T>::load(fstream& stream, StringList* string_list)
 	readIntFromStream(stream, 4, name_offset);
 	InternalParameter::name = string_list->getStringFromOffset(name_offset);
 
+	InternalParameter::type_num = T;
 	stream.seekg(4, ios::cur);
 
 	if (type == ParameterType::STRING)
@@ -467,6 +465,8 @@ void CommandParameter<T>::load(fstream& stream, StringList* string_list, bool is
 	address = stream.tellg();
 	int section_num = is_input ? T * 2 : T * 2 + 1;
 	int end_pos = address + CommandParamEntryLengths[section_num];
+
+	CommandParameter::type_num = T;
 
 	int name_offset;
 	readIntFromStream(stream, 2, name_offset);
@@ -577,4 +577,19 @@ void CommandParameter<ParameterType::UDT>::write(fstream& stream, StringList* st
 	stream.write(convertIntToCharArray(command_ref, 4), 4);
 
 	stream.seekg(end_pos, ios::beg);
+}
+
+template <ParameterType T>
+map<string, string> CommandParameter<T>::getExtras()
+{
+	map<string, string> extras;
+	// todo
+	return extras;
+}
+
+map<string, string> CommandParameter<ParameterType::UDT>::getExtras()
+{
+	map<string, string> extras;
+	extras["type_name"] = type_name;
+	return extras;
 }

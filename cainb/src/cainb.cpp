@@ -40,5 +40,17 @@ int* GetCommandParameterCounts(AINB* ainb)
 
 InternalParameterData GetInternalParameter(AINB* ainb, int type_index, int param_index)
 {
-	return getInternalParameterData(ainb->getInternalParameter(type_index, param_index));
+	return convertInternalParameterData(ainb->getInternalParameter(type_index, param_index));
+}
+
+CommandParameterData GetCommandParameter(AINB* ainb, int type_index, int param_index)
+{
+	//CommandParameterData data{};
+
+	//_bstr_t name;
+	//BSTR udt_name; // only used by udt params
+
+	//return data;
+	return convertCommandParameterData(ainb->getCommandParameter(type_index, param_index));
+
 }

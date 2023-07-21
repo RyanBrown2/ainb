@@ -54,7 +54,7 @@ void handleInternalParameters(YAML::Emitter& out, ainb::AINB* ainb)
 		}
 		out << YAML::Key << typeStrings.at((ainb::ParameterType)i);
 		out << YAML::Value << YAML::BeginSeq;
-		for (int j = 1; j < count; j++)
+		for (int j = 1; j <= count; j++)
 		{
 			out << ainb->getInternalParameter(i, j);
 		}
@@ -77,7 +77,7 @@ void handleCommandParameters(YAML::Emitter& out, ainb::AINB* ainb)
 		string section_name = typeStrings.at((ainb::ParameterType)(i/2)) + (i % 2 == 0 ? "_input" : "_output");
 		out << YAML::Key << section_name;
 		out << YAML::Value << YAML::BeginSeq;
-		for (int j = 1; j < count; j++)
+		for (int j = 1; j <= count; j++)
 		{
 			out << ainb->getCommandParameter(i, j);
 		}
