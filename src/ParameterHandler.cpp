@@ -580,16 +580,16 @@ void CommandParameter<ParameterType::UDT>::write(fstream& stream, StringList* st
 }
 
 template <ParameterType T>
-map<string, string> CommandParameter<T>::getExtras()
+map<string, string>* CommandParameter<T>::getExtras()
 {
-	map<string, string> extras;
+	map<string, string>* extras = new map<string, string>();
 	// todo
 	return extras;
 }
 
-map<string, string> CommandParameter<ParameterType::UDT>::getExtras()
+map<string, string>* CommandParameter<ParameterType::UDT>::getExtras()
 {
-	map<string, string> extras;
-	extras["type_name"] = type_name;
+	map<string, string>* extras = new map<string, string>();
+	extras->insert(pair<string, string>("type_name", type_name));
 	return extras;
 }

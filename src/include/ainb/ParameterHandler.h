@@ -61,7 +61,7 @@ namespace ainb {
 		virtual ~CommandParameterBase() = default;
 		virtual void load(std::fstream& stream, StringList* string_list, bool is_input) {};
 		virtual void write(std::fstream& stream, StringList* string_list, bool is_input) {};
-		virtual std::map<std::string, std::string> getExtras() {}; // any data specific to the parameter type
+		virtual std::map<std::string, std::string>* getExtras() { return new std::map<std::string, std::string>(); }; // any data specific to the parameter type
 	};
 
 	template <ParameterType Type>
@@ -73,7 +73,7 @@ namespace ainb {
 
 		void load(std::fstream& stream, StringList* string_list, bool is_input) override;
 		void write(std::fstream& stream, StringList* string_list, bool is_input) override;
-		std::map<std::string, std::string> getExtras() override;
+		std::map<std::string, std::string>* getExtras() override;
 	};
 
 	template <>
@@ -85,7 +85,7 @@ namespace ainb {
 
 		void load(std::fstream& stream, StringList* string_list, bool is_input) override;
 		void write(std::fstream& stream, StringList* string_list, bool is_input) override;
-		std::map<std::string, std::string> getExtras() override;
+		std::map<std::string, std::string>* getExtras() override;
 	};
 
 
