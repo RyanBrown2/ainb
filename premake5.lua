@@ -18,11 +18,6 @@ project "ainb"
 		"src/include"
 	}
 
-	defines
-	{
-		"AINB_STATIC_DEFINE"
-	}
-
 	filter "system:windows"
 		systemversion "latest"
 		cppdialect "C++17"
