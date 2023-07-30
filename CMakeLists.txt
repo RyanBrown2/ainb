@@ -11,7 +11,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-option(COMPILE_WRAPPER "Compile the wrapper for easier c# support" OFF)
 option(COMPILE_CMD "Compile the command line tool(s)" OFF)
 
 add_library(ainb SHARED
@@ -34,11 +33,6 @@ target_include_directories(ainb PUBLIC ./src/include)
 target_include_directories(ainb_static PUBLIC ./src/include)
 
 add_library(ainb::ainb ALIAS ainb_static)
-
-# Wrapper for easier c# support
-if(COMPILE_WRAPPER)
-	add_subdirectory(cainb)
-endif()
 
 # Command line tool(s)
 if(COMPILE_CMD)
