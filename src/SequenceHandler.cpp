@@ -7,7 +7,6 @@ SequenceHandler::SequenceHandler(ParameterHandler* parameter_handler, StringList
 {
 	m_parameter_handler = parameter_handler;
 	m_string_list = string_list;
-
 }
 
 SequenceHandler::~SequenceHandler()

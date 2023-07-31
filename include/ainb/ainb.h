@@ -35,6 +35,8 @@ public:
 
 	std::vector<SequenceHandler::EntryCommand*> getEntryCommands() { return m_sequence_handler->getEntryCommands(); }
 
+	std::vector<SequenceNode*> getSequenceNodes() { return m_sequence_handler->getSequenceNodes(); }
+
 	void finalize();
 
 private:

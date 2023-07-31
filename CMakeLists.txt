@@ -29,8 +29,8 @@ add_library(ainb_static STATIC
 	./src/ParameterHandler.cpp
  )
 
-target_include_directories(ainb PUBLIC ./src/include)
-target_include_directories(ainb_static PUBLIC ./src/include)
+target_include_directories(ainb PUBLIC ./include)
+target_include_directories(ainb_static PUBLIC ./include)
 
 add_library(ainb::ainb ALIAS ainb_static)
 
