@@ -10,12 +10,12 @@ project "ainb"
 		"src/**.h",
 		"src/**.cpp",
 		
-		"src/include/**.h"
+		"include/**.h"
 	}
 
 	includedirs
 	{
-		"src/include"
+		"include"
 	}
 
 	filter "system:windows"
