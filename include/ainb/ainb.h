@@ -31,8 +31,6 @@ public:
 	InternalParameterBase* getInternalParameter(int section_num, int index);
 	CommandParameterBase* getCommandParameter(int section_num, int index);
 
-	std::vector<SequenceNode*> getSequenceNodes() { return m_sequence_handler->getSequenceNodes(); }
-
 	std::vector<SequenceHandler::EntryCommand*> getEntryCommands() { return m_sequence_handler->getEntryCommands(); }
 
 	std::vector<SequenceNode*> getSequenceNodes() { return m_sequence_handler->getSequenceNodes(); }
