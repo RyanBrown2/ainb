@@ -14,7 +14,7 @@ The build output will be in `/build/bin/`.
 Usage: ./ainb_to_yaml <file>
 ```
 
-Note: This tool will output data from the .ainb file into a .yml file. This is mainly just for file insight. At some point, I will most likely create a more graphical application that supports file editing.
+Note: This tool will output data from the .ainb file into a .yml file. This is mainly just for file insight. At some point, I am working on a graphical application that supports file editing.
 
 ## CMake Usage
 Add the following to your CMakeLists.txt file:
