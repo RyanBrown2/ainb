@@ -5,7 +5,7 @@ using namespace ainb;
 
 SequenceNode::SequenceNode()
 {
-	m_guid = nullptr;
+	//m_guid = new char[17];
 	m_body_pos = -1;
 	m_name = "";
 }
@@ -15,14 +15,48 @@ SequenceNode::~SequenceNode()
 
 }
 
-void SequenceNode::writeHeadToStream(fstream& stream, int index)
+void SequenceNode::writeHeadToStream(fstream& stream, StringList* string_list)
 {
+	// todo unknown 1
+	stream.seekg(0x2, ios::cur);
+	// 0x2
 
+	// index
+	writeIntToStream(stream, 4, m_index);
+	// 0x6
+
+	// todo unknown 2
+	stream.seekg(0x2, ios::cur);
+	// 0x8
+
+	// string offset
+	int string_offset = string_list->getOffsetOfString(m_name);
+	writeIntToStream(stream, 4, string_offset);
+	// 0xC
+
+	// todo uid
+	stream.seekg(0x4, ios::cur);
+	// 0x10
+
+	stream.seekg(0x4, ios::cur);
+	// 0x14
+
+	// command body address
+	writeIntToStream(stream, 4, m_body_pos);
+	// 0x18
+
+	stream.seekg(0x14, ios::cur);
+	// 0x2C
+
+	// guid
+	stream.write(m_guid, 16);
+	// 0x3C
 }
 
 void SequenceNode::writeBodyToStream(fstream& stream, StringList* string_list)
 {
 	int body_start_pos = stream.tellg();
+	m_body_pos = body_start_pos;
 
 	for (auto& param_pair : m_internal_parameters)
 	{
@@ -86,7 +120,6 @@ void SequenceNode::writeBodyToStream(fstream& stream, StringList* string_list)
 	}
 
 	stream.seekg(call_table_addresses.back() + 0x8, ios::beg);
-
 }
 
 
@@ -133,7 +166,8 @@ char* SequenceNode::getGUID()
 
 void SequenceNode::setGUID(char* guid)
 {
-	m_guid = guid;
+	memcpy(m_guid, guid, 16);
+	m_guid[16] = '\0';
 }
 
 int SequenceNode::getBodyPos()

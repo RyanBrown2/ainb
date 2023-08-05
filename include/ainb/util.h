@@ -45,4 +45,10 @@ namespace ainb {
 		delete[] buffer;
 	}
 
+	static void writeIntToStream(std::fstream& stream, int size, int value) {
+		char* buffer = convertIntToCharArray(value, size);
+		stream.write(buffer, size);
+		delete[] buffer;
+	}
+
 }

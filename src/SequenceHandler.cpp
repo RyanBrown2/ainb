@@ -57,6 +57,39 @@ void SequenceHandler::updateCommandIndices()
 	}
 }
 
+void SequenceHandler::writeEntryCommandHeadsToStream(fstream& stream)
+{
+	stream.seekg(0x74, ios::beg);
+
+	for (int i = 0; i < m_entry_commands.size(); i++)
+	{
+		EntryCommand* entry_command = m_entry_commands.at(i);
+
+		// name offset
+		int name_offset = m_string_list->getOffsetOfString(entry_command->name);
+		writeIntToStream(stream, 4, name_offset);
+
+		// guid
+		stream.write(entry_command->guid, 16);
+
+		// entry node index
+		int entry_node_index = entry_command->entry_node->getIndex();
+		writeIntToStream(stream, 4, entry_node_index);
+	}
+}
+
+void SequenceHandler::writeExecutionCommandHeadsToStream(fstream& stream)
+{
+	stream.seekg(0x74 + 0x18 * m_entry_commands.size(), ios::beg);
+
+	for (int i = 0; i < m_sequence_nodes.size(); i++)
+	{
+		int start_pos = stream.tellg();
+		SequenceNode* node = m_sequence_nodes.at(i);
+		node->writeHeadToStream(stream, m_string_list);
+		stream.seekg(start_pos + 0x3c, ios::beg);
+	}
+}
 
 // todo
 void SequenceHandler::writeCommandBodiesToStream(fstream& stream)

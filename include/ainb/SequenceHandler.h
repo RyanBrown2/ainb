@@ -29,6 +29,8 @@ public:
 	
 	void loadFromStream(std::fstream& stream, int entry_count, int execution_count);
 
+	void writeEntryCommandHeadsToStream(std::fstream& stream);
+	void writeExecutionCommandHeadsToStream(std::fstream& stream);
 	void writeCommandBodiesToStream(std::fstream& stream);
 
 	std::vector<EntryCommand*> getEntryCommands() { return m_entry_commands; }

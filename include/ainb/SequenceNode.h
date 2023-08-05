@@ -35,7 +35,7 @@ public:
 	int getBodyPos();
 	void setBodyPos(int pos);
 
-	void writeHeadToStream(std::fstream& stream, int index);
+	void writeHeadToStream(std::fstream& stream, StringList* string_list);
 
 	void setInternalParameter(InternalParameterBase* parameter, int value, int position);
 	void setCommandParameter(CommandParameterBase* parameter, int value, int position);
@@ -63,7 +63,7 @@ private:
 	std::vector<SequenceNode*> m_callers;
 
 	int m_index;
-	char* m_guid;
+	char m_guid[17];
 	int m_body_pos; // position of the command body, should only be used for loading
 	std::string m_name;
 

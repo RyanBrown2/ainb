@@ -92,6 +92,10 @@ void AINB::writeToStream(fstream& stream)
 	stream.seekg(command_end_pos + 0x30, ios::beg);
 	m_sequence_handler->writeCommandBodiesToStream(stream);
 
+	// write command heads
+	m_sequence_handler->writeEntryCommandHeadsToStream(stream);
+	m_sequence_handler->writeExecutionCommandHeadsToStream(stream);
+
 	// internal parameter data
 	stream.seekg(m_header_data.internal_parameters_start, ios::beg);
 	m_parameter_handler->writeInternalParametersToStream(stream);
