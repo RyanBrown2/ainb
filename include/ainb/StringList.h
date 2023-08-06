@@ -20,6 +20,10 @@ public:
 	std::string getStringFromOffset(int offset);
 	int getOffsetOfString(std::string str);
 	void writeToStream(std::fstream& stream);
+
+	// gets the offset that will be used for the next string added to the string list
+	// needed for the file header
+	int getNextOffset();
 private:
 	int* m_start_pos = nullptr;
 

@@ -70,9 +70,9 @@ void StringList::writeToStream(fstream& stream)
 		string str = m_strings_ordered[i];
 		stream.write(str.c_str(), str.length() + 1);
 	}
-	//for (auto pair : m_string_data) {
-	//	string str = pair.first;
-	//	//stream->Write(str.c_str(), str.length() + 1, NULL);
-	//	stream.write(str.c_str(), str.length() + 1);
-	//}
+}
+
+int StringList::getNextOffset()
+{
+	return m_next_offset;
 }

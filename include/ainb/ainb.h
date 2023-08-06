@@ -45,14 +45,27 @@ private:
 	std::string m_name;
 
 	struct HeaderData {
-		char* type = new char[5];
-		int entry_command_count = -1;
-		int execution_command_count = -1;
+		char* type = new char[5]; // 0x00
+		int entry_command_count = -1; // 0x0c
+		int execution_command_count = -1; // 0x10
 
-		int string_list_start_pos = -1;
-		int internal_parameters_start = -1;
-		int command_parameters_start = -1;
+		int command_heads_end = -1; // 0x20
+
+		int string_list_start_pos = -1; // 0x24
+		int internal_parameters_start = -1; // 0x2c
+		int command_parameters_start = -1; // 0x34
 		int command_parameters_end = -1;
+
+		int parameter_section_start = -1; // 0x40
+
+		// string offset for second string in string list
+		int name_offset = -1; // 0x60
+
+		// AI = 0, Logic = 1, Sequence = 2
+		int file_category = -1; // 0x64
+
+		void writeToStream(std::fstream& stream);
+
 	};
 
 	HeaderData m_header_data;
