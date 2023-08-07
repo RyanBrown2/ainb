@@ -19,6 +19,8 @@ AINB::AINB(fstream& stream) : m_stream(stream)
 	m_sequence_handler->loadFromStream(m_stream, m_header_data.entry_command_count, m_header_data.execution_command_count);
 
 	m_name = m_string_list->getStringFromOffset(0);
+
+	m_address_manager = new AddressManager(m_parameter_handler, m_sequence_handler);
 }
 
 AINB::~AINB() {
@@ -85,50 +87,23 @@ int AINB::getExecutionCommandCount()
  */
 void AINB::writeToStream(fstream& stream)
 {
-	// update header data
-	m_header_data.entry_command_count = m_sequence_handler->getEntryCommands().size();
-	m_header_data.execution_command_count = m_sequence_handler->getSequenceNodes().size();
 
-	// end of command heads
-	m_header_data.command_heads_end = 0x74 + (0x18 * m_header_data.entry_command_count) + (0x3c * m_header_data.execution_command_count);
 
 	// write command bodies
 	stream.seekg(m_header_data.command_heads_end + 0x30, ios::beg);
 	m_sequence_handler->writeCommandBodiesToStream(stream);
 
-	// get start position of parameter section
-	stream.seekg(0x14, ios::cur); // 0x14 bytes of padding
-	m_header_data.parameter_section_start = stream.tellg();
-
 	// write command heads
 	m_sequence_handler->writeEntryCommandHeadsToStream(stream);
 	m_sequence_handler->writeExecutionCommandHeadsToStream(stream);
-
-	// get start position of internal parameter section
-	// todo: there is potentially another section before this, need to figure out what it is
-	m_header_data.internal_parameters_start = m_header_data.parameter_section_start;
 
 	// internal parameter data
 	stream.seekg(m_header_data.internal_parameters_start, ios::beg);
 	m_parameter_handler->writeInternalParametersToStream(stream);
 
-	// get start position of command parameter section
-	m_header_data.command_parameters_start = stream.tellg();
-
 	// command parameter data
 	stream.seekg(m_header_data.command_parameters_start, ios::beg);
 	m_parameter_handler->writeCommandParametersToStream(stream);
-
-	// get end of parameter section
-	m_header_data.command_parameters_end = stream.tellg();
-
-	// todo: there is more data between the end of the parameter section and the start of the string list
-	// for now, just pad 0x20 bytes
-	// the library currently doesn't support this data, so it will be lost
-
-	// get start position of string list
-	// todo: update this once the above todo is resolved
-	m_header_data.string_list_start_pos = m_header_data.command_parameters_end + 0x20;
 
 	// write string table
 	stream.seekg(m_header_data.string_list_start_pos, ios::beg);
@@ -192,6 +167,22 @@ void AINB::finalize()
 
 	m_sequence_handler->finalize();
 	m_parameter_handler->finalize();
+
+	// update header data
+	m_header_data.entry_command_count = m_sequence_handler->getEntryCommands().size();
+	m_header_data.execution_command_count = m_sequence_handler->getSequenceNodes().size();
+
+	AddressManager::AddressData* address_data = m_address_manager->calcAddressData();
+
+	m_header_data.command_heads_end = address_data->headers_end_address;
+
+	m_header_data.parameter_section_start = address_data->param_section_start_address;
+
+	m_header_data.internal_parameters_start = address_data->internal_param_start_address;
+	m_header_data.command_parameters_start = address_data->command_param_start_address;
+	m_header_data.command_parameters_end = address_data->command_param_start_address;
+
+	m_header_data.string_list_start_pos = address_data->string_list_start_address;
 }
 
 void AINB::HeaderData::writeToStream(fstream& stream)
@@ -200,6 +191,8 @@ void AINB::HeaderData::writeToStream(fstream& stream)
 
 	// 0x00
 	stream.write(type, 4); 
+
+	//stream.write(, 1);
 
 	stream.seekg(0x0c, ios::beg);
 

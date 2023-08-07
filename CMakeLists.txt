@@ -19,7 +19,7 @@ add_library(ainb SHARED
 	./src/SequenceNode.cpp
 	./src/SequenceHandler.cpp
 	./src/ParameterHandler.cpp
- )
+	src/AddressManager.cpp)
 
 add_library(ainb_static STATIC
 	./src/ainb.cpp
@@ -27,7 +27,7 @@ add_library(ainb_static STATIC
 	./src/SequenceNode.cpp
 	./src/SequenceHandler.cpp
 	./src/ParameterHandler.cpp
- )
+	src/AddressManager.cpp)
 
 target_include_directories(ainb PUBLIC ./include)
 target_include_directories(ainb_static PUBLIC ./include)

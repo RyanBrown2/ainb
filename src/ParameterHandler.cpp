@@ -3,28 +3,28 @@
 using namespace std;
 using namespace ainb;
 
-map<int, int> InternalParamEntryLengths = {
-	{0, 0x0c},
-	{1, 0x0c},
-	{2, 0x0c},
-	{3, 0x0c},
-	{4, 0x14}
-};
-
-map<int, int> CommandParamEntryLengths = {
-	{0, 0x10},
-	{1, 0x4},
-	{2, 0x10},
-	{3, 0x4},
-	{4, 0x10},
-	{5, 0x4},
-	{6, 0x10},
-	{7, 0x4},
-	{8, 0x18},
-	{9, 0x4},
-	{10, 0x14},
-	{11, 0x8}
-};
+//map<int, int> InternalParamEntryLengths = {
+//	{0, 0x0c},
+//	{1, 0x0c},
+//	{2, 0x0c},
+//	{3, 0x0c},
+//	{4, 0x14}
+//};
+//
+//map<int, int> CommandParamEntryLengths = {
+//	{0, 0x10},
+//	{1, 0x4},
+//	{2, 0x10},
+//	{3, 0x4},
+//	{4, 0x10},
+//	{5, 0x4},
+//	{6, 0x10},
+//	{7, 0x4},
+//	{8, 0x18},
+//	{9, 0x4},
+//	{10, 0x14},
+//	{11, 0x8}
+//};
 
 ParameterHandler::ParameterHandler(StringList* string_list)
 {
@@ -154,7 +154,7 @@ void ParameterHandler::loadCommandParameters(fstream& stream, int end_address)
 		int section_address = section_addresses[i];
 		// get entry lengths for section
 		int section_number = address_to_section_number[section_address];
-		int entry_length = CommandParamEntryLengths[section_number];
+		int entry_length = ainb::CommandParamEntryLengths.at(section_number);
 
 		stream.seekg(section_address, ios::beg);
 
@@ -209,7 +209,7 @@ InternalParameterBase* ParameterHandler::getInternalParameter(int section_num, i
 		//return &(InternalParameterBase)m_internal_parameters.at(section_num).at(parameter_num);
 	}
 	catch (out_of_range) {
-		cerr << "Tried getting internal parameter index " << to_string(parameter_num) << " from section" << to_string(section_num) << endl;
+		cerr << "Tried getting internal parameter index " << to_string(parameter_num) << " from section " << to_string(section_num) << endl;
 		throw std::invalid_argument("Invalid parameter index");
 	}
 }
@@ -221,7 +221,7 @@ CommandParameterBase* ParameterHandler::getCommandParameter(int section_num, int
 		return param;
 	}
 	catch (out_of_range) {
-		cerr << "Tried getting command parameter index " << to_string(parameter_num) << " from section" << to_string(section_num) << endl;
+		cerr << "Tried getting command parameter index " << to_string(parameter_num) << " from section " << to_string(section_num) << endl;
 		throw std::invalid_argument("Invalid parameter index");
 	}
 }
@@ -339,6 +339,10 @@ void ParameterHandler::writeInternalParametersToStream(fstream& stream)
 			section_offsets.erase(section_offsets.begin());
 		}
 	}
+
+	stream.seekg(end_pos, ios::beg);
+
+	stream.flush();
 }
 
 void ParameterHandler::writeCommandParametersToStream(fstream& stream)
@@ -379,6 +383,10 @@ void ParameterHandler::writeCommandParametersToStream(fstream& stream)
 			section_offsets.erase(section_offsets.begin());
 		}
 	}
+
+	stream.seekg(end_pos, ios::beg);
+
+	stream.flush();
 }
 
 void ParameterHandler::finalize()
@@ -415,7 +423,7 @@ void InternalParameter<T>::load(fstream& stream, StringList* string_list)
 {
 	InternalParameter::address = stream.tellg();
 	int section_num = T;
-	int end_pos = address + InternalParamEntryLengths[section_num];
+	int end_pos = address + InternalParamEntryLengths.at(section_num);
 	int name_offset;
 	readIntFromStream(stream, 4, name_offset);
 	InternalParameter::name = string_list->getStringFromOffset(name_offset);
@@ -443,7 +451,8 @@ void InternalParameter<Type>::write(fstream& stream, StringList* string_list)
 {
 	int name_offset = string_list->getOffsetOfString(name);
 
-	stream.write(convertIntToCharArray(name_offset, 4), 4);
+	//stream.write(convertIntToCharArray(name_offset, 4), 4);
+	writeIntToStream(stream, 4, name_offset);
 
 	stream.seekg(4, ios::cur);
 
@@ -454,7 +463,7 @@ void InternalParameter<Type>::write(fstream& stream, StringList* string_list)
 	}
 	else {
 		int val = stoi(value);
-		stream.write(convertIntToCharArray(val, 4), 4);
+		writeIntToStream(stream, 4, val);
 	}
 
 }
@@ -464,7 +473,7 @@ void CommandParameter<T>::load(fstream& stream, StringList* string_list, bool is
 {
 	address = stream.tellg();
 	int section_num = is_input ? T * 2 : T * 2 + 1;
-	int end_pos = address + CommandParamEntryLengths[section_num];
+	int end_pos = address + CommandParamEntryLengths.at(section_num);
 
 	CommandParameter::type_num = T;
 
@@ -493,7 +502,7 @@ void CommandParameter<ParameterType::UDT>::load(fstream& stream, StringList* str
 {
 	address = stream.tellg();
 	int section_num = is_input ? UDT * 2 : UDT * 2 + 1;
-	int end_pos = address + CommandParamEntryLengths[section_num];
+	int end_pos = address + CommandParamEntryLengths.at(section_num);
 
 	int name_offset;
 	readIntFromStream(stream, 2, name_offset);
@@ -528,7 +537,7 @@ template <ParameterType T>
 void CommandParameter<T>::write(fstream& stream, StringList* string_list, bool is_input)
 {
 	int section_num = is_input ? T * 2 : T * 2 + 1;
-	int end_pos = (int)stream.tellg() + CommandParamEntryLengths[section_num];
+	int end_pos = (int)stream.tellg() + CommandParamEntryLengths.at(section_num);
 
 	int name_offset = string_list->getOffsetOfString(name);
 	stream.write(convertIntToCharArray(name_offset, 2), 2);
@@ -555,7 +564,7 @@ void CommandParameter<T>::write(fstream& stream, StringList* string_list, bool i
 void CommandParameter<ParameterType::UDT>::write(fstream& stream, StringList* string_list, bool is_input)
 {
 	int section_num = is_input ? UDT * 2 : UDT * 2 + 1;
-	int end_pos = (int)stream.tellg() + CommandParamEntryLengths[section_num];
+	int end_pos = (int)stream.tellg() + CommandParamEntryLengths.at(section_num);
 
 	int name_offset = string_list->getOffsetOfString(name);
 	stream.write(convertIntToCharArray(name_offset, 2), 2);

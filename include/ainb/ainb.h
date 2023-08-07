@@ -9,6 +9,7 @@
 #include "SequenceNode.h"
 #include "SequenceHandler.h"
 #include "ParameterHandler.h"
+#include "AddressManager.h"
 
 namespace ainb {
 
@@ -73,6 +74,7 @@ private:
 	StringList* m_string_list;
 	ParameterHandler* m_parameter_handler;
 	SequenceHandler* m_sequence_handler;
+	AddressManager* m_address_manager;
 
 	void parseHeader();
 	void parseParameters();
