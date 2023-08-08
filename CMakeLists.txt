@@ -12,6 +12,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 option(COMPILE_CMD "Compile the command line tool(s)" OFF)
+option(COMPILE_TEST "Compile the test tool" OFF)
 
 add_library(ainb SHARED
 	./src/ainb.cpp
@@ -37,4 +38,8 @@ add_library(ainb::ainb ALIAS ainb_static)
 # Command line tool(s)
 if(COMPILE_CMD)
 	add_subdirectory(cmd)
+endif()
+
+if(COMPILE_TEST)
+	add_subdirectory(test)
 endif()
