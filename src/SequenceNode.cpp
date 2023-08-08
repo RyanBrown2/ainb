@@ -85,8 +85,10 @@ void SequenceNode::writeBodyToStream(fstream& stream, StringList* string_list)
 	int call_table_header_start_pos = command_param_start_pos + (12 * 0x8);
 	stream.seekg(call_table_header_start_pos, ios::beg);
 
-	// todo: figure out call table header
-	stream.seekg(0x14, ios::cur);
+	// todo: figure out proper call table header
+	stream.seekg(0x12, ios::cur);
+	writeIntToStream(stream, 1, m_call_table.size());
+	stream.seekg(1, ios::cur);
 
 	int call_table_size = m_call_table.size();
 
@@ -103,14 +105,19 @@ void SequenceNode::writeBodyToStream(fstream& stream, StringList* string_list)
 	// write call table entries
 	for (int i = 0; i < m_call_table.size(); i++)
 	{
+		CallTableEntry entry = m_call_table.at(i);
+
 		call_table_addresses.push_back(stream.tellg());
 
-		int callee_index = m_call_table.at(i).callee->getIndex();
-		string entry_string = m_call_table.at(i).entry_string;
+		//int callee_index = m_call_table.at(i).callee->getIndex();
+		int callee_index = entry.callee->getIndex();
+		//string entry_string = m_call_table.at(i).entry_string;
+		string entry_string = entry.entry_string;
 		int string_offset = string_list->getOffsetOfString(entry_string);
 
-		stream.write(convertIntToCharArray(callee_index, 4), 4);
-		stream.write(convertIntToCharArray(string_offset, 4), 4);
+		writeIntToStream(stream, 4, callee_index);
+		writeIntToStream(stream, 4, string_offset);
+		stream.flush();
 	}
 
 	// write call table addresses
@@ -118,10 +125,11 @@ void SequenceNode::writeBodyToStream(fstream& stream, StringList* string_list)
 
 	for (int i = 0; i < call_table_addresses.size(); i++)
 	{
-		stream.write(convertIntToCharArray(call_table_addresses.at(i), 4), 4);
+		writeIntToStream(stream, 4, call_table_addresses.at(i));
 	}
 
 	stream.seekg(call_table_addresses.back() + 0x8, ios::beg);
+	stream.flush();
 }
 
 

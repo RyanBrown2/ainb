@@ -19,7 +19,7 @@ public:
 	// todo, struct for entry command
 	struct EntryCommand {
 		std::string name = "";
-		char* guid = new char[17];
+		char guid[17];
 		SequenceNode* entry_node = nullptr;
 	};
 

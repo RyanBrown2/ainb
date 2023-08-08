@@ -28,6 +28,7 @@ SequenceNode* SequenceHandler::getSequenceNode(int index)
 
 void SequenceHandler::loadFromStream(fstream& stream, int entry_count, int execution_count)
 {
+	stream.seekg(0x74, ios::beg);
 	// skip entry commands
 	stream.seekg(0x18 * entry_count, ios::cur);
 
