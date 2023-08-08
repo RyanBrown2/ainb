@@ -3,29 +3,6 @@
 using namespace std;
 using namespace ainb;
 
-//map<int, int> InternalParamEntryLengths = {
-//	{0, 0x0c},
-//	{1, 0x0c},
-//	{2, 0x0c},
-//	{3, 0x0c},
-//	{4, 0x14}
-//};
-//
-//map<int, int> CommandParamEntryLengths = {
-//	{0, 0x10},
-//	{1, 0x4},
-//	{2, 0x10},
-//	{3, 0x4},
-//	{4, 0x10},
-//	{5, 0x4},
-//	{6, 0x10},
-//	{7, 0x4},
-//	{8, 0x18},
-//	{9, 0x4},
-//	{10, 0x14},
-//	{11, 0x8}
-//};
-
 ParameterHandler::ParameterHandler(StringList* string_list)
 {
 	m_string_list = string_list;
@@ -341,8 +318,6 @@ void ParameterHandler::writeInternalParametersToStream(fstream& stream)
 	}
 
 	stream.seekg(end_pos, ios::beg);
-
-	stream.flush();
 }
 
 void ParameterHandler::writeCommandParametersToStream(fstream& stream)
@@ -385,8 +360,6 @@ void ParameterHandler::writeCommandParametersToStream(fstream& stream)
 	}
 
 	stream.seekg(end_pos, ios::beg);
-
-	stream.flush();
 }
 
 void ParameterHandler::finalize()

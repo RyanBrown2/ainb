@@ -134,8 +134,6 @@ public:
 
 	void finalize();
 
-
-
 private:
 	StringList* m_string_list;
 

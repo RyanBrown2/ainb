@@ -3,6 +3,7 @@
 #include <fstream>
 #include <algorithm>
 #include <vector>
+#include <map>
 #include <string>
 #include "util.h"
 #include "StringList.h"
@@ -12,6 +13,12 @@
 #include "AddressManager.h"
 
 namespace ainb {
+
+	static const std::map<int, std::string> FileTypeNumToName = {
+		{0, "AI"},
+		{1, "Logic"},
+		{2, "Sequence"}
+	};
 
 class AINB {
 public:
@@ -46,7 +53,7 @@ private:
 	std::string m_name;
 
 	struct HeaderData {
-		char* type = new char[5]; // 0x00
+		char* head = new char[5]; // 0x00
 		int entry_command_count = -1; // 0x0c
 		int execution_command_count = -1; // 0x10
 
@@ -59,11 +66,11 @@ private:
 
 		int parameter_section_start = -1; // 0x40
 
-		// string offset for second string in string list
-		int name_offset = -1; // 0x60
+		// string offset for type string in string list
+		int type_name_offset = -1; // 0x60
 
 		// AI = 0, Logic = 1, Sequence = 2
-		int file_category = -1; // 0x64
+		int file_type = -1; // 0x64
 
 		void writeToStream(std::fstream& stream);
 

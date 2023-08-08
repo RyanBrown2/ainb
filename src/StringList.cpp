@@ -71,8 +71,3 @@ void StringList::writeToStream(fstream& stream)
 		stream.write(str.c_str(), str.length() + 1);
 	}
 }
-
-int StringList::getNextOffset()
-{
-	return m_next_offset;
-}

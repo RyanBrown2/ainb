@@ -70,7 +70,7 @@ AddressManager::AddressData* AddressManager::calcAddressData()
 	int entry_count = m_sequence_handler->getEntryCommands().size();
 	int node_count = m_sequence_handler->getSequenceNodes().size();
 
-	address_data->headers_end_address = 0x20 + (entry_count * 0x18) + (node_count * 0x3c);
+	address_data->headers_end_address = 0x74 + (entry_count * 0x18) + (node_count * 0x3c);
 
 	// todo: library currently doesn't support this data, so it will be lost
 	int external_ref_section_size = 0x30;
@@ -87,7 +87,7 @@ AddressManager::AddressData* AddressManager::calcAddressData()
 	address_data->internal_param_start_address = address_data->param_unknown_section_2_start_address;
 
 	address_data->command_param_start_address = address_data->internal_param_start_address + calcInternalParamSize();
-	address_data->command_param_end_address = address_data->command_param_end_address + calcCommandParamSize();
+	address_data->command_param_end_address = address_data->command_param_start_address + calcCommandParamSize();
 
 
 	address_data->string_list_start_address = address_data->command_param_end_address + 0x20; // todo

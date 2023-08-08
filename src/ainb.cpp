@@ -30,8 +30,8 @@ AINB::~AINB() {
 void AINB::parseHeader()
 {
 	m_stream.seekg(0, ios::beg);
-	m_stream.read(m_header_data.type, 4);
-	m_header_data.type[4] = '\0';
+	m_stream.read(m_header_data.head, 4);
+	m_header_data.head[4] = '\0';
 
 	m_stream.seekg(0x0c, ios::beg);
 	readIntFromStream(m_stream, 4, m_header_data.entry_command_count);
@@ -53,7 +53,7 @@ void AINB::parseHeader()
 	readIntFromStream(m_stream, 4, m_header_data.command_parameters_end);
 
 	m_stream.seekg(0x64, ios::beg);
-	readIntFromStream(m_stream, 4, m_header_data.file_category);
+	readIntFromStream(m_stream, 4, m_header_data.file_type);
 	return;
 }
 
@@ -87,27 +87,31 @@ int AINB::getExecutionCommandCount()
  */
 void AINB::writeToStream(fstream& stream)
 {
-
-
 	// write command bodies
 	stream.seekg(m_header_data.command_heads_end + 0x30, ios::beg);
 	m_sequence_handler->writeCommandBodiesToStream(stream);
+	stream.flush();
 
 	// write command heads
 	m_sequence_handler->writeEntryCommandHeadsToStream(stream);
+	stream.flush();
 	m_sequence_handler->writeExecutionCommandHeadsToStream(stream);
+	stream.flush();
 
 	// internal parameter data
 	stream.seekg(m_header_data.internal_parameters_start, ios::beg);
 	m_parameter_handler->writeInternalParametersToStream(stream);
+	stream.flush();
 
 	// command parameter data
 	stream.seekg(m_header_data.command_parameters_start, ios::beg);
 	m_parameter_handler->writeCommandParametersToStream(stream);
+	stream.flush();
 
 	// write string table
 	stream.seekg(m_header_data.string_list_start_pos, ios::beg);
 	m_string_list->writeToStream(stream);
+	stream.flush();
 	
 	// write file header
 	m_header_data.writeToStream(stream);
@@ -163,7 +167,8 @@ void AINB::finalize()
 	m_string_list->getOffsetOfString(m_name);
 
 	// ensure that the offset for the second string is correct
-	m_header_data.name_offset = m_string_list->getNextOffset();
+	string type_name = ainb::FileTypeNumToName.at(m_header_data.file_type);
+	m_header_data.type_name_offset = m_string_list->getOffsetOfString(type_name);
 
 	m_sequence_handler->finalize();
 	m_parameter_handler->finalize();
@@ -190,7 +195,7 @@ void AINB::HeaderData::writeToStream(fstream& stream)
 	stream.seekg(0, ios::beg);
 
 	// 0x00
-	stream.write(type, 4); 
+	stream.write(head, 4); 
 
 	//stream.write(, 1);
 
@@ -232,8 +237,8 @@ void AINB::HeaderData::writeToStream(fstream& stream)
 	stream.seekg(0x60, ios::beg);
 
 	// 0x60
-	writeIntToStream(stream, 4, name_offset);
+	writeIntToStream(stream, 4, type_name_offset);
 
 	// 0x64
-	writeIntToStream(stream, 4, file_category);
+	writeIntToStream(stream, 4, file_type);
 }
