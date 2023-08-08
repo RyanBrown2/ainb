@@ -60,17 +60,27 @@ private:
 		int command_heads_end = -1; // 0x20
 
 		int string_list_start_pos = -1; // 0x24
+		int string_list_4byte_padding = -1; // 0x28 in header - will probably be renamed
 		int internal_parameters_start = -1; // 0x2c
 		int command_parameters_start = -1; // 0x34
-		int command_parameters_end = -1;
+		int command_parameters_end = -1; // 0x38
 
 		int parameter_section_start = -1; // 0x40
+
+		int func_start_address = -1; // 0x44 in header - not sure if should be renamed
+
+		int func_end_address = -1; // 0x5c in header - not sure if should be renamed
 
 		// string offset for type string in string list
 		int type_name_offset = -1; // 0x60
 
 		// AI = 0, Logic = 1, Sequence = 2
 		int file_type = -1; // 0x64
+
+		int end_data_4byte_padding = -1; // 0x68 in header - will be renamed
+		int string_list_8byte_padding = -1; // 0x6c in header - will be renamed
+
+		int end_data_address = -1; // 0x70 in header - will be renamed
 
 		void writeToStream(std::fstream& stream);
 

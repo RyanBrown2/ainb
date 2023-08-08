@@ -188,6 +188,12 @@ void AINB::finalize()
 	m_header_data.command_parameters_end = address_data->command_param_start_address;
 
 	m_header_data.string_list_start_pos = address_data->string_list_start_address;
+	m_header_data.string_list_4byte_padding = address_data->string_list_4byte_padding;
+	m_header_data.string_list_8byte_padding = address_data->string_list_8byte_padding;
+
+	m_header_data.func_start_address = address_data->func_start_address;
+	m_header_data.func_end_address = address_data->func_end_address;
+	m_header_data.end_data_4byte_padding = address_data->end_data_4byte_padding;
 }
 
 void AINB::HeaderData::writeToStream(fstream& stream)
@@ -196,8 +202,7 @@ void AINB::HeaderData::writeToStream(fstream& stream)
 
 	// 0x00
 	stream.write(head, 4); 
-
-	//stream.write(, 1);
+	writeIntToStream(stream, 4, 1031); // 
 
 	stream.seekg(0x0c, ios::beg);
 
@@ -213,32 +218,54 @@ void AINB::HeaderData::writeToStream(fstream& stream)
 	// 0x24
 	writeIntToStream(stream, 4, string_list_start_pos);
 
-	// 0x28 todo: This is the address that points 4 bytes before the String List.
-	stream.seekg(0x4, ios::cur);
+	// 0x28
+	writeIntToStream(stream, 4, string_list_4byte_padding);
 	
 	// 0x2c
 	writeIntToStream(stream, 4, internal_parameters_start);
 
 	// 0x30 todo
-	stream.seekg(0x4, ios::cur);
+	writeIntToStream(stream, 4, -1);
 
 	// 0x34
 	writeIntToStream(stream, 4, command_parameters_start);
 
 	// 0x38 todo: end of command parameters section
-	stream.seekg(0x4, ios::cur);
+	writeIntToStream(stream, 4, command_parameters_end);
 
 	// 0x3c todo
-	stream.seekg(0x4, ios::cur);
+	writeIntToStream(stream, 4, -1);
 
 	// 0x40
 	writeIntToStream(stream, 4, parameter_section_start);
 
-	stream.seekg(0x60, ios::beg);
+	// 0x44
+	writeIntToStream(stream, 4, func_start_address);
+
+	// 0x48 todo
+	writeIntToStream(stream, 4, -1);
+
+	// 0x4c todo
+	writeIntToStream(stream, 4, -1);
+
+	// 0x50 todo
+	writeIntToStream(stream, 4, -1);
+
+	stream.seekg(0x5c, ios::beg);
+	writeIntToStream(stream, 4, func_end_address);
 
 	// 0x60
 	writeIntToStream(stream, 4, type_name_offset);
 
 	// 0x64
 	writeIntToStream(stream, 4, file_type);
+
+	// 0x68
+	writeIntToStream(stream, 4, end_data_4byte_padding);
+
+	// 0x6c
+	writeIntToStream(stream, 4, string_list_8byte_padding);
+
+	// 0x70
+	writeIntToStream(stream, 4, end_data_address);
 }
