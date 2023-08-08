@@ -448,6 +448,8 @@ void CommandParameter<T>::load(fstream& stream, StringList* string_list, bool is
 	int section_num = is_input ? T * 2 : T * 2 + 1;
 	int end_pos = address + CommandParamEntryLengths.at(section_num);
 
+	type_num = section_num;
+
 	CommandParameter::type_num = T;
 
 	int name_offset;
@@ -476,6 +478,8 @@ void CommandParameter<ParameterType::UDT>::load(fstream& stream, StringList* str
 	address = stream.tellg();
 	int section_num = is_input ? UDT * 2 : UDT * 2 + 1;
 	int end_pos = address + CommandParamEntryLengths.at(section_num);
+
+	type_num = section_num;
 
 	int name_offset;
 	readIntFromStream(stream, 2, name_offset);
@@ -556,7 +560,8 @@ void CommandParameter<ParameterType::UDT>::write(fstream& stream, StringList* st
 		return;
 	}
 
-	stream.write(convertIntToCharArray(command_ref, 4), 4);
+	writeIntToStream(stream, 4, command_ref);
+	// 0x0c
 
 	stream.seekg(end_pos, ios::beg);
 }

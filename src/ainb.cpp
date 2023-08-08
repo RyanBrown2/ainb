@@ -185,7 +185,7 @@ void AINB::finalize()
 
 	m_header_data.internal_parameters_start = address_data->internal_param_start_address;
 	m_header_data.command_parameters_start = address_data->command_param_start_address;
-	m_header_data.command_parameters_end = address_data->command_param_start_address;
+	m_header_data.command_parameters_end = address_data->command_param_end_address;
 
 	m_header_data.string_list_start_pos = address_data->string_list_start_address;
 	m_header_data.string_list_4byte_padding = address_data->string_list_4byte_padding;
@@ -202,7 +202,7 @@ void AINB::HeaderData::writeToStream(fstream& stream)
 
 	// 0x00
 	stream.write(head, 4); 
-	writeIntToStream(stream, 4, 1031); // 
+	writeIntToStream(stream, 4, 1031);
 
 	stream.seekg(0x0c, ios::beg);
 
@@ -230,7 +230,7 @@ void AINB::HeaderData::writeToStream(fstream& stream)
 	// 0x34
 	writeIntToStream(stream, 4, command_parameters_start);
 
-	// 0x38 todo: end of command parameters section
+	// 0x38
 	writeIntToStream(stream, 4, command_parameters_end);
 
 	// 0x3c todo

@@ -56,7 +56,7 @@ int StringList::getOffsetOfString(string str)
 	else {
 		m_strings_ordered.push_back(str);
 		m_string_data.insert(pair<string, int>(str, m_next_offset));
-		m_next_offset = str.length() + 1;
+		m_next_offset += str.length() + 1;
 		return m_string_data.at(str);
 	}
 }
