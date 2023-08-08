@@ -307,16 +307,15 @@ void ParameterHandler::writeInternalParametersToStream(fstream& stream)
 	for (int i = 0; i < 6; i++)
 	{
 		if (section_offsets.size() == 0) {
-			stream.write(convertIntToCharArray(end_pos, 4), 4);
+			writeIntToStream(stream, 4, end_pos);
 			continue;
 		}
-		stream.write(convertIntToCharArray(section_offsets.at(0), 4), 4);
+		writeIntToStream(stream, 4, section_offsets.at(0));
 		if (count(m_active_internal_parameter_types.begin(), m_active_internal_parameter_types.end(), i)) {
 			//section_address[i] = section_offsets.begin();
 			section_offsets.erase(section_offsets.begin());
 		}
 	}
-
 	stream.seekg(end_pos, ios::beg);
 }
 
@@ -350,10 +349,10 @@ void ParameterHandler::writeCommandParametersToStream(fstream& stream)
 	for (int i = 0; i < 12; i++)
 	{
 		if (section_offsets.size() == 0) {
-			stream.write(convertIntToCharArray(end_pos, 4), 4);
+			writeIntToStream(stream, 4, end_pos);
 			continue;
 		}
-		stream.write(convertIntToCharArray(section_offsets.at(0), 4), 4);
+		writeIntToStream(stream, 4, section_offsets.at(0));
 		if (count(m_active_command_parameter_types.begin(), m_active_command_parameter_types.end(), i)) {
 			section_offsets.erase(section_offsets.begin());
 		}
@@ -424,7 +423,6 @@ void InternalParameter<Type>::write(fstream& stream, StringList* string_list)
 {
 	int name_offset = string_list->getOffsetOfString(name);
 
-	//stream.write(convertIntToCharArray(name_offset, 4), 4);
 	writeIntToStream(stream, 4, name_offset);
 
 	stream.seekg(4, ios::cur);
@@ -432,7 +430,7 @@ void InternalParameter<Type>::write(fstream& stream, StringList* string_list)
 	if (type == ParameterType::STRING)
 	{
 		int string_offset = string_list->getOffsetOfString(value);
-		stream.write(convertIntToCharArray(string_offset, 4), 4);
+		writeIntToStream(stream, 4, string_offset);
 	}
 	else {
 		int val = stoi(value);
@@ -517,7 +515,7 @@ void CommandParameter<T>::write(fstream& stream, StringList* string_list, bool i
 	int end_pos = (int)stream.tellg() + CommandParamEntryLengths.at(section_num);
 
 	int name_offset = string_list->getOffsetOfString(name);
-	stream.write(convertIntToCharArray(name_offset, 2), 2);
+	writeIntToStream(stream, 2, name_offset);
 
 	stream.seekg(2, ios::cur);
 	// 0x04
@@ -527,7 +525,7 @@ void CommandParameter<T>::write(fstream& stream, StringList* string_list, bool i
 		return;
 	}
 
-	stream.write(convertIntToCharArray(command_ref, 2), 2);
+	writeIntToStream(stream, 2, command_ref);
 	stream.seekg(2, ios::cur);
 
 	if (stream.tellg() >= end_pos)
@@ -544,13 +542,13 @@ void CommandParameter<ParameterType::UDT>::write(fstream& stream, StringList* st
 	int end_pos = (int)stream.tellg() + CommandParamEntryLengths.at(section_num);
 
 	int name_offset = string_list->getOffsetOfString(name);
-	stream.write(convertIntToCharArray(name_offset, 2), 2);
+	writeIntToStream(stream, 2, name_offset);
 
 	stream.seekg(2, ios::cur);
 	// 0x04
 
 	int type_name_offset = string_list->getOffsetOfString(type_name);
-	stream.write(convertIntToCharArray(type_name_offset, 2), 2);
+	writeIntToStream(stream, 2, type_name_offset);
 
 	stream.seekg(2, ios::cur);
 	// 0x08

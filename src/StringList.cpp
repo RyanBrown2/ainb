@@ -63,8 +63,6 @@ int StringList::getOffsetOfString(string str)
 
 void StringList::writeToStream(fstream& stream)
 {
-	//streamSeek(stream, *m_start_pos, START);
-	stream.seekg(*m_start_pos, ios::beg);
 	for (int i = 0; i < m_strings_ordered.size(); i++)
 	{
 		string str = m_strings_ordered[i];

@@ -211,6 +211,9 @@ void AINB::HeaderData::writeToStream(fstream& stream)
 	// 0x10
 	writeIntToStream(stream, 4, execution_command_count);
 
+	// 0x14 todo
+	writeIntToStream(stream, 4, -1);
+
 	stream.seekg(0x20, ios::beg);
 
 	// 0x20
