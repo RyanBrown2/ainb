@@ -11,6 +11,7 @@
 #include "SequenceHandler.h"
 #include "ParameterHandler.h"
 #include "AddressManager.h"
+#include "ExternalHandler.h"
 
 namespace ainb {
 
@@ -54,6 +55,7 @@ private:
 
 	struct HeaderData {
 		char* head = new char[5]; // 0x00
+		int version = -1; // 0x04 - normally 0x407
 		int entry_command_count = -1; // 0x0c
 		int execution_command_count = -1; // 0x10
 
