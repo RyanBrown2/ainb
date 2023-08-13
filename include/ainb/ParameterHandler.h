@@ -8,107 +8,11 @@
 #include <memory>
 #include <map>
 #include "StringList.h"
+#include "parameters/ParameterBase.h"
+#include "parameters/InternalParameter.h"
+#include "parameters/CommandParameter.h"
 
 namespace ainb {
-
-	enum ParameterType {
-		INT = 0,
-		BOOL = 1,
-		FLOAT = 2,
-		STRING = 3,
-		VEC3 = 4,
-		UDT = 5
-	};
-
-	struct InternalParameterBase {
-		int address = -1;
-		int index = -1;
-		std::string name = "";
-		std::string value = "";
-
-		int type_num = -1;
-
-		InternalParameterBase() {}
-
-		virtual void load(std::fstream& stream, StringList* string_list) {};
-		virtual void write(std::fstream& stream, StringList* string_list) {};
-	};
-
-	template <ParameterType Type>
-	struct InternalParameter : public InternalParameterBase {
-		ParameterType type = Type;
-		
-		void load(std::fstream& stream, StringList* string_list) override;
-		void write(std::fstream& stream, StringList* string_list) override;
-	};
-
-	struct CommandParameterBase
-	{
-		int address = -1;
-		int index = -1;
-		std::string name = "";
-		bool is_input = false;
-
-		// todo: once command loading gets finished, need to make this a command pointer instead
-		// also will need to implement a linking pass to link the command pointers to the command
-		int command_ref = -1; 
-
-		int type_num = -1;
-
-		CommandParameterBase() {}
-
-		virtual ~CommandParameterBase() = default;
-		virtual void load(std::fstream& stream, StringList* string_list, bool is_input) {};
-		virtual void write(std::fstream& stream, StringList* string_list, bool is_input) {};
-		virtual std::map<std::string, std::string>* getExtras() { return new std::map<std::string, std::string>(); }; // any data specific to the parameter type
-	};
-
-	template <ParameterType Type>
-	struct CommandParameter : public CommandParameterBase
-	{
-		ParameterType type = Type;
-
-		CommandParameter() {}
-
-		void load(std::fstream& stream, StringList* string_list, bool is_input) override;
-		void write(std::fstream& stream, StringList* string_list, bool is_input) override;
-		std::map<std::string, std::string>* getExtras() override;
-	};
-
-	template <>
-	struct CommandParameter<ParameterType::UDT> : public CommandParameterBase
-	{
-		std::string type_name = "";
-
-		CommandParameter(): CommandParameterBase() {}
-
-		void load(std::fstream& stream, StringList* string_list, bool is_input) override;
-		void write(std::fstream& stream, StringList* string_list, bool is_input) override;
-		std::map<std::string, std::string>* getExtras() override;
-	};
-
-	static const std::map<int, int> InternalParamEntryLengths = {
-		{0, 0x0c},
-		{1, 0x0c},
-		{2, 0x0c},
-		{3, 0x0c},
-		{4, 0x14}
-	};
-
-	static const std::map<int, int> CommandParamEntryLengths = {
-		{0, 0x10},
-		{1, 0x4},
-		{2, 0x10},
-		{3, 0x4},
-		{4, 0x10},
-		{5, 0x4},
-		{6, 0x10},
-		{7, 0x4},
-		{8, 0x18},
-		{9, 0x4},
-		{10, 0x14},
-		{11, 0x8}
-	};
 
 class ParameterHandler {
 public:

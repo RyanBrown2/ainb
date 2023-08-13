@@ -64,9 +64,11 @@ void SequenceNode::writeBodyToStream(fstream& stream, StringList* string_list)
 	{
 		int section_num = param_pair.first;
 		stream.seekg(body_start_pos + (8 * section_num), ios::beg);
-		int param_index = param_pair.second->index;
-		stream.write(convertIntToCharArray(param_index, 4), 4);
-		stream.write(convertIntToCharArray(m_internal_parameter_values.at(param_pair.second), 4), 4);
+		// todo: move write function into param class
+
+		//int param_index = param_pair.second->index;
+		//stream.write(convertIntToCharArray(param_index, 4), 4);
+		//stream.write(convertIntToCharArray(m_internal_parameter_values.at(param_pair.second), 4), 4);
 
 	}
 
@@ -76,7 +78,7 @@ void SequenceNode::writeBodyToStream(fstream& stream, StringList* string_list)
 	{
 		int section_num = param_pair.first;
 		stream.seekg(command_param_start_pos + (8 * section_num), ios::beg);
-		int param_index = param_pair.second->index;
+		int param_index = param_pair.second->getIndex();
 		stream.write(convertIntToCharArray(param_index, 4), 4);
 		stream.write(convertIntToCharArray(m_command_parameter_values.at(param_pair.second), 4), 4);
 

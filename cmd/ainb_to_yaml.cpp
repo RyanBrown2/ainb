@@ -20,10 +20,10 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::InternalParameterBase* par
 	out << YAML::BeginMap;
 
 	out << YAML::Key << "name";
-	out << YAML::Value << parameter->name;
+	out << YAML::Value << parameter->getName();
 
 	out << YAML::Key << "value";
-	out << YAML::Value << parameter->value;
+	out << YAML::Value << parameter->getValue();
 
 	out << YAML::EndMap;
 
@@ -34,7 +34,7 @@ YAML::Emitter& operator << (YAML::Emitter& out, ainb::CommandParameterBase* para
 	out << YAML::BeginMap;
 
 	out << YAML::Key << "name";
-	out << YAML::Value << parameter->name;
+	out << YAML::Value << parameter->getName();
 
 	out << YAML::EndMap;
 

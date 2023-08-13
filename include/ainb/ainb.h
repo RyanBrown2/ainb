@@ -12,6 +12,8 @@
 #include "ParameterHandler.h"
 #include "AddressManager.h"
 #include "ExternalHandler.h"
+#include "parameters/ParameterBase.h"
+#include "parameters/InternalParameter.h"
 
 namespace ainb {
 
