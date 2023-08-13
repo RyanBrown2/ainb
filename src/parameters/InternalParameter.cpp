@@ -3,31 +3,37 @@
 using namespace std;
 using namespace ainb;
 
+template <>
 InternalParameter<ParameterType::INT>::InternalParameter() : InternalParameterBase()
 {
 
 }
 
+template <>
 InternalParameter<ParameterType::BOOL>::InternalParameter() : InternalParameterBase()
 {
 
 }
 
+template <>
 InternalParameter<ParameterType::FLOAT>::InternalParameter() : InternalParameterBase()
 {
 
 }
 
+template <>
 InternalParameter<ParameterType::STRING>::InternalParameter() : InternalParameterBase()
 {
 
 }
 
+template <>
 InternalParameter<ParameterType::VEC3>::InternalParameter() : InternalParameterBase()
 {
 
 }
 
+template <>
 InternalParameter<ParameterType::UDT>::InternalParameter() : InternalParameterBase()
 {
 

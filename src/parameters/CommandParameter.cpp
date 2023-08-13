@@ -3,26 +3,31 @@
 using namespace std;
 using namespace ainb;
 
+template <>
 CommandParameter<ParameterType::INT>::CommandParameter()
 {
 
 }
 
+template <>
 CommandParameter<ParameterType::BOOL>::CommandParameter()
 {
 
 }
 
+template <>
 CommandParameter<ParameterType::FLOAT>::CommandParameter()
 {
 
 }
 
+template <>
 CommandParameter<ParameterType::STRING>::CommandParameter()
 {
 
 }
 
+template <>
 CommandParameter<ParameterType::VEC3>::CommandParameter()
 {
 
