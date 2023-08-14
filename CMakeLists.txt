@@ -14,7 +14,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 option(COMPILE_CMD "Compile the command line tool(s)" OFF)
 option(COMPILE_TEST "Compile the test tool" OFF)
 
-add_library(ainb SHARED
+set(LIB_SOURCE_FILES
 	src/ainb.cpp
 	src/StringList.cpp
 	src/SequenceNode.cpp
@@ -24,19 +24,13 @@ add_library(ainb SHARED
 	src/ExternalHandler.cpp 
 	src/parameters/ParameterBase.cpp
 	src/parameters/InternalParameter.cpp
-	src/parameters/CommandParameter.cpp)
+	src/parameters/CommandParameter.cpp
+	src/parameters/ExternalParameter.cpp
+)
 
-add_library(ainb_static STATIC
-	src/ainb.cpp
-	src/StringList.cpp
-	src/SequenceNode.cpp
-	src/SequenceHandler.cpp
-	src/ParameterHandler.cpp
-	src/AddressManager.cpp
-	src/ExternalHandler.cpp 
-	src/parameters/ParameterBase.cpp
-	src/parameters/InternalParameter.cpp
-	src/parameters/CommandParameter.cpp)
+add_library(ainb SHARED ${LIB_SOURCE_FILES})
+
+add_library(ainb_static STATIC ${LIB_SOURCE_FILES})
 
 target_include_directories(ainb PUBLIC ./include)
 target_include_directories(ainb_static PUBLIC ./include)
