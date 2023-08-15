@@ -33,9 +33,6 @@ namespace ainb
 		virtual void write(std::fstream& stream, StringList* string_list, bool is_input) {};
 		virtual std::map<std::string, std::string>* getExtras() { return new std::map<std::string, std::string>(); }; // any data specific to the parameter type
 
-		void setIndex(int index) { m_index = index; }
-		int getIndex() { return m_index; }
-
 		void setAddress(int address) { m_address = address; }
 		int getAddress() { return m_address; }
 
@@ -44,7 +41,6 @@ namespace ainb
 
 	protected:
 		int m_address = -1;
-		int m_index = -1;
 		bool m_is_input = false;
 
 		// todo: once command loading gets finished, need to make this a command pointer instead

@@ -27,7 +27,11 @@ namespace ainb
 
 		void setName(std::string name) { m_name = name; }
 		std::string getName() { return m_name; }
+
+		void setIndex(int index) { m_index = index; }
+		int getIndex() { return m_index; }
 	protected:
+		int m_index = -1;
 		std::string m_name = "";
 	};
 

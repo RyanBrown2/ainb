@@ -26,22 +26,13 @@ namespace ainb
 		virtual void load(std::fstream& file, StringList* string_list) {};
 		virtual void write(std::fstream& file, StringList* string_list) {};
 
-		void setIndex(int index) { m_index = index; }
-		int getIndex() { return m_index; }
-
-		void setAddress(int address) { m_address = address; }
-		int getAddress() { return m_address; }
-
 		void setValue(std::string value) { m_value = value; }
 		std::string getValue() { return m_value; }
 
 	protected:
-		int m_address = -1;
-		int m_index = -1;
 		std::string m_value = "";
 
 		int m_type_num = -1;
-
 	};
 
 	template <ParameterType T>

@@ -26,12 +26,7 @@ namespace ainb
 		virtual void load(std::fstream& stream, StringList* string_list) {};
 		virtual void write(std::fstream& stream, StringList* string_list) {};
 
-		void setIndex(int index) { m_index = index; }
-		int getIndex() { return m_index; }
-
 	protected:
-		int m_index = -1;
-
 		std::string m_second_string = "";
 
 		int m_type_num = -1;

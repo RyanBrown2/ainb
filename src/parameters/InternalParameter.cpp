@@ -48,9 +48,9 @@ InternalParameter<T>::~InternalParameter()
 template <ParameterType T>
 void InternalParameter<T>::load(fstream& stream, StringList* string_list)
 {
-	InternalParameter::m_address = stream.tellg();
+	int address = stream.tellg();
 	int section_num = T;
-	int end_pos = m_address + InternalParamEntryLengths.at(section_num);
+	int end_pos = address + InternalParamEntryLengths.at(section_num);
 	int name_offset;
 	readIntFromStream(stream, 4, name_offset);
 	InternalParameter::m_name = string_list->getStringFromOffset(name_offset);
