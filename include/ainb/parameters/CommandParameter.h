@@ -73,7 +73,6 @@ namespace ainb
 	{
 	public:
 		CommandParameter();
-		//~CommandParameter();
 
 		void load(std::fstream& stream, StringList* string_list, bool is_input) override;
 		void write(std::fstream& stream, StringList* string_list, bool is_input) override;

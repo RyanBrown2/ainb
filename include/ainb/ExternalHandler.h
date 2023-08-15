@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "util.h"
+#include "parameters/ExternalParameter.h"
 
 namespace ainb
 {
