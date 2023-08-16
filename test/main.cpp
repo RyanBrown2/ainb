@@ -138,7 +138,7 @@ void handleSequenceNodeRecurse(YAML::Emitter& out, ainb::AINB* ainb, ainb::Seque
 		handleSequenceNodeRecurse(out, ainb, entry.callee, visited);
 		out << YAML::EndMap;
 	}
-	visited->erase(node);
+	//visited->erase(node);
 	out << YAML::EndSeq;
 
 	out << YAML::EndMap;

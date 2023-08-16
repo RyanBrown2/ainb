@@ -95,6 +95,7 @@ private:
 	StringList* m_string_list;
 	ParameterHandler* m_parameter_handler;
 	SequenceHandler* m_sequence_handler;
+	ExternalHandler* m_external_handler;
 	AddressManager* m_address_manager;
 
 	void parseHeader();

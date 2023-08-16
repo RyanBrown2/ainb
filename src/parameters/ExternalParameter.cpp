@@ -72,4 +72,14 @@ template <ParameterType T>
 void ExternalParameter<T>::write(fstream& stream, StringList* string_list)
 {
 	// todo
+
+	int name_offset = string_list->getOffsetOfString(m_name);
+	int second_string_offset = string_list->getOffsetOfString(m_second_string);
+
+	writeIntToStream(stream, 2, name_offset);
+
+	// todo
+	stream.seekg(2, ios::cur);
+
+	writeIntToStream(stream, 4, second_string_offset);
 }

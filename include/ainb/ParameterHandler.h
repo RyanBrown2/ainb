@@ -51,12 +51,14 @@ private:
 	std::vector<int> m_active_command_parameter_types;
 
 	template <ParameterType Type>
-	std::unique_ptr<CommandParameterBase> createCommandParameter() {
+	std::unique_ptr<CommandParameterBase> createCommandParameter()
+	{
 		return std::make_unique<CommandParameter<Type>>();
 	}
 
 	template <ParameterType Type>
-	void pushCommandParameter(std::vector<std::unique_ptr<CommandParameterBase>>& vec) {
+	void pushCommandParameter(std::vector<std::unique_ptr<CommandParameterBase>>& vec)
+	{
 		vec.push_back(std::make_unique<CommandParameter<Type>>());
 	}
 

@@ -14,6 +14,10 @@ AINB::AINB(fstream& stream) : m_stream(stream)
 	m_parameter_handler = new ParameterHandler(m_string_list);
 	parseParameters();
 
+	stream.seekg(m_header_data.command_heads_end, ios::beg);
+	m_external_handler = new ExternalHandler(m_string_list);
+	m_external_handler->loadFromStream(m_stream);
+
 	stream.seekg(0x74, ios::beg);
 	m_sequence_handler = new SequenceHandler(m_parameter_handler, m_string_list);
 	m_sequence_handler->loadFromStream(m_stream, m_header_data.entry_command_count, m_header_data.execution_command_count);
@@ -87,8 +91,11 @@ int AINB::getExecutionCommandCount()
  */
 void AINB::writeToStream(fstream& stream)
 {
+	stream.seekg(m_header_data.command_heads_end, ios::beg);
+	m_external_handler->writeToStream(stream);
+
 	// write command bodies
-	stream.seekg(m_header_data.command_heads_end + 0x30, ios::beg);
+	//stream.seekg(m_header_data.command_heads_end + 0x30, ios::beg);
 	m_sequence_handler->writeCommandBodiesToStream(stream);
 	stream.flush();
 

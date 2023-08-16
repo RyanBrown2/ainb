@@ -1,7 +1,14 @@
 #pragma once
+
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <vector>
+#include <map>
+
+#include "StringList.h"
 #include "util.h"
+#include "parameters/ParameterBase.h"
 #include "parameters/ExternalParameter.h"
 
 namespace ainb
@@ -10,31 +17,26 @@ namespace ainb
 class ExternalHandler
 {
 public:
-	ExternalHandler();
+	ExternalHandler(StringList* string_list);
 	~ExternalHandler();
 
 	void loadFromStream(std::fstream& stream);
 	void writeToStream(std::fstream& stream);
 
 private:
+
 	struct HeaderEntry
 	{
-		int entry_count;
-		int start_index;
-		int allocation_offset;
-
-		void load(std::fstream& stream);
+		int entry_count = -1;
+		int start_index = -1;
+		int allocation_offset = -1;
 	};
 
-	struct Header
-	{
-		HeaderEntry entries[6];
+	StringList* m_string_list;
 
-		void load(std::fstream& stream);
+	std::map<int, std::vector<std::unique_ptr<ExternalParameterBase>>> m_parameters;
 
-	};
-
-	Header m_header;
+	void createAndLoadParameter(std::fstream& stream, int index, ParameterType type);
 };
 
 }
