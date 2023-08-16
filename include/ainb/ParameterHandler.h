@@ -7,6 +7,7 @@
 #include <variant>
 #include <memory>
 #include <map>
+
 #include "StringList.h"
 #include "parameters/ParameterBase.h"
 #include "parameters/InternalParameter.h"

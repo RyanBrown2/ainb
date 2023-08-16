@@ -235,8 +235,11 @@ int main(int argc, char* argv[])
 		if (input_char == '\b')
 		{
 			input.pop_back(); // remove \b
-			input.pop_back(); // remove the character that was just printed
-			printf("\33[2K\r");
+			if (!input.empty())
+			{
+				input.pop_back(); // remove the character that was just printed
+				printf("\33[2K\r");
+			}
 			cout << input;
 		}
 	}

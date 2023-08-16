@@ -4,6 +4,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <variant>
+#include <memory>
 #include <map>
 
 #include "StringList.h"
