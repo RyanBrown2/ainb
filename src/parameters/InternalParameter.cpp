@@ -82,14 +82,35 @@ void InternalParameter<T>::write(fstream& stream, StringList* string_list)
 
 	stream.seekg(4, ios::cur);
 
-	if (T == ParameterType::STRING)
-	{
-		int string_offset = string_list->getOffsetOfString(m_value);
-		writeIntToStream(stream, 4, string_offset);
-	}
-	else {
-		int val = stoi(m_value);
-		writeIntToStream(stream, 4, val);
-	}
+	int val = stoi(m_value);
+	writeIntToStream(stream, 4, val);
+}
 
+template <>
+void InternalParameter<ParameterType::STRING>::write(fstream& stream, StringList* string_list)
+{
+	int name_offset = string_list->getOffsetOfString(m_name);
+
+	writeIntToStream(stream, 4, name_offset);
+
+	stream.seekg(4, ios::cur);
+
+	int string_offset = string_list->getOffsetOfString(m_value);
+	writeIntToStream(stream, 4, string_offset);
+}
+
+template <>
+void InternalParameter<ParameterType::VEC3>::write(fstream& stream, StringList* string_list)
+{
+	int name_offset = string_list->getOffsetOfString(m_name);
+
+	writeIntToStream(stream, 4, name_offset);
+
+	stream.seekg(4, ios::cur);
+
+	int val = stoi(m_value);
+	writeIntToStream(stream, 4, val);
+
+	// todo: default vec3 value has 3 4-byte numbers
+	writeIntToStream(stream, 8, -1);
 }

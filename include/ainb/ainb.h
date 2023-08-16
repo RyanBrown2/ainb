@@ -61,8 +61,13 @@ private:
 		int entry_command_count = -1; // 0x0c
 		int execution_command_count = -1; // 0x10
 
-		int command_heads_end = -1; // 0x20
+		// todo: figure out what these are
+		// assuming they are counts of some sort
+		int unknown_1 = -1; // 0x14
+		int unknown_2 = -1; // 0x18
+		int unknown_3 = -1; // 0x1c
 
+		int command_heads_end = -1; // 0x20
 		int string_list_start_pos = -1; // 0x24
 		int string_list_4byte_padding = -1; // 0x28 in header - will probably be renamed
 		int internal_parameters_start = -1; // 0x2c

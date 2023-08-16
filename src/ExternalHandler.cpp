@@ -16,7 +16,7 @@ ExternalHandler::~ExternalHandler()
 void ExternalHandler::loadFromStream(fstream& stream)
 {
 	// first load header
-	vector<HeaderEntry> m_header_entries;
+	vector<HeaderEntry> header_entries;
 
 	for (int i = 0; i < 6; i++)
 	{
@@ -24,7 +24,14 @@ void ExternalHandler::loadFromStream(fstream& stream)
 		readIntFromStream(stream, 2, entry.entry_count);
 		readIntFromStream(stream, 2, entry.start_index);
 		readIntFromStream(stream, 4, entry.allocation_offset);
-		m_header_entries.push_back(entry);
+		header_entries.push_back(entry);
+	}
+
+	// check if the file has data in this section
+	// if not, return
+	if (header_entries[5].start_index == 0)
+	{
+		return;
 	}
 
 	// now load data
@@ -32,13 +39,26 @@ void ExternalHandler::loadFromStream(fstream& stream)
 	{
 		vector<unique_ptr<ExternalParameterBase>> parameters;
 
-		HeaderEntry entry = m_header_entries[i];
+		HeaderEntry entry = header_entries[i];
 		for (int j = 0; j < entry.entry_count; j++)
 		{
 			int index = entry.start_index + j;
 			createAndLoadParameter(stream, index, (ParameterType) i);
 		}
+	}
 
+	// move to end of allocated space
+	int alloc_size = header_entries[5].allocation_offset + header_entries[5].entry_count * ExternalParamAllocSizes.at(5);
+	stream.seekg(alloc_size, ios::cur);
+
+	// load external files
+	// todo: currently just determines the count, doesn't store data for each reference
+	int entry_terminator = -1;
+	while (entry_terminator != 0x0b68a737)
+	{
+		stream.seekg(0x0c, ios::cur);
+		m_external_file_count += 1;
+		readIntFromStream(stream, 4, entry_terminator);
 	}
 }
 
@@ -84,7 +104,13 @@ void ExternalHandler::writeToStream(fstream& stream)
 		writeIntToStream(stream, 4, entry.allocation_offset);
 	}
 
-	stream.seekg(end_pos, ios::beg);
+	stream.seekg(end_pos + alloc_size, ios::beg);
+
+	// todo: write external files
+	for (int i = 0; i < m_external_file_count; i++)
+	{
+		writeIntToStream(stream, 0x10, -1);
+	}
 }
 
 
@@ -114,4 +140,31 @@ void ExternalHandler::createAndLoadParameter(fstream& stream, int index, Paramet
 	
 	m_parameters[type].back()->setIndex(index);
 	m_parameters[type].back()->load(stream, m_string_list);
+}
+
+int ExternalHandler::getSize()
+{
+	int total_size = 0x30; // header size
+
+	// entries + allocation space
+	//for (int i = 0; i < 6; i++)
+	//{
+	//	vector<unique_ptr<ExternalParameterBase>>& parameters = m_parameters.at(i);
+	//	int entry_count = parameters.size();
+	//	int size = entry_count * (0x8 + ExternalParamAllocSizes.at(i));
+	//	total_size += size;
+	//}
+	for (auto& pair : m_parameters)
+	{
+		int type_num = pair.first;
+		vector<unique_ptr<ExternalParameterBase>>& parameters = pair.second;
+		int entry_count = parameters.size();
+		int size = entry_count * (0x8 + ExternalParamAllocSizes.at(type_num));
+		total_size += size;
+	}
+
+	// external files
+	total_size += m_external_file_count * 0x10;
+
+	return total_size;
 }

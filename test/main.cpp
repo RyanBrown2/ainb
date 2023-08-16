@@ -200,7 +200,7 @@ int main(int argc, char* argv[])
 	for (const auto& entry : fs::directory_iterator(path))
 	{
 		string file = entry.path().string().erase(0,2);
-		if (file.find(".ainb") != string::npos) {
+		if (file.find(".ainb") != string::npos || file.find(".asb") != string::npos) {
 			files.push_back(file);
 		}
 	}

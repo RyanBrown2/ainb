@@ -3,10 +3,11 @@
 using namespace std;
 using namespace ainb;
 
-AddressManager::AddressManager(ParameterHandler* parameter_handler, SequenceHandler* sequence_handler)
+AddressManager::AddressManager(ParameterHandler* parameter_handler, SequenceHandler* sequence_handler, ExternalHandler* external_handler)
 {
 	m_parameter_handler = parameter_handler;
 	m_sequence_handler = sequence_handler;
+	m_external_handler = external_handler;
 }
 
 AddressManager::~AddressManager()
@@ -73,7 +74,7 @@ AddressManager::AddressData* AddressManager::calcAddressData()
 	address_data->headers_end_address = 0x74 + (entry_count * 0x18) + (node_count * 0x3c);
 
 	// todo: library currently doesn't support this data, so it will be lost
-	int external_ref_section_size = 0x30;
+	int external_ref_section_size = m_external_handler->getSize();
 
 	address_data->node_bodies_start_address = address_data->headers_end_address + external_ref_section_size;
 

@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "ExternalHandler.h"
 #include "ParameterHandler.h"
 #include "SequenceHandler.h"
 #include "SequenceNode.h"
@@ -46,7 +47,7 @@ public:
 		int node_bodies_start_address;
 	};
 
-	AddressManager(ParameterHandler* parameter_handler, SequenceHandler* sequence_handler);
+	AddressManager(ParameterHandler* parameter_handler, SequenceHandler* sequence_handler, ExternalHandler* external_handler);
 	~AddressManager();
 
 	AddressData* calcAddressData();
@@ -54,6 +55,7 @@ public:
 private:
 	ParameterHandler* m_parameter_handler = nullptr;
 	SequenceHandler* m_sequence_handler = nullptr;
+	ExternalHandler* m_external_handler = nullptr;
 
 	AddressData* m_address_data = nullptr;
 

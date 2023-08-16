@@ -15,7 +15,8 @@ namespace ainb
 		{1, 0x0c},
 		{2, 0x0c},
 		{3, 0x0c},
-		{4, 0x14}
+		{4, 0x14},
+		{5, 0x0c}
 	};
 
 	class InternalParameterBase : public ParameterBase

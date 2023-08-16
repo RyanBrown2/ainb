@@ -24,7 +24,7 @@ AINB::AINB(fstream& stream) : m_stream(stream)
 
 	m_name = m_string_list->getStringFromOffset(0);
 
-	m_address_manager = new AddressManager(m_parameter_handler, m_sequence_handler);
+	m_address_manager = new AddressManager(m_parameter_handler, m_sequence_handler, m_external_handler);
 }
 
 AINB::~AINB() {
@@ -40,8 +40,11 @@ void AINB::parseHeader()
 	m_stream.seekg(0x0c, ios::beg);
 	readIntFromStream(m_stream, 4, m_header_data.entry_command_count);
 	readIntFromStream(m_stream, 4, m_header_data.execution_command_count);
+	readIntFromStream(m_stream, 4, m_header_data.unknown_1);
+	readIntFromStream(m_stream, 4, m_header_data.unknown_2);
+	readIntFromStream(m_stream, 4, m_header_data.unknown_3);
 
-	m_stream.seekg(0x20, ios::beg);
+	//m_stream.seekg(0x20, ios::beg);
 	readIntFromStream(m_stream, 4, m_header_data.command_heads_end); // 0x20
 	readIntFromStream(m_stream, 4, m_header_data.string_list_start_pos); // 0x24
 
@@ -63,7 +66,6 @@ void AINB::parseHeader()
 
 void AINB::parseParameters()
 {
-	//streamSeek(m_stream, m_header_data.internal_parameters_start, START);
 	m_stream.seekg(m_header_data.internal_parameters_start, ios::beg);
 	m_parameter_handler->loadInternalParameters(m_stream, m_header_data.command_parameters_start);
 
@@ -220,6 +222,12 @@ void AINB::HeaderData::writeToStream(fstream& stream)
 
 	// 0x14 todo
 	writeIntToStream(stream, 4, -1);
+
+	// 0x18 todo
+	writeIntToStream(stream, 4, -1);
+
+	// 0x1c todo
+	writeIntToStream(stream, 4, -1); 
 
 	stream.seekg(0x20, ios::beg);
 

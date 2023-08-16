@@ -26,6 +26,9 @@ public:
 	void loadFromStream(std::fstream& stream);
 	void writeToStream(std::fstream& stream);
 
+	// temp just so the address manager can function
+	int getSize();
+
 private:
 
 	struct HeaderEntry
@@ -40,6 +43,7 @@ private:
 	std::map<int, std::vector<std::unique_ptr<ExternalParameterBase>>> m_parameters;
 
 	void createAndLoadParameter(std::fstream& stream, int index, ParameterType type);
-};
 
+	int m_external_file_count = 0;
+};
 }
